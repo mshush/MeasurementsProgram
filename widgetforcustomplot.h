@@ -7,6 +7,7 @@
 #include <QVBoxLayout>
 #include <qcustomplot.h>
 #include <QFileDialog>
+#include <plotclass.h>
 
 class WidgetForCustomPlot : public QWidget
 {
@@ -14,14 +15,16 @@ class WidgetForCustomPlot : public QWidget
 public:
     explicit WidgetForCustomPlot(QWidget *parent = nullptr);
 
-    QCustomPlot * customPlot;
+    PlotClass * customPlot;
     QWidget * ControlsWidget;
     QHBoxLayout * HorizontalPlotLayout;
     QVBoxLayout * VerticalControlsLayout;
     QPushButton * ResetButton;
     QPushButton * SaveButton;
-public slots:
-    void SavePlot();
+    QPushButton * MarkerAddButton;
+    QPushButton * MarkerDeleteButton;
+
+
 };
 
 #endif // WIDGETFORCUSTOMPLOT_H

@@ -1,0 +1,29 @@
+#ifndef PLOTCLASS_H
+#define PLOTCLASS_H
+
+#include <qcustomplot.h>
+#include <QObject>
+#include <QWidget>
+#include <QList>
+
+class PlotClass : public QCustomPlot
+{
+    Q_OBJECT
+public:
+    PlotClass(QWidget *parent = nullptr);
+
+    QCPItemTracer * MouseMoveMarker;
+    QCPItemText * MouseMoveLabel;
+    bool markerbuttonactive = false;
+
+    //QList<QCPItemTracer*> MarkerList;
+
+    void ResetPlot();
+    void SavePlot();
+protected:
+    void mouseMoveEvent(QMouseEvent *event) override;
+    void mousePressEvent(QMouseEvent *event) override;
+
+};
+
+#endif // PLOTCLASS_H

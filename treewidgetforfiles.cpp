@@ -11,7 +11,7 @@ TreeWidgetForFiles::TreeWidgetForFiles()
     rootItem->setText(0, rootDir.dirName());
     this->addTopLevelItem(rootItem);
 
-    AddItems(rootDir, rootItem); //Если рекурсивно, то будет задержка при большой длине пути -- подумать как уменьшить.
+    AddItems(rootDir, rootItem);
 
     this->resize(800,100);
     this->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Fixed);
@@ -21,7 +21,7 @@ TreeWidgetForFiles::TreeWidgetForFiles()
 
 
 
-void TreeWidgetForFiles::AddItems(const QDir &directory, QTreeWidgetItem *parent) // Закомментировал, так как программа медленно запускается
+void TreeWidgetForFiles::AddItems(const QDir &directory, QTreeWidgetItem *parent)
 {
 
     QFileInfoList fileList = directory.entryInfoList(QDir::Files | QDir::Dirs | QDir::NoDotAndDotDot);

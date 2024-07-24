@@ -8,31 +8,13 @@ WidgetForCustomPlot::WidgetForCustomPlot(QWidget *parent)
 
     HorizontalPlotLayout = new QHBoxLayout(this);
 
-    QVector<double> x(101), y(101); // initialize with entries 0..100
-    for (int i=0; i<101; ++i)
-    {
-        x[i] = i/50.0 - 1; // x goes from -1 to 1
-        y[i] = x[i]*x[i]; // let's plot a quadratic function
-    }
 
-    customPlot = new QCustomPlot(this);
+    customPlot = new PlotClass(this);
 
 
-    // create graph and assign data to it:
-    customPlot->addGraph();
-    customPlot->graph(0)->setData(x, y);
-    // give the axes some labels:
-    customPlot->xAxis->setLabel("x");
-    customPlot->yAxis->setLabel("y");
-    // set axes ranges, so we see all data:
-    customPlot->xAxis->setRange(-1, 1);
-    customPlot->yAxis->setRange(0, 1);
-    customPlot->replot();
 
     customPlot->resize(600,200);
     customPlot->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding);
-
-    customPlot->setInteractions(QCP::iRangeZoom | QCP::iRangeDrag);
 
     ControlsWidget = new QWidget(this);
     ControlsWidget->resize(200,200);
@@ -44,23 +26,38 @@ WidgetForCustomPlot::WidgetForCustomPlot(QWidget *parent)
     ControlsWidget->setSizePolicy(QSizePolicy::Fixed,QSizePolicy::Fixed);
 
     ResetButton = new QPushButton("Сброс");
-    connect(ResetButton, &QPushButton::clicked, [this]()
+    connect(ResetButton, &QPushButton::clicked, customPlot, &PlotClass::ResetPlot);
+    VerticalControlsLayout->addWidget(ResetButton);
+
+    MarkerAddButton = new QPushButton("+Маркер"); //Добавить смену значка и цвета где-нибудь в продвинутых опциях. Переместить лямбда-функцию в PlotClass?
+    MarkerAddButton->setCheckable(true);
+    connect(MarkerAddButton, &QPushButton::clicked, [this]()
             {
-                customPlot->rescaleAxes();
+                customPlot->markerbuttonactive = !customPlot->markerbuttonactive;
+                customPlot->MouseMoveMarker->setVisible(customPlot->markerbuttonactive);
+                customPlot->MouseMoveLabel->setVisible(customPlot->markerbuttonactive);
                 customPlot->replot();
             }
             );
-    VerticalControlsLayout->addWidget(ResetButton);
+    VerticalControlsLayout->addWidget(MarkerAddButton);
+
+    MarkerDeleteButton = new QPushButton("-Маркер"); //Добавить смену значка и цвета где-нибудь в продвинутых опциях. Переместить лямбда-функцию в PlotClass?
+    MarkerDeleteButton->setCheckable(true);
+    connect(MarkerDeleteButton, &QPushButton::clicked, [this]()
+            {
+                customPlot->markerbuttonactive = !customPlot->markerbuttonactive;
+                customPlot->MouseMoveMarker->setVisible(customPlot->markerbuttonactive);
+                customPlot->MouseMoveLabel->setVisible(customPlot->markerbuttonactive);
+                customPlot->replot();
+            }
+            );
+    VerticalControlsLayout->addWidget(MarkerDeleteButton);
+
 
 
     SaveButton = new QPushButton("Сохранить");
-    connect(SaveButton, &QPushButton::clicked, this, &WidgetForCustomPlot::SavePlot);
+    connect(SaveButton, &QPushButton::clicked, customPlot, &PlotClass::SavePlot);
     VerticalControlsLayout->addWidget(SaveButton);
-
-
-
-
-
     HorizontalPlotLayout->addWidget(customPlot);
     HorizontalPlotLayout->addWidget(ControlsWidget);
 
@@ -69,24 +66,3 @@ WidgetForCustomPlot::WidgetForCustomPlot(QWidget *parent)
 
 
 
-void WidgetForCustomPlot::SavePlot()
-{
-    qDebug()<<"Was Here!";
-
-    QString filePath = QFileDialog::getSaveFileName(this, "Сохранить как", "", "PNG File (*.png);;JPEG File (*.jpg);;PDF File (*.pdf)");
-
-
-    if (!filePath.isEmpty()) {
-        // Determine the file format based on the file extension
-        QString fileFormat = QFileInfo(filePath).suffix();
-
-        // Save the plot in the selected format
-        if (fileFormat == "png") {
-            customPlot->savePng(filePath);
-        } else if (fileFormat == "jpg") {
-            customPlot->saveJpg(filePath);
-        } else if (fileFormat == "pdf") {
-            customPlot->savePdf(filePath);
-        }
-    }
-}
