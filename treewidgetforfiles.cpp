@@ -11,7 +11,7 @@ TreeWidgetForFiles::TreeWidgetForFiles()
     rootItem->setText(0, rootDir.dirName());
     this->addTopLevelItem(rootItem);
 
-    AddItems(rootDir, rootItem); //Если рекурсивно, то будет задержка при большой длине пути -- подумать как уменьшить.
+    AddItems(rootDir, rootItem); //Если рекурсивно, то будет задержка при большой длине пути -- ограничить.
 
     this->resize(800,100);
     this->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Fixed);
