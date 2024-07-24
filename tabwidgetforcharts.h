@@ -6,6 +6,7 @@
 #include <QWidget>
 #include <QTabBar>
 #include<widgetforchart.h>
+#include <widgetforcustomplot.h>
 
 class TabWidgetForCharts : public QTabWidget
 {
@@ -13,7 +14,9 @@ class TabWidgetForCharts : public QTabWidget
 public:
 
     WidgetForChart * ChartTab;
+    WidgetForCustomPlot * PlotTab;
     TabWidgetForCharts();
+
 
 };
 

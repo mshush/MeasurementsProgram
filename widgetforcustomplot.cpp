@@ -57,7 +57,6 @@ WidgetForCustomPlot::WidgetForCustomPlot(QWidget *parent)
                     }
                 }
 
-
                 customPlot->markeraddbuttonactive = false;
                 customPlot->markerdeletebuttonactive = MarkerDeleteButton->isChecked();
                 MarkerAddButton->setChecked(false);

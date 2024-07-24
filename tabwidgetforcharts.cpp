@@ -5,10 +5,10 @@ TabWidgetForCharts::TabWidgetForCharts()
 {
     //ChartTabBar = new QTabBar(this);
 
+    PlotTab = new WidgetForCustomPlot;
+    addTab(PlotTab,"График 1");
     ChartTab = new WidgetForChart;
-    addTab(ChartTab,"График 1");
-    QWidget * Tab1 = new QWidget;
-    addTab(Tab1,"График 2");
+    addTab(ChartTab,"График 2");
     QWidget * Tab2 = new QWidget;
     addTab(Tab2,"График 3");
     QWidget * Tab3 = new QWidget;

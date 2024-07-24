@@ -10,19 +10,23 @@ TabWidgetForTools::TabWidgetForTools()
     //ExplanationLabel->setWordWrap(true);
 
 
-    QPushButton * StartMeasurementsButton = new QPushButton();
-    StartMeasurementsButton->setIcon(QIcon("C://Users/HP/Documents/MeasurementsProgram/startbuttonicon.png"));
-    //StartMeasurementsButton->setIcon(QIcon(QIcon::fromTheme(QStyle::SP_MediaPlay)));//
+
+    QPushButton * StartMeasurementsButton = new QPushButton("►");
+    //StartMeasurementsButton->setIcon(QIcon("C://Users/HP/Documents/MeasurementsProgram/startbuttonicon.png"));
+    StartMeasurementsButton->setFont(QFont("Arial", 50, QFont::Bold));
+    StartMeasurementsButton->setStyleSheet("QPushButton { color: green; padding-top: 0px; padding-bottom: 0px; }");
+    StartMeasurementsButton->resize(50,50);
+    StartMeasurementsButton->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
 
     Tab1Layout->addWidget(StartMeasurementsButton);
-    StartMeasurementsButton->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
-    StartMeasurementsButton->setIconSize(QSize(40, 40));
 
-    QPushButton * StopMeasurementsButton = new QPushButton();
-    StopMeasurementsButton->setIcon(QIcon("C://Users/HP/Documents/MeasurementsProgram/stopbuttonicon.png"));
-    Tab1Layout->addWidget(StopMeasurementsButton);
+    QPushButton * StopMeasurementsButton = new QPushButton("🟥"); //■🟥
+    //StopMeasurementsButton->setIcon(QIcon("C://Users/HP/Documents/MeasurementsProgram/stopbuttonicon.png"));
+    StopMeasurementsButton->setFont(QFont("Arial", 50, QFont::Bold));
+    StopMeasurementsButton->setStyleSheet("QPushButton { color: red; padding-top: 0px; padding-bottom: 0px; padding-left: 5px; padding-right: 5px; }");
+    StopMeasurementsButton->resize(50,50);
     StopMeasurementsButton->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
-    StopMeasurementsButton->setIconSize(QSize(40, 40));
+    Tab1Layout->addWidget(StopMeasurementsButton);
 
 
     Tab1Layout->setAlignment(Qt::AlignLeft);

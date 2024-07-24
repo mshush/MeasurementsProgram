@@ -45,8 +45,8 @@ MainWindow::MainWindow(QWidget *parent)
     //FileTreeWidget = new TreeWidgetForFiles();
     //InnerVerticalLayout->addWidget(FileTreeWidget);
 
-    CustomPlotWidget = new WidgetForCustomPlot(this);
-    InnerVerticalLayout->addWidget(CustomPlotWidget);
+    //CustomPlotWidget = new WidgetForCustomPlot(this);
+    //InnerVerticalLayout->addWidget(CustomPlotWidget);
 
     MiddleHorizontalLayout->addLayout(InnerVerticalLayout);
 
