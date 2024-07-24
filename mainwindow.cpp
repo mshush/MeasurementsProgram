@@ -15,6 +15,7 @@ MainWindow::MainWindow(QWidget *parent)
     this->menuBar()->addMenu("Постобработка");
     this->menuBar()->addMenu("...");
 
+
     QVBoxLayout *OutermostVerticalLayout = new QVBoxLayout(this);
 
     TabOfTools = new TabWidgetForTools;
@@ -42,9 +43,11 @@ MainWindow::MainWindow(QWidget *parent)
 
     QHBoxLayout * BottomHorizontalLayout = new QHBoxLayout(this);
 
-    FileTreeWidget = new TreeWidgetForFiles();
+    //FileTreeWidget = new TreeWidgetForFiles();
+    //InnerVerticalLayout->addWidget(FileTreeWidget);
 
-    InnerVerticalLayout->addWidget(FileTreeWidget);
+    CustomPlotWidget = new WidgetForCustomPlot(this);
+    InnerVerticalLayout->addWidget(CustomPlotWidget);
 
     MiddleHorizontalLayout->addLayout(InnerVerticalLayout);
 

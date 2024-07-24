@@ -5,6 +5,7 @@
 WidgetForChart::WidgetForChart(QWidget *parent)
     : QWidget{parent}
 {
+
     freq1 = 20;
     freq2= 5;
 
@@ -12,7 +13,7 @@ WidgetForChart::WidgetForChart(QWidget *parent)
 
 
     ChartSeries = new QLineSeries();
-    for (int i=0;i<100;i++)
+    for (int i=0;i<10;i++)
     {
         ChartSeries->append(static_cast<double>(i),sin(static_cast<double>(i)/freq1)*(sin(static_cast<double>(i)/freq2)));
     }
@@ -270,7 +271,7 @@ void WidgetForChart::RedrawChart()
     freq1 = Freq1Slider->value();
     freq2 = Freq2Slider->value();
     ChartSeries->clear();
-    for (int i=0;i<100;i++)
+    for (int i=0;i<10;i++)
     {
         ChartSeries->append(static_cast<double>(i),sin(static_cast<double>(i)/freq1)*(sin(static_cast<double>(i)/freq2)));
     }
@@ -281,23 +282,21 @@ void WidgetForChart::RedrawChart()
 
 
 
-
+/*
 void WidgetForChart::ScaleToZoom(QRectF rect, QPointF fromScenePoint, QPointF toScenePoint) // Не работает!
 {
     qDebug()<< "Was here!";
     //QValueAxis *axisX = qobject_cast<QValueAxis*>(Chart->axisX());
     //QValueAxis *axisY = qobject_cast<QValueAxis*>(Chart->axisY());
 
-    // Calculate new axis ranges based on the selected area
     double minX = std::min(fromScenePoint.x(), toScenePoint.x());
     double maxX = std::max(fromScenePoint.x(), toScenePoint.x());
     double minY = std::min(fromScenePoint.y(), toScenePoint.y());
     double maxY = std::max(fromScenePoint.y(), toScenePoint.y());
 
-    // Update the axis ranges
     Chart->axisX()->setRange(minX, maxX);
     Chart->axisY()->setRange(minY, maxY);
 }
-
+*/
 
 

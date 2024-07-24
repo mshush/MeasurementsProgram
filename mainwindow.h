@@ -14,11 +14,12 @@
 #include <tabwidgetforparameters.h>
 #include <tabwidgetfortools.h>
 #include <widgetforchart.h>
-#include <treewidgetforfiles.h>>
+#include <treewidgetforfiles.h>
 #include <QTreeWidget>
 #include <QTreeWidgetItem>
 #include <QDir>
-#include <tabwidgetforcharts.h>>
+#include <tabwidgetforcharts.h>
+#include <widgetforcustomplot.h>
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -40,6 +41,7 @@ public:
     //WidgetForChart * ChartWidget;
     TabWidgetForCharts * ChartTab;
     TreeWidgetForFiles * FileTreeWidget;
+    WidgetForCustomPlot * CustomPlotWidget;
 
     void addItems(const QDir &directory, QTreeWidgetItem *parent); // Перенести в отдельный класс для дерева
 

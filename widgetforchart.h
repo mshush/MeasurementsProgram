@@ -10,6 +10,8 @@
 #include <QtCharts>
 #include <QGraphicsView>
 #include <customchartview.h>
+//#include <qcustomplot.h>
+
 
 class WidgetForChart : public QWidget
 {
@@ -27,7 +29,9 @@ public:
     QSlider * Freq2Slider;
 
     QValueAxis * axisY;
-    void ScaleToZoom(QRectF rect, QPointF fromScenePoint, QPointF toScenePoint);
+    //void ScaleToZoom(QRectF rect, QPointF fromScenePoint, QPointF toScenePoint);
+
+    //QCustomPlot CustomPlotTest;
 
 
     //QGroupBox * ChartManipulationGroupBox;

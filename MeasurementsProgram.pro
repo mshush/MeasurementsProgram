@@ -3,7 +3,7 @@ QT       += charts
 QT       += gui
 
 
-greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
+greaterThan(QT_MAJOR_VERSION, 4): QT += widgets printsupport
 
 CONFIG += c++17
 
@@ -17,22 +17,26 @@ SOURCES += \
     mainwindow.cpp \
     measurementsparameterswidget.cpp \
     processingparameterswidget.cpp \
+    qcustomplot.cpp \
     tabwidgetforcharts.cpp \
     tabwidgetforparameters.cpp \
     tabwidgetfortools.cpp \
     treewidgetforfiles.cpp \
-    widgetforchart.cpp
+    widgetforchart.cpp \
+    widgetforcustomplot.cpp
 
 HEADERS += \
     customchartview.h \
     mainwindow.h \
     measurementsparameterswidget.h \
     processingparameterswidget.h \
+    qcustomplot.h \
     tabwidgetforcharts.h \
     tabwidgetforparameters.h \
     tabwidgetfortools.h \
     treewidgetforfiles.h \
-    widgetforchart.h
+    widgetforchart.h \
+    widgetforcustomplot.h
 
 FORMS += \
     mainwindow.ui
@@ -41,3 +45,5 @@ FORMS += \
 qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
+
+QMAKE_CXXFLAGS += -Wa,-mbig-obj
