@@ -9,6 +9,7 @@
 #include <QRadioButton>
 #include <QGroupBox>
 #include <QComboBox>
+#include <QLineEdit>
 
 
 class MeasurementsParametersWidget : public QWidget

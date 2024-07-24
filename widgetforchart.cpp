@@ -6,6 +6,7 @@ WidgetForChart::WidgetForChart(QWidget *parent)
     : QWidget{parent}
 {
 
+
     freq1 = 20;
     freq2= 5;
 
@@ -171,6 +172,9 @@ WidgetForChart::WidgetForChart(QWidget *parent)
 
     LayoutOfParameters->addWidget(Freq1LineEdit,1,0);
     LayoutOfParameters->addWidget(Freq2LineEdit,1,1);
+
+
+
 
     /*
     Freq1Slider = new QSlider(Qt::Horizontal);

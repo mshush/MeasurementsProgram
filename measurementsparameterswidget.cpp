@@ -1,5 +1,4 @@
 #include "measurementsparameterswidget.h"
-#include "qlineedit.h"
 
 MeasurementsParametersWidget::MeasurementsParametersWidget(QWidget *parent)
     : QWidget{parent}
