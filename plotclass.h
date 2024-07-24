@@ -14,7 +14,10 @@ public:
 
     QCPItemTracer * MouseMoveMarker;
     QCPItemText * MouseMoveLabel;
-    bool markerbuttonactive = false;
+    bool markeraddbuttonactive = false;
+    bool markerdeletebuttonactive = false;
+    int iter = 0;
+
 
     //QList<QCPItemTracer*> MarkerList;
 

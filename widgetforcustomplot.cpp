@@ -33,21 +33,52 @@ WidgetForCustomPlot::WidgetForCustomPlot(QWidget *parent)
     MarkerAddButton->setCheckable(true);
     connect(MarkerAddButton, &QPushButton::clicked, [this]()
             {
-                customPlot->markerbuttonactive = !customPlot->markerbuttonactive;
-                customPlot->MouseMoveMarker->setVisible(customPlot->markerbuttonactive);
-                customPlot->MouseMoveLabel->setVisible(customPlot->markerbuttonactive);
+                customPlot->markeraddbuttonactive = MarkerAddButton->isChecked(); //!customPlot->markeraddbuttonactive;
+                customPlot->markerdeletebuttonactive = false;
+                MarkerDeleteButton->setChecked(false);
+                customPlot->MouseMoveMarker->setVisible(customPlot->markeraddbuttonactive);
+                customPlot->MouseMoveLabel->setVisible(customPlot->markeraddbuttonactive);
                 customPlot->replot();
             }
             );
     VerticalControlsLayout->addWidget(MarkerAddButton);
 
-    MarkerDeleteButton = new QPushButton("-Маркер"); //Добавить смену значка и цвета где-нибудь в продвинутых опциях. Переместить лямбда-функцию в PlotClass?
+    MarkerDeleteButton = new QPushButton("-Маркер"); //Лучше через connect(NewMarker... и чтобы выключать кликом на маркер при включённой кнопке.
     MarkerDeleteButton->setCheckable(true);
     connect(MarkerDeleteButton, &QPushButton::clicked, [this]()
             {
-                customPlot->markerbuttonactive = !customPlot->markerbuttonactive;
-                customPlot->MouseMoveMarker->setVisible(customPlot->markerbuttonactive);
-                customPlot->MouseMoveLabel->setVisible(customPlot->markerbuttonactive);
+
+
+                for (QCPAbstractItem* item : customPlot->selectedItems())
+                {
+                    if (dynamic_cast<QCPItemTracer*>(item))
+                    {
+                        dynamic_cast<QCPItemTracer*>(item)->setSelected(false);
+                    }
+                }
+
+
+                customPlot->markeraddbuttonactive = false;
+                customPlot->markerdeletebuttonactive = MarkerDeleteButton->isChecked();
+                MarkerAddButton->setChecked(false);
+                customPlot->MouseMoveMarker->setVisible(customPlot->markeraddbuttonactive);
+                customPlot->MouseMoveLabel->setVisible(customPlot->markeraddbuttonactive);
+
+
+
+/*
+                for (int i=0; i < customPlot->itemCount();i++)
+                {
+                    if (dynamic_cast<QCPItemText*>(customPlot->item(i)))
+                    {
+                        if (dynamic_cast<QCPItemText*>(customPlot->item(i))->visible() && dynamic_cast<QCPItemText*>(customPlot->item(i))!=customPlot->MouseMoveLabel)
+                        {
+                            customPlot->removeItem(customPlot->item(i));
+
+                        }
+                    }
+                }
+*/
                 customPlot->replot();
             }
             );

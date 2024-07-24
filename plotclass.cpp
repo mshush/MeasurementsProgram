@@ -8,6 +8,7 @@ PlotClass::PlotClass(QWidget * parent) : QCustomPlot(parent)
 
     MouseMoveMarker->setVisible(false);
     MouseMoveLabel->setVisible(false);
+    MouseMoveMarker->setSelectable(false);
 
     QVector<double> x(101), y(101); // initialize with entries 0..100
     for (int i=0; i<101; ++i)
@@ -35,7 +36,7 @@ void PlotClass::mouseMoveEvent(QMouseEvent *event)
 {
     QCustomPlot::mouseMoveEvent(event);
 
-    if (markerbuttonactive)
+    if (markeraddbuttonactive)
     {
         MouseMoveMarker->setBrush(QBrush(Qt::red));
         MouseMoveMarker->setStyle(QCPItemTracer::TracerStyle::tsCrosshair);
@@ -59,7 +60,7 @@ void PlotClass::mousePressEvent(QMouseEvent *event)
 {
     QCustomPlot::mousePressEvent(event);
 
-    if (markerbuttonactive)
+    if (markeraddbuttonactive)
     {
         QCPItemTracer * NewMarker = new QCPItemTracer(this);
         NewMarker->setBrush(QBrush(Qt::red));
@@ -77,9 +78,22 @@ void PlotClass::mousePressEvent(QMouseEvent *event)
         NewMarkerLabel->setFont(QFont(font().family(), 9));
         NewMarkerLabel->setVisible(false);
 
-        connect(NewMarker,&QCPItemTracer::selectionChanged,[NewMarkerLabel,NewMarker]()
+        connect(NewMarker,&QCPItemTracer::selectionChanged,[NewMarkerLabel, NewMarker,this]()
                 {
                     NewMarkerLabel->setVisible(NewMarker->selected());
+
+                    if (markerdeletebuttonactive && NewMarker->selected())
+                    {
+                        removeItem(NewMarker);
+                        removeItem(NewMarkerLabel);
+                    }
+
+                    /*
+                    else if  (this->selectedItems().isEmpty())
+                    {
+                        removeItem(NewMarker);
+                        removeItem(NewMarkerLabel);
+                    }*/
 
                 }
                 );
