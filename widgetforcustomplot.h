@@ -17,12 +17,13 @@ public:
 
     PlotClass * customPlot;
     QWidget * ControlsWidget;
-    QHBoxLayout * HorizontalPlotLayout;
-    QVBoxLayout * VerticalControlsLayout;
+    QVBoxLayout * VerticalPlotLayout;
+    QHBoxLayout * HorizontalControlsLayout;
     QPushButton * ResetButton;
     QPushButton * SaveButton;
     QPushButton * MarkerAddButton;
     QPushButton * MarkerDeleteButton;
+    QPushButton * DeleteAllMarkersButton;
 
 
 };

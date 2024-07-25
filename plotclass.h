@@ -23,6 +23,8 @@ public:
 
     void ResetPlot();
     void SavePlot();
+    void DeleteAllMarkers();
+
 protected:
     void mouseMoveEvent(QMouseEvent *event) override;
     void mousePressEvent(QMouseEvent *event) override;

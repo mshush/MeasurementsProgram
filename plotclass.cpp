@@ -36,7 +36,7 @@ void PlotClass::mouseMoveEvent(QMouseEvent *event)
 {
     QCustomPlot::mouseMoveEvent(event);
 
-    if (markeraddbuttonactive)
+    if (markeraddbuttonactive or markerdeletebuttonactive)
     {
         MouseMoveMarker->setBrush(QBrush(Qt::red));
         MouseMoveMarker->setStyle(QCPItemTracer::TracerStyle::tsCrosshair);
@@ -132,3 +132,22 @@ void PlotClass::SavePlot()
         }
     }
 }
+
+
+
+void PlotClass::DeleteAllMarkers()
+{
+
+    for (int i=0; i < itemCount();i++)
+    {
+        if (dynamic_cast<QCPItemText*>(item(i)) && dynamic_cast<QCPItemText*>(item(i))!=MouseMoveLabel)
+        {
+            removeItem(item(i));
+        }
+        else if (dynamic_cast<QCPItemTracer*>(item(i)) && dynamic_cast<QCPItemTracer*>(item(i))!=MouseMoveMarker)
+        {
+            removeItem(item(i));
+        }
+    }
+}
+

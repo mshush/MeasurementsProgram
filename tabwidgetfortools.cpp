@@ -13,19 +13,19 @@ TabWidgetForTools::TabWidgetForTools()
 
     QPushButton * StartMeasurementsButton = new QPushButton("►");
     //StartMeasurementsButton->setIcon(QIcon("C://Users/HP/Documents/MeasurementsProgram/startbuttonicon.png"));
-    StartMeasurementsButton->setFont(QFont("Arial", 50, QFont::Bold));
+    StartMeasurementsButton->setFont(QFont("Arial", 30, QFont::Bold));
     StartMeasurementsButton->setStyleSheet("QPushButton { color: green; padding-top: 0px; padding-bottom: 0px; }");
-    StartMeasurementsButton->resize(50,50);
-    StartMeasurementsButton->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
+    StartMeasurementsButton->resize(30,30);
+    StartMeasurementsButton->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
 
     Tab1Layout->addWidget(StartMeasurementsButton);
 
     QPushButton * StopMeasurementsButton = new QPushButton("🟥"); //■🟥
     //StopMeasurementsButton->setIcon(QIcon("C://Users/HP/Documents/MeasurementsProgram/stopbuttonicon.png"));
-    StopMeasurementsButton->setFont(QFont("Arial", 50, QFont::Bold));
-    StopMeasurementsButton->setStyleSheet("QPushButton { color: red; padding-top: 0px; padding-bottom: 0px; padding-left: 5px; padding-right: 5px; }");
-    StopMeasurementsButton->resize(50,50);
-    StopMeasurementsButton->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
+    StopMeasurementsButton->setFont(QFont("Arial", 20, QFont::Bold));
+    StopMeasurementsButton->setStyleSheet("QPushButton { color: red; padding-top: 0px; padding-bottom: 5px; padding-left: 5px; padding-right: 5px; }");
+    StopMeasurementsButton->resize(30,30);
+    StopMeasurementsButton->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
     Tab1Layout->addWidget(StopMeasurementsButton);
 
 
