@@ -7,7 +7,7 @@ WidgetForCustomPlot::WidgetForCustomPlot(QWidget *parent)
     this->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding);
 
     VerticalPlotLayout = new QVBoxLayout(this);
-    HorizontalControlsLayout = new QHBoxLayout(this);
+    HorizontalControlsLayout = new QHBoxLayout;
     HorizontalControlsLayout->setAlignment(Qt::AlignLeft);
 
     customPlot = new PlotClass(this);
@@ -103,8 +103,8 @@ WidgetForCustomPlot::WidgetForCustomPlot(QWidget *parent)
 
 
 
-    MarkerSettingsDialogue = new QDialog;
-    //MarkerSettingsDialogueButtonBox = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal, MarkerSettingsDialogue);
+    MarkerSettingsDialogue = new QDialog(this);
+    MarkerSettingsDialogueButtonBox = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal, MarkerSettingsDialogue);
 
     connect(MarkerSettingsDialogueButtonBox, &QDialogButtonBox::accepted, MarkerSettingsDialogue, &QDialog::accept);
     connect(MarkerSettingsDialogueButtonBox, &QDialogButtonBox::rejected, MarkerSettingsDialogue, &QDialog::reject);
@@ -116,24 +116,31 @@ WidgetForCustomPlot::WidgetForCustomPlot(QWidget *parent)
     MarkerColourButton = new QPushButton("Цвет");
     connect(MarkerColourButton, &QPushButton::clicked, this, &WidgetForCustomPlot::OpenMarkerColourDialogue);
 
-
+    MarkerSettingsDialogueLayout->addWidget(MarkerColourButton);
+/*
+    IndexToMarkerStyle =
+        {
+        {0, QCPItemTracer::TracerStyle::tsSquare},
+        {1, QCPItemTracer::TracerStyle::tsCrosshair},
+        {2, QCPItemTracer::TracerStyle::tsPlus},
+        {3,QCPItemTracer::TracerStyle::tsCircle},
+        };
+*/
+    MarkerStyleComboBox = new QComboBox(this);
+    MarkerStyleComboBox->addItem("Квадрат");
+    MarkerStyleComboBox->addItem("Крест");
+    MarkerStyleComboBox->addItem("Крестик");
+    MarkerStyleComboBox->addItem("Круг");
+    connect(MarkerStyleComboBox, &QComboBox::currentIndexChanged,this,&WidgetForCustomPlot::ChangeMarkerStyle);
 
     MarkerSettingsDialogueLayout->addWidget(MarkerColourButton);
-
-    MarkerTypeComboBox = new QComboBox();
-    MarkerTypeComboBox->addItem("Крест");
-    MarkerTypeComboBox->addItem("Квадрат");
-    MarkerTypeComboBox->addItem("Круг");
-    MarkerTypeComboBox->addItem("Треугольник");
-    connect(MarkerTypeComboBox, &QComboBox::currentIndexChanged,this,&WidgetForCustomPlot::ChangeMarkerType);
-
-    MarkerSettingsDialogueLayout->addWidget(MarkerColourButton);
-    MarkerSettingsDialogueLayout->addWidget(MarkerTypeComboBox);
-    //MarkerSettingsDialogueLayout->addWidget(MarkerSettingsDialogueButtonBox);
+    MarkerSettingsDialogueLayout->addWidget(MarkerStyleComboBox);
+    MarkerSettingsDialogueLayout->addWidget(MarkerSettingsDialogueButtonBox);
 
 
 
-    qDebug()<< customPlot->size();
+
+    //qDebug()<< customPlot->size();
 
 }
 
@@ -145,12 +152,11 @@ WidgetForCustomPlot::WidgetForCustomPlot(QWidget *parent)
 
 void WidgetForCustomPlot::OpenMarkerColourDialogue()
 {
-    MarkerColour = QColorDialog::getColor(Qt::black, this, "Select Marker Color");
-    if (!MarkerColour.isValid())
+    MarkerColourChoise = QColorDialog::getColor(Qt::black, this, "Select Marker Color");
+    if (!MarkerColourChoise.isValid())
     {
         return;
     }
-
 }
 
 void WidgetForCustomPlot::OpenMarkerSettings()
@@ -158,8 +164,9 @@ void WidgetForCustomPlot::OpenMarkerSettings()
 
     if (MarkerSettingsDialogue->exec() == QDialog::Accepted)
     {
-        customPlot->MarkerColour = MarkerColour;
-
+        customPlot->MarkerColour = MarkerColourChoise;
+        customPlot->MarkerStyle = 3;//MarkerStyleChoise;
+        qDebug()<< "Стиль маркера = " << customPlot->MarkerStyle;
     }
 
     /*
@@ -190,9 +197,13 @@ void WidgetForCustomPlot::OpenMarkerSettings()
 
 
 
-void WidgetForCustomPlot::ChangeMarkerType(int TypeIndex)
+void WidgetForCustomPlot::ChangeMarkerStyle() //Может это из-за QDialogBox ошибки?
 {
-
+    //int MarkerStyleChoise = this->MarkerStyleComboBox->currentIndex();
+    //MarkerStyleChoise = QCPItemTracer::TracerStyle(index);
+    //if ()
+    //MarkerStyleChoise =IndexToMarkerStyle[MarkerStyleComboBox->currentIndex()];
+    //qDebug()<< MarkerStyleChoise;
 }
 
 

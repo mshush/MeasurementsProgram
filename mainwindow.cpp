@@ -15,7 +15,7 @@ MainWindow::MainWindow(QWidget *parent)
     this->menuBar()->addMenu("...");
 
 
-    QVBoxLayout *OutermostVerticalLayout = new QVBoxLayout(this);
+    QVBoxLayout *OutermostVerticalLayout = new QVBoxLayout;
 
     TabOfTools = new TabWidgetForTools;
     TabOfTools->resize(800,200);
@@ -23,10 +23,10 @@ MainWindow::MainWindow(QWidget *parent)
     OutermostVerticalLayout->addWidget(TabOfTools);
 
 
-    QHBoxLayout * MiddleHorizontalLayout = new QHBoxLayout(this);
+    QHBoxLayout * MiddleHorizontalLayout = new QHBoxLayout;
 
 
-    QVBoxLayout * InnerVerticalLayout = new QVBoxLayout(this);
+    QVBoxLayout * InnerVerticalLayout = new QVBoxLayout;
 
     ChartTab = new TabWidgetForCharts;
     //QHBoxLayout * HorizontalChartLayout = new QHBoxLayout(this);
@@ -40,7 +40,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     TabOfParameters = new TabWidgetForParameters;
 
-    QHBoxLayout * BottomHorizontalLayout = new QHBoxLayout(this);
+    QHBoxLayout * BottomHorizontalLayout = new QHBoxLayout;
 
     //FileTreeWidget = new TreeWidgetForFiles();
     //InnerVerticalLayout->addWidget(FileTreeWidget);

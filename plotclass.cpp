@@ -39,7 +39,7 @@ void PlotClass::mouseMoveEvent(QMouseEvent *event)
     if (markeraddbuttonactive or markerdeletebuttonactive)
     {
         MouseMoveMarker->setBrush(QBrush(MarkerColour));
-        MouseMoveMarker->setStyle(QCPItemTracer::TracerStyle::tsCrosshair); //tsCrosshair
+        MouseMoveMarker->setStyle(QCPItemTracer::TracerStyle(2));//QCPItemTracer::TracerStyle::tsCrosshair); //tsCrosshair
         MouseMoveMarker->setGraphKey(this->xAxis->pixelToCoord(event->pos().x()));
         MouseMoveMarker->setGraph(graph());
         MouseMoveMarker->setInterpolating(true);
@@ -64,7 +64,7 @@ void PlotClass::mousePressEvent(QMouseEvent *event)
     {
         QCPItemTracer * NewMarker = new QCPItemTracer(this);
         NewMarker->setBrush(QBrush(MarkerColour));
-        NewMarker->setStyle(QCPItemTracer::TracerStyle::tsSquare);//tsPlus
+        NewMarker->setStyle(QCPItemTracer::TracerStyle(MarkerStyle));//tsPlus
         NewMarker->setGraphKey( this->xAxis->pixelToCoord( event->pos().x() ) ); //Разобраться как работает
         NewMarker->setGraph(graph());
         NewMarker->setInterpolating(true);
@@ -79,7 +79,7 @@ void PlotClass::mousePressEvent(QMouseEvent *event)
         NewMarkerLabel->setFont(QFont(font().family(), 9));
         NewMarkerLabel->setVisible(false);
 
-        connect(NewMarker,&QCPItemTracer::selectionChanged,[NewMarkerLabel, NewMarker,this]()
+        connect(NewMarker,&QCPItemTracer::selectionChanged,this, [NewMarkerLabel, NewMarker,this]()
                 {
                     NewMarkerLabel->setVisible(NewMarker->selected());
 
@@ -137,7 +137,7 @@ void PlotClass::SavePlot()
 
 void PlotClass::DeleteAllMarkers()
 {
-    qDebug()<<itemCount();
+    //qDebug()<<itemCount();
     for (int i=0; i < itemCount();i++)
     {   //Зря итерируемся по всем элементам. Так оставлять нельзя, чтобы не итерироваться долго в будущем, когда появятся новые элементы
         if (dynamic_cast<QCPItemText*>(item(i)) && dynamic_cast<QCPItemText*>(item(i))!=MouseMoveLabel) // Проверить, сколько itemов, Сохранять в QList
@@ -166,6 +166,15 @@ void PlotClass::DeleteAllMarkers()
 // Программа должна выглядеть полностью работающей, но с бэкендом.
 // 1. задание параметров, 2. Измер backgr response единичн , многократное, отобр графиков результатов: дальн портрет, диаграмму.
 // Помимо сохранения, копирование в clipboard (чтобы cntrl+V)
-// Кто сохраняет данные в .dat массив из x и y. Чтобы открывать в др программах
-// Кто обрабатывает, существует ли прорежевание, Загрузить
+// Кто сохраняет данные в (в .dat) массив из x и y. Чтобы открывать в др программах
+// Кто обрабатывает, существует ли прорежевание, сохраняет (не в .dat, лучше непонятное расширение)(в .dat).
+// Загрузить background и response. RubberBand
+// Добавить Rubberband: квадратный, гориз (увел с запретом на увел по одной из осей), верт
+// valgrind perf perfmon profiler. Попробовать qt профайлер
+//
+
+
+
+
+
 

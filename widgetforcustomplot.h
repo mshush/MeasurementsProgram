@@ -8,6 +8,7 @@
 #include <qcustomplot.h>
 #include <QFileDialog>
 #include <plotclass.h>
+#include <map>
 
 class WidgetForCustomPlot : public QWidget
 {
@@ -31,19 +32,29 @@ public:
     QPushButton * MarkerDeleteButton;
     QPushButton * DeleteAllMarkersButton;
     QPushButton * MarkerSettingsButton;
-    QColor MarkerColour = Qt::black;
+    QColor MarkerColourChoise = Qt::black;
+    int MarkerStyleChoise = 3;
+
     //Окно с настройкой внешнего вида маркера
     QDialog * MarkerSettingsDialogue;
     QDialogButtonBox * MarkerSettingsDialogueButtonBox;
-    QComboBox * MarkerTypeComboBox;
+    QComboBox * MarkerStyleComboBox;
     QPushButton * MarkerColourButton;
-
     QVBoxLayout * MarkerSettingsDialogueLayout;
+/*
+    std::map<int, QCPItemTracer::TracerStyle> IndexToMarkerStyle =
+        {
+        {0, QCPItemTracer::TracerStyle::tsSquare},
+        {1, QCPItemTracer::TracerStyle::tsCrosshair},
+        {2, QCPItemTracer::TracerStyle::tsPlus},
+        {3, QCPItemTracer::TracerStyle::tsCircle}
+        };
+*/
 
 public slots:
     void OpenMarkerSettings();
     void OpenMarkerColourDialogue();
-    void ChangeMarkerType(int TypeIndex);
+    void ChangeMarkerStyle();
 };
 
 #endif // WIDGETFORCUSTOMPLOT_H
