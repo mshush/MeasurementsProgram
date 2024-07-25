@@ -38,8 +38,8 @@ void PlotClass::mouseMoveEvent(QMouseEvent *event)
 
     if (markeraddbuttonactive or markerdeletebuttonactive)
     {
-        MouseMoveMarker->setBrush(QBrush(Qt::red));
-        MouseMoveMarker->setStyle(QCPItemTracer::TracerStyle::tsCrosshair);
+        MouseMoveMarker->setBrush(QBrush(MarkerColour));
+        MouseMoveMarker->setStyle(QCPItemTracer::TracerStyle::tsCrosshair); //tsCrosshair
         MouseMoveMarker->setGraphKey(this->xAxis->pixelToCoord(event->pos().x()));
         MouseMoveMarker->setGraph(graph());
         MouseMoveMarker->setInterpolating(true);
@@ -63,17 +63,18 @@ void PlotClass::mousePressEvent(QMouseEvent *event)
     if (markeraddbuttonactive)
     {
         QCPItemTracer * NewMarker = new QCPItemTracer(this);
-        NewMarker->setBrush(QBrush(Qt::red));
-        NewMarker->setStyle(QCPItemTracer::TracerStyle::tsPlus);
-        NewMarker->setGraphKey(this->xAxis->pixelToCoord(event->pos().x()));
+        NewMarker->setBrush(QBrush(MarkerColour));
+        NewMarker->setStyle(QCPItemTracer::TracerStyle::tsSquare);//tsPlus
+        NewMarker->setGraphKey( this->xAxis->pixelToCoord( event->pos().x() ) ); //Разобраться как работает
         NewMarker->setGraph(graph());
         NewMarker->setInterpolating(true);
         NewMarker->setSize(20);
 
-        QCPItemText *NewMarkerLabel = new QCPItemText(this);
+        QCPItemText * NewMarkerLabel = new QCPItemText(this);
         NewMarkerLabel->setPositionAlignment(Qt::AlignRight|Qt::AlignBottom);
         NewMarkerLabel->position->setCoords(NewMarker->position->key(),NewMarker->position->value());
-        NewMarkerLabel->setText(QString("(")+QString::number(NewMarker->position->key())+QString(",")+QString::number(NewMarker->position->value())+QString(")"));
+        QString LabelText = "(" + QString::number(NewMarker->position->key()) + "," + QString::number(NewMarker->position->value()) + ")";
+        NewMarkerLabel->setText(LabelText);
         NewMarkerLabel->setTextAlignment(Qt::AlignLeft);
         NewMarkerLabel->setFont(QFont(font().family(), 9));
         NewMarkerLabel->setVisible(false);
@@ -94,7 +95,6 @@ void PlotClass::mousePressEvent(QMouseEvent *event)
                         removeItem(NewMarker);
                         removeItem(NewMarkerLabel);
                     }*/
-
                 }
                 );
 
@@ -137,11 +137,11 @@ void PlotClass::SavePlot()
 
 void PlotClass::DeleteAllMarkers()
 {
-
+    qDebug()<<itemCount();
     for (int i=0; i < itemCount();i++)
-    {
-        if (dynamic_cast<QCPItemText*>(item(i)) && dynamic_cast<QCPItemText*>(item(i))!=MouseMoveLabel)
-        {
+    {   //Зря итерируемся по всем элементам. Так оставлять нельзя, чтобы не итерироваться долго в будущем, когда появятся новые элементы
+        if (dynamic_cast<QCPItemText*>(item(i)) && dynamic_cast<QCPItemText*>(item(i))!=MouseMoveLabel) // Проверить, сколько itemов, Сохранять в QList
+        { //Не всё сразу удаляет, оставляет label,
             removeItem(item(i));
         }
         else if (dynamic_cast<QCPItemTracer*>(item(i)) && dynamic_cast<QCPItemTracer*>(item(i))!=MouseMoveMarker)
@@ -149,5 +149,23 @@ void PlotClass::DeleteAllMarkers()
             removeItem(item(i));
         }
     }
+    replot();
 }
+
+
+// Убедиться, что ошибается не более чем на один пиксель
+// Размер графика нельзя менять. Люди привыкают как выглядит -- привыкают, могут сказать, что ошибка. Интерфейс как прибор
+// Прорежевание -- опасно, так как острые пики может неправильно показать
+// Посмотреть, как с этим работает QCustomPlot.
+// dynamic_cast не надо использовать. Лучше хранить массив. В Qt есть автоматический сборщик мусора (определяет -- используется или нет, можно не удалять). Всё наследуется из QObject, вся память -- древовидная структура (у всех parent).
+// При удалении виджета рекурсивно удаляются дети. Если удалять вручную, то программа упадёт. не факт, что из-за delete программа падала.
+// Сколько занимает dynamic_cast?
+// Псевдо бэкенд. Что там нужно?
+// Результаты измерений. Сделать создание, сохранение массива и подгрузку.
+// Как обновляется график? Какой-то сигнал от бэкенда? Измерить -- посылаем данные в backend.
+// Программа должна выглядеть полностью работающей, но с бэкендом.
+// 1. задание параметров, 2. Измер backgr response единичн , многократное, отобр графиков результатов: дальн портрет, диаграмму.
+// Помимо сохранения, копирование в clipboard (чтобы cntrl+V)
+// Кто сохраняет данные в .dat массив из x и y. Чтобы открывать в др программах
+// Кто обрабатывает, существует ли прорежевание, Загрузить
 

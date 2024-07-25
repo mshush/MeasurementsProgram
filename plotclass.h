@@ -17,6 +17,7 @@ public:
     bool markeraddbuttonactive = false;
     bool markerdeletebuttonactive = false;
     int iter = 0;
+    QColor MarkerColour = Qt::black;
 
 
     //QList<QCPItemTracer*> MarkerList;

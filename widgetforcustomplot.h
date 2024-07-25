@@ -21,11 +21,29 @@ public:
     QHBoxLayout * HorizontalControlsLayout;
     QPushButton * ResetButton;
     QPushButton * SaveButton;
+
+    //GroupBox для манипуляций с маркерами
+    QGroupBox * MarkerManipulationGroupBox;
+    QVBoxLayout * MarkerManipulationLayout;
+    QHBoxLayout * MarkerStyleLayout;
+    QHBoxLayout * MarkerAddDeleteLayout;
     QPushButton * MarkerAddButton;
     QPushButton * MarkerDeleteButton;
     QPushButton * DeleteAllMarkersButton;
+    QPushButton * MarkerSettingsButton;
+    QColor MarkerColour = Qt::black;
+    //Окно с настройкой внешнего вида маркера
+    QDialog * MarkerSettingsDialogue;
+    QDialogButtonBox * MarkerSettingsDialogueButtonBox;
+    QComboBox * MarkerTypeComboBox;
+    QPushButton * MarkerColourButton;
 
+    QVBoxLayout * MarkerSettingsDialogueLayout;
 
+public slots:
+    void OpenMarkerSettings();
+    void OpenMarkerColourDialogue();
+    void ChangeMarkerType(int TypeIndex);
 };
 
 #endif // WIDGETFORCUSTOMPLOT_H

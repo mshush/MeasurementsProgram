@@ -19,7 +19,7 @@ MeasurementsParametersWidget::MeasurementsParametersWidget(QWidget *parent)
     FrequencyGroupMainLayout->addWidget(ExplanationLabel2);
     */
 
-    QHBoxLayout * FrequencyButtonLayout = new QHBoxLayout;
+    QVBoxLayout * FrequencyButtonLayout = new QVBoxLayout;
     QRadioButton * StartStopButton = new QRadioButton("Начало-Конец");
     QRadioButton * CenterSpanButton = new QRadioButton("Центр-Диапазон");
     FrequencyButtonLayout->addWidget(StartStopButton);
