@@ -213,7 +213,7 @@ WidgetForChart::WidgetForChart(QWidget *parent)
     layout.setColumnStretch(1, 0);
 
 
-    /*
+
     QHBoxLayout * FrequencyStopLayout = new QHBoxLayout;
     QLabel * FrequencyStopLabel = new QLabel("Конец");
     QLineEdit * FrequencyStopEdit = new QLineEdit;

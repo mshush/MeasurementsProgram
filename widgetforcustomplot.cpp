@@ -3,6 +3,8 @@
 WidgetForCustomPlot::WidgetForCustomPlot(QWidget *parent)
     : QWidget{parent}
 {
+
+
     this->resize(600,200);
     this->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding);
 
@@ -74,6 +76,8 @@ WidgetForCustomPlot::WidgetForCustomPlot(QWidget *parent)
     SaveButton = new QPushButton("Сохранить");
     connect(SaveButton, &QPushButton::clicked, customPlot, &PlotClass::SavePlot);
 
+    CopyButton = new QPushButton("Копировать");
+    connect(CopyButton, &QPushButton::clicked, customPlot, &PlotClass::CopyPlot);
 
 
     HorizontalControlsLayout->addWidget(ResetButton);
@@ -96,18 +100,41 @@ WidgetForCustomPlot::WidgetForCustomPlot(QWidget *parent)
 
     HorizontalControlsLayout->addWidget(MarkerManipulationGroupBox);
     HorizontalControlsLayout->addWidget(SaveButton);
+    HorizontalControlsLayout->addWidget(CopyButton);
 
 
     VerticalPlotLayout->addWidget(ControlsWidget);
     VerticalPlotLayout->addWidget(customPlot);
 
 
+    RubberBandButton = new QPushButton("Выделить");
+    RubberBandButton->setCheckable(true);
+    connect(RubberBandButton, &QPushButton::clicked,this,&WidgetForCustomPlot::ActivateRubberBand);
 
-    MarkerSettingsDialogue = new QDialog(this);
-    MarkerSettingsDialogueButtonBox = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal, MarkerSettingsDialogue);
+    HorizontalControlsLayout->addWidget(RubberBandButton);
 
-    connect(MarkerSettingsDialogueButtonBox, &QDialogButtonBox::accepted, MarkerSettingsDialogue, &QDialog::accept);
-    connect(MarkerSettingsDialogueButtonBox, &QDialogButtonBox::rejected, MarkerSettingsDialogue, &QDialog::reject);
+
+    LockXAxisButton = new QPushButton("Блок X");
+    connect(LockXAxisButton, &QPushButton::clicked,this,&WidgetForCustomPlot::LockXAxis);
+    LockXAxisButton->setCheckable(true);
+    LockYAxisButton = new QPushButton("Блок Y");
+    connect(LockYAxisButton, &QPushButton::clicked,this,&WidgetForCustomPlot::LockYAxis);
+    LockYAxisButton->setCheckable(true);
+
+    HorizontalControlsLayout->addWidget(LockXAxisButton);
+    HorizontalControlsLayout->addWidget(LockYAxisButton);
+
+
+
+    MarkerSettingsDialogue = new QDialog;
+    //MarkerSettingsDialogueButtonBox = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal, MarkerSettingsDialogue);
+
+    QPushButton * OKDialogueButton = new QPushButton("OK");
+    connect(OKDialogueButton, &QPushButton::clicked, this, &WidgetForCustomPlot::DialogueResultAccepted);
+
+
+    //connect(MarkerSettingsDialogueButtonBox, &QDialogButtonBox::rejected, MarkerSettingsDialogue, &QDialog::reject);
+
 
 
 
@@ -127,21 +154,29 @@ WidgetForCustomPlot::WidgetForCustomPlot(QWidget *parent)
         };
 */
     MarkerStyleComboBox = new QComboBox(this);
-    MarkerStyleComboBox->addItem("Квадрат");
-    MarkerStyleComboBox->addItem("Крест");
-    MarkerStyleComboBox->addItem("Крестик");
+    MarkerStyleComboBox->addItem("Плюс");
+    MarkerStyleComboBox->addItem("Прицел");
     MarkerStyleComboBox->addItem("Круг");
+    MarkerStyleComboBox->addItem("Квадрат");
+    //MarkerStyleComboBox->addItem("Проверка");
+    MarkerStyleComboBox->setCurrentIndex(0);
+    MarkerStyleChoice = 1;
+
     connect(MarkerStyleComboBox, &QComboBox::currentIndexChanged,this,&WidgetForCustomPlot::ChangeMarkerStyle);
 
     MarkerSettingsDialogueLayout->addWidget(MarkerColourButton);
     MarkerSettingsDialogueLayout->addWidget(MarkerStyleComboBox);
-    MarkerSettingsDialogueLayout->addWidget(MarkerSettingsDialogueButtonBox);
-
-
-
+    MarkerSettingsDialogueLayout->addWidget(OKDialogueButton);
+    //MarkerSettingsDialogueLayout->addWidget(MarkerSettingsDialogueButtonBox);
 
     //qDebug()<< customPlot->size();
 
+
+    /*
+    ColourDialogue = new QColorDialog;
+    ColourDialogue->setModal(true);
+    ColourDialogue->setFocus();
+    */
 }
 
 
@@ -150,61 +185,107 @@ WidgetForCustomPlot::WidgetForCustomPlot(QWidget *parent)
 
 
 
-void WidgetForCustomPlot::OpenMarkerColourDialogue()
+void WidgetForCustomPlot::OpenMarkerColourDialogue() // Почему не сразу меняется сразу???
 {
-    MarkerColourChoise = QColorDialog::getColor(Qt::black, this, "Select Marker Color");
+    MarkerColourChoise = QColorDialog::getColor(Qt::black, this, "Выберите цвет");
+    //MarkerColourChoise = ColourDialogue->getColor(Qt::black, this, "Выберите цвет");
+
     if (!MarkerColourChoise.isValid())
     {
         return;
     }
 }
 
-void WidgetForCustomPlot::OpenMarkerSettings()
+void WidgetForCustomPlot::OpenMarkerSettings() // Лучше наверное вообще без диалога.
 {
-
+/*
     if (MarkerSettingsDialogue->exec() == QDialog::Accepted)
     {
         customPlot->MarkerColour = MarkerColourChoise;
-        customPlot->MarkerStyle = 3;//MarkerStyleChoise;
+        customPlot->MarkerStyle = MarkerStyleChoise + 1;
         qDebug()<< "Стиль маркера = " << customPlot->MarkerStyle;
     }
-
-    /*
-    QDialog dialog;
-    QComboBox *markerTypeComboBox = new QComboBox(&dialog);
-    markerTypeComboBox->addItem("Circle");
-    markerTypeComboBox->addItem("Square");
-
-
-    QDialogButtonBox buttonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal, &dialog);
-    connect(&buttonBox, &QDialogButtonBox::accepted, &dialog, &QDialog::accept);
-    connect(&buttonBox, &QDialogButtonBox::rejected, &dialog, &QDialog::reject);
-
-    QVBoxLayout layout(&dialog);
-    layout.addWidget(markerTypeComboBox);
-    layout.addWidget(&buttonBox);
-
-    if (dialog.exec() == QDialog::Accepted)
+    else
     {
-        // Get the selected marker type
-        QString selectedMarkerType = markerTypeComboBox->currentText();
-
-        // Update the plot with the selected marker color and type
-        // You can use the selectedColor and selectedMarkerType to update the plot
+        MarkerColourChoise = customPlot->MarkerColour;
+        MarkerStyleChoise = customPlot->MarkerStyle -1;
+        this->MarkerStyleComboBox->setCurrentIndex(MarkerStyleChoise);
     }
 */
+    MarkerSettingsDialogue->show();
 }
 
 
 
-void WidgetForCustomPlot::ChangeMarkerStyle() //Может это из-за QDialogBox ошибки?
+void WidgetForCustomPlot::ChangeMarkerStyle(int ComboIndex) // Почему выдаёт не то до первого изменения
 {
-    //int MarkerStyleChoise = this->MarkerStyleComboBox->currentIndex();
+    MarkerStyleChoise = ComboIndex;
+    //qDebug()<< "Стиль Маркера (КомбоБокс) = " << MarkerStyleChoice + 1;
     //MarkerStyleChoise = QCPItemTracer::TracerStyle(index);
     //if ()
     //MarkerStyleChoise =IndexToMarkerStyle[MarkerStyleComboBox->currentIndex()];
     //qDebug()<< MarkerStyleChoise;
 }
+
+void WidgetForCustomPlot::DialogueResultAccepted()
+{
+
+    customPlot->MarkerColour = MarkerColourChoise;
+    customPlot->MarkerStyle = MarkerStyleChoise + 1;
+    //qDebug()<< "Стиль маркера (График) = " << customPlot->MarkerStyle;
+    //qDebug()<< "Стиль маркера (График Выбор) = " << MarkerStyleChoice + 1;
+    MarkerSettingsDialogue->close();
+}
+
+
+
+void WidgetForCustomPlot::ActivateRubberBand()
+{
+    if (this->RubberBandButton->isChecked())
+    {
+        customPlot->setSelectionRectMode(QCP::srmZoom);
+    }
+    else
+    {
+        customPlot->setSelectionRectMode(QCP::srmNone);
+    }
+}
+
+
+void WidgetForCustomPlot::LockXAxis()
+{
+    if (this->LockXAxisButton->isChecked())
+    {
+
+        customPlot->axisRect()->setRangeZoom(Qt::Vertical);
+        QList <QCPAxis * > ZoomableAxesList = {customPlot->yAxis};
+        customPlot->axisRect()->setRangeZoomAxes(ZoomableAxesList);
+        this->LockYAxisButton->setChecked(false);
+    }
+    else
+    {
+        customPlot->axisRect()->setRangeZoom(Qt::Horizontal | Qt::Vertical);
+        customPlot->axisRect()->setRangeZoomAxes(customPlot->xAxis, customPlot->yAxis);
+    }
+}
+
+void WidgetForCustomPlot::LockYAxis()
+{
+    if (this->LockYAxisButton->isChecked())
+    {
+
+        customPlot->axisRect()->setRangeZoom(Qt::Horizontal);
+        QList <QCPAxis * > ZoomableAxesList = {customPlot->xAxis};
+        customPlot->axisRect()->setRangeZoomAxes(ZoomableAxesList);
+        this->LockXAxisButton->setChecked(false);
+    }
+    else
+    {
+        customPlot->axisRect()->setRangeZoom(Qt::Horizontal | Qt::Vertical);
+        customPlot->axisRect()->setRangeZoomAxes(customPlot->xAxis, customPlot->yAxis);
+    }
+}
+
 
 
 /*
@@ -214,7 +295,4 @@ void WidgetForCustomPlot::ChangeMarkerStyle() //Может это из-за QDia
 
 Подводные камни? Скачки, какие ещё проблемы, поискать литературу по проблемам с построением графиков.
 Убедиться, что qcustomplot правильно строит, какая там интерполяция, ничего ли он не пропускает.
-
-
-
 */

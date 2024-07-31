@@ -2,6 +2,9 @@
 
 PlotClass::PlotClass(QWidget * parent) : QCustomPlot(parent)
 {
+    MarkerStyle=1;
+    AddedMarkersList.clear();
+    AddedMarkerLabelsList.clear();
 
     MouseMoveMarker = new QCPItemTracer(this);
     MouseMoveLabel = new QCPItemText(this);
@@ -9,26 +12,45 @@ PlotClass::PlotClass(QWidget * parent) : QCustomPlot(parent)
     MouseMoveMarker->setVisible(false);
     MouseMoveLabel->setVisible(false);
     MouseMoveMarker->setSelectable(false);
+    MouseMoveLabel->setSelectable(false);
 
+    /*
     QVector<double> x(101), y(101); // initialize with entries 0..100
     for (int i=0; i<101; ++i)
     {
         x[i] = i/50.0 - 1; // x goes from -1 to 1
         y[i] = x[i]*x[i]; // let's plot a quadratic function
     }
+    */
 
-    // create graph and assign data to it:
+    QVector<double> x(1601), y(1601);
+    y[0] = 0;
+    x[0] = -800;
+
+    std::default_random_engine generator(time(0));
+    std::normal_distribution<double> distribution(0.0, 1.0);
+
+    for (int i=1; i<1601; ++i)
+    {
+        x[i] = i - 800;
+        y[i] = y[i-1] + distribution(generator);
+    }
+
+
     addGraph();
     graph(0)->setData(x, y);
-    // give the axes some labels:
+
     xAxis->setLabel("x");
     yAxis->setLabel("y");
-    // set axes ranges, so we see all data:
-    xAxis->setRange(-1, 1);
-    yAxis->setRange(0, 1);
+
+    //xAxis->setRange(-1, 1);
+    //yAxis->setRange(0, 1);
+    rescaleAxes();
     replot();
 
     setInteractions(QCP::iRangeZoom | QCP::iRangeDrag | QCP::iSelectItems);
+
+    //RubberBand = new QRubberBand(QRubberBand::Rectangle, this);
 }
 
 
@@ -38,6 +60,7 @@ void PlotClass::mouseMoveEvent(QMouseEvent *event)
 
     if (markeraddbuttonactive or markerdeletebuttonactive)
     {
+
         MouseMoveMarker->setBrush(QBrush(MarkerColour));
         MouseMoveMarker->setStyle(QCPItemTracer::TracerStyle(2));//QCPItemTracer::TracerStyle::tsCrosshair); //tsCrosshair
         MouseMoveMarker->setGraphKey(this->xAxis->pixelToCoord(event->pos().x()));
@@ -63,8 +86,9 @@ void PlotClass::mousePressEvent(QMouseEvent *event)
     if (markeraddbuttonactive)
     {
         QCPItemTracer * NewMarker = new QCPItemTracer(this);
+        NewMarker->setPen(QPen(MarkerColour));
         NewMarker->setBrush(QBrush(MarkerColour));
-        NewMarker->setStyle(QCPItemTracer::TracerStyle(MarkerStyle));//tsPlus
+        NewMarker->setStyle(QCPItemTracer::TracerStyle(MarkerStyle));
         NewMarker->setGraphKey( this->xAxis->pixelToCoord( event->pos().x() ) ); //Разобраться как работает
         NewMarker->setGraph(graph());
         NewMarker->setInterpolating(true);
@@ -79,6 +103,7 @@ void PlotClass::mousePressEvent(QMouseEvent *event)
         NewMarkerLabel->setFont(QFont(font().family(), 9));
         NewMarkerLabel->setVisible(false);
 
+
         connect(NewMarker,&QCPItemTracer::selectionChanged,this, [NewMarkerLabel, NewMarker,this]()
                 {
                     NewMarkerLabel->setVisible(NewMarker->selected());
@@ -87,19 +112,15 @@ void PlotClass::mousePressEvent(QMouseEvent *event)
                     {
                         removeItem(NewMarker);
                         removeItem(NewMarkerLabel);
+                        AddedMarkersList.remove(NewMarker);
+                        AddedMarkerLabelsList.remove(NewMarkerLabel);
                     }
-
-                    /*
-                    else if  (this->selectedItems().isEmpty())
-                    {
-                        removeItem(NewMarker);
-                        removeItem(NewMarkerLabel);
-                    }*/
-                }
+                 }
                 );
 
 
-        //MarkerList.append(NewMarker); //Почему ошибка?
+        AddedMarkersList.push_back(NewMarker); //Почему аварийно завершается?
+        AddedMarkerLabelsList.push_back(NewMarkerLabel);
 
         replot();
     }
@@ -133,10 +154,31 @@ void PlotClass::SavePlot()
     }
 }
 
+void PlotClass::CopyPlot()
+{
+    QPixmap PlotPixmap = this->toPixmap();
+    QImage PlotImage = PlotPixmap.toImage();
+    QClipboard *ClipBoard = QApplication::clipboard();
+    ClipBoard->setImage(PlotImage);
+}
+
 
 
 void PlotClass::DeleteAllMarkers()
 {
+    for (QCPItemTracer* MarkerIterator : AddedMarkersList) {
+        removeItem(MarkerIterator);
+    }
+    for (QCPItemText* MarkerLabelIterator : AddedMarkerLabelsList) {
+        removeItem(MarkerLabelIterator);
+        //qDebug()<<"Was Here";
+    }
+    AddedMarkersList.clear();
+    AddedMarkerLabelsList.clear();
+
+    replot();
+
+    /*
     //qDebug()<<itemCount();
     for (int i=0; i < itemCount();i++)
     {   //Зря итерируемся по всем элементам. Так оставлять нельзя, чтобы не итерироваться долго в будущем, когда появятся новые элементы
@@ -150,6 +192,7 @@ void PlotClass::DeleteAllMarkers()
         }
     }
     replot();
+    */
 }
 
 

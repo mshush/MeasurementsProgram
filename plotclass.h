@@ -5,6 +5,10 @@
 #include <QObject>
 #include <QWidget>
 #include <QList>
+#include <list>
+#include <QClipboard>
+#include <QImage>
+#include <random>
 
 class PlotClass : public QCustomPlot
 {
@@ -19,13 +23,16 @@ public:
     int iter = 0;
     QColor MarkerColour = Qt::black;
     int MarkerStyle = 1;
-
+    std::list <QCPItemTracer*> AddedMarkersList;
+    std::list <QCPItemText*> AddedMarkerLabelsList;
+    QRubberBand * RubberBand;
 
     //QList<QCPItemTracer*> MarkerList;
 
     void ResetPlot();
     void SavePlot();
     void DeleteAllMarkers();
+    void CopyPlot();
 
 protected:
     void mouseMoveEvent(QMouseEvent *event) override;

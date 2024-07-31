@@ -8,7 +8,7 @@
 #include <qcustomplot.h>
 #include <QFileDialog>
 #include <plotclass.h>
-#include <map>
+//#include <map>
 
 class WidgetForCustomPlot : public QWidget
 {
@@ -22,6 +22,11 @@ public:
     QHBoxLayout * HorizontalControlsLayout;
     QPushButton * ResetButton;
     QPushButton * SaveButton;
+    QPushButton * CopyButton;
+    QPushButton * RubberBandButton;
+    QPushButton * LockXAxisButton;
+    QPushButton * LockYAxisButton;
+
 
     //GroupBox для манипуляций с маркерами
     QGroupBox * MarkerManipulationGroupBox;
@@ -33,7 +38,8 @@ public:
     QPushButton * DeleteAllMarkersButton;
     QPushButton * MarkerSettingsButton;
     QColor MarkerColourChoise = Qt::black;
-    int MarkerStyleChoise = 3;
+    int MarkerStyleChoise = 0;
+
 
     //Окно с настройкой внешнего вида маркера
     QDialog * MarkerSettingsDialogue;
@@ -41,6 +47,8 @@ public:
     QComboBox * MarkerStyleComboBox;
     QPushButton * MarkerColourButton;
     QVBoxLayout * MarkerSettingsDialogueLayout;
+    int MarkerStyleChoice;
+    QColorDialog * ColourDialogue;
 /*
     std::map<int, QCPItemTracer::TracerStyle> IndexToMarkerStyle =
         {
@@ -54,7 +62,11 @@ public:
 public slots:
     void OpenMarkerSettings();
     void OpenMarkerColourDialogue();
-    void ChangeMarkerStyle();
+    void ChangeMarkerStyle( int ComboIndex);
+    void DialogueResultAccepted();
+    void ActivateRubberBand();
+    void LockXAxis();
+    void LockYAxis();
 };
 
 #endif // WIDGETFORCUSTOMPLOT_H

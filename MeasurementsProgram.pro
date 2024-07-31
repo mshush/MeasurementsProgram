@@ -17,6 +17,7 @@ SOURCES += \
     mainwindow.cpp \
     measurementsparameterswidget.cpp \
     plotclass.cpp \
+    processimitation.cpp \
     processingparameterswidget.cpp \
     qcustomplot.cpp \
     tabwidgetforcharts.cpp \
@@ -31,6 +32,7 @@ HEADERS += \
     mainwindow.h \
     measurementsparameterswidget.h \
     plotclass.h \
+    processimitation.h \
     processingparameterswidget.h \
     qcustomplot.h \
     tabwidgetforcharts.h \
