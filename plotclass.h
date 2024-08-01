@@ -8,7 +8,10 @@
 #include <list>
 #include <QClipboard>
 #include <QImage>
+#include <QTimer>
 #include <random>
+#include <QFile>
+#include <QDataStream>
 
 class PlotClass : public QCustomPlot
 {
@@ -25,14 +28,25 @@ public:
     int MarkerStyle = 1;
     std::list <QCPItemTracer*> AddedMarkersList;
     std::list <QCPItemText*> AddedMarkerLabelsList;
-    QRubberBand * RubberBand;
+    QVector <double> x, y;
 
-    //QList<QCPItemTracer*> MarkerList;
+    std::default_random_engine generator;
+    std::normal_distribution<double> distribution;
+    //std::gamma_distribution<double> distribution;
+    //std::cauchy_distribution<double> distribution;
 
+    QTimer * RefreshTimer;
+
+public slots:
     void ResetPlot();
     void SavePlot();
     void DeleteAllMarkers();
     void CopyPlot();
+    void Measure();
+    void MeasureContinuously();
+    void RefreshPlot();
+    void SaveData();
+    //void ImportData();
 
 protected:
     void mouseMoveEvent(QMouseEvent *event) override;

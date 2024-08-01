@@ -8,7 +8,7 @@
 #include <qcustomplot.h>
 #include <QFileDialog>
 #include <plotclass.h>
-//#include <map>
+
 
 class WidgetForCustomPlot : public QWidget
 {
@@ -20,17 +20,28 @@ public:
     QWidget * ControlsWidget;
     QVBoxLayout * VerticalPlotLayout;
     QHBoxLayout * HorizontalControlsLayout;
-    QPushButton * ResetButton;
+
+    //GroupBox для сохранения
     QPushButton * SaveButton;
     QPushButton * CopyButton;
+
+
+
+    //GroupBox для движения/приближения
+    void InitiateMovementGroupBox();
+    QGroupBox * MovementGroupBox;
+    QVBoxLayout * MovementGroupBoxLayout;
+    QHBoxLayout * LockAxesLayout;
+    QPushButton * ResetButton;
     QPushButton * RubberBandButton;
     QPushButton * LockXAxisButton;
     QPushButton * LockYAxisButton;
 
 
     //GroupBox для манипуляций с маркерами
-    QGroupBox * MarkerManipulationGroupBox;
-    QVBoxLayout * MarkerManipulationLayout;
+    void InitiateMarkerGroupBox();
+    QGroupBox * MarkerGroupBox;
+    QVBoxLayout * MarkerGroupBoxLayout;
     QHBoxLayout * MarkerStyleLayout;
     QHBoxLayout * MarkerAddDeleteLayout;
     QPushButton * MarkerAddButton;
@@ -39,31 +50,23 @@ public:
     QPushButton * MarkerSettingsButton;
     QColor MarkerColourChoise = Qt::black;
     int MarkerStyleChoise = 0;
-
-
-    //Окно с настройкой внешнего вида маркера
-    QDialog * MarkerSettingsDialogue;
-    QDialogButtonBox * MarkerSettingsDialogueButtonBox;
     QComboBox * MarkerStyleComboBox;
     QPushButton * MarkerColourButton;
-    QVBoxLayout * MarkerSettingsDialogueLayout;
-    int MarkerStyleChoice;
     QColorDialog * ColourDialogue;
-/*
-    std::map<int, QCPItemTracer::TracerStyle> IndexToMarkerStyle =
-        {
-        {0, QCPItemTracer::TracerStyle::tsSquare},
-        {1, QCPItemTracer::TracerStyle::tsCrosshair},
-        {2, QCPItemTracer::TracerStyle::tsPlus},
-        {3, QCPItemTracer::TracerStyle::tsCircle}
-        };
-*/
+
+    //Окно с настройкой внешнего вида маркера
+    //QDialog * MarkerSettingsDialogue;
+    //QDialogButtonBox * MarkerSettingsDialogueButtonBox;
+
+    //QVBoxLayout * MarkerSettingsDialogueLayout;
+    //int MarkerStyleChoice;
+
+
 
 public slots:
-    void OpenMarkerSettings();
     void OpenMarkerColourDialogue();
     void ChangeMarkerStyle( int ComboIndex);
-    void DialogueResultAccepted();
+    //void DialogueResultAccepted();
     void ActivateRubberBand();
     void LockXAxis();
     void LockYAxis();

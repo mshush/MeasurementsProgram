@@ -11,7 +11,7 @@ TabWidgetForTools::TabWidgetForTools()
 
 
 
-    QPushButton * StartMeasurementsButton = new QPushButton("►");
+    StartMeasurementsButton = new QPushButton("►");
     //StartMeasurementsButton->setIcon(QIcon("C://Users/HP/Documents/MeasurementsProgram/startbuttonicon.png"));
     StartMeasurementsButton->setFont(QFont("Arial", 30, QFont::Bold));
     StartMeasurementsButton->setStyleSheet("QPushButton { color: green; padding-top: 0px; padding-bottom: 0px; }");
@@ -20,13 +20,36 @@ TabWidgetForTools::TabWidgetForTools()
 
     Tab1Layout->addWidget(StartMeasurementsButton);
 
-    QPushButton * StopMeasurementsButton = new QPushButton("🟥"); //■🟥
+    StopMeasurementsButton = new QPushButton("🟥"); //■🟥
     //StopMeasurementsButton->setIcon(QIcon("C://Users/HP/Documents/MeasurementsProgram/stopbuttonicon.png"));
     StopMeasurementsButton->setFont(QFont("Arial", 20, QFont::Bold));
     StopMeasurementsButton->setStyleSheet("QPushButton { color: red; padding-top: 0px; padding-bottom: 5px; padding-left: 5px; padding-right: 5px; }");
     StopMeasurementsButton->resize(30,30);
     StopMeasurementsButton->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
     Tab1Layout->addWidget(StopMeasurementsButton);
+
+
+    ContinuousMeasurementsButton = new QPushButton("∞");
+    ContinuousMeasurementsButton->setFont(QFont("Arial", 30, QFont::Bold));
+    ContinuousMeasurementsButton->setStyleSheet("QPushButton { color: blue; padding-top: 0px; padding-bottom: 0px; padding-left: 5px; padding-right: 5px; }");
+    ContinuousMeasurementsButton->resize(30,30);
+    ContinuousMeasurementsButton->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+    ContinuousMeasurementsButton->setCheckable(true);
+    Tab1Layout->addWidget(ContinuousMeasurementsButton);
+
+    SaveDataButton = new QPushButton("⇩"); //⤓⇩
+    SaveDataButton->setFont(QFont("Arial", 30, QFont::Bold));
+    SaveDataButton->setStyleSheet("QPushButton { color: orange; padding-top: 0px; padding-bottom: 0px; padding-left: 5px; padding-right: 5px; }");
+    SaveDataButton->resize(30,30);
+    SaveDataButton->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+    Tab1Layout->addWidget(SaveDataButton);
+
+    ImportDataButton = new QPushButton("⇧"); //⇧
+    ImportDataButton->setFont(QFont("Arial", 30, QFont::Bold));
+    ImportDataButton->setStyleSheet("QPushButton { color: orange; padding-top: 0px; padding-bottom: 0px; padding-left: 5px; padding-right: 5px; }");
+    ImportDataButton->resize(30,30);
+    ImportDataButton->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+    Tab1Layout->addWidget(ImportDataButton);
 
 
     Tab1Layout->setAlignment(Qt::AlignLeft);
@@ -38,7 +61,6 @@ TabWidgetForTools::TabWidgetForTools()
 
     addTab(Tab1, "Запуск");
     addTab(Tab2, "Управление");
-
 
 
     //resize(800,200);

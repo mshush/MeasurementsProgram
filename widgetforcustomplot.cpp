@@ -25,112 +25,33 @@ WidgetForCustomPlot::WidgetForCustomPlot(QWidget *parent)
     ControlsWidget->setSizePolicy(QSizePolicy::Fixed,QSizePolicy::Fixed);
 
 
-    ResetButton = new QPushButton("Вернуть");
-    connect(ResetButton, &QPushButton::clicked, customPlot, &PlotClass::ResetPlot);
+    InitiateMovementGroupBox();
+    HorizontalControlsLayout->addWidget(MovementGroupBox);
+
+    InitiateMarkerGroupBox();
+    HorizontalControlsLayout->addWidget(MarkerGroupBox);
 
 
-    MarkerAddButton = new QPushButton("+"); //Добавить смену значка и цвета где-нибудь в продвинутых опциях. Переместить лямбда-функцию в PlotClass?
-    MarkerAddButton->setCheckable(true); // Подпись к маркеру QCPItemText должна не вылазить за пределы графика.
-    connect(MarkerAddButton, &QPushButton::clicked, this, [this]()
-            {
-                customPlot->markeraddbuttonactive = MarkerAddButton->isChecked(); //!customPlot->markeraddbuttonactive;
-                customPlot->markerdeletebuttonactive = false;
-                MarkerDeleteButton->setChecked(false);
-                customPlot->MouseMoveMarker->setVisible(customPlot->markeraddbuttonactive);
-                customPlot->MouseMoveLabel->setVisible(customPlot->markeraddbuttonactive);
-                customPlot->replot();
-            }
-            );
-
-
-    MarkerDeleteButton = new QPushButton("-");
-    MarkerDeleteButton->setCheckable(true);
-    connect(MarkerDeleteButton, &QPushButton::clicked, this, [this]()
-            {
-                for (QCPAbstractItem* item : customPlot->selectedItems())
-                {
-                    if (dynamic_cast<QCPItemTracer*>(item))
-                    {
-                        dynamic_cast<QCPItemTracer*>(item)->setSelected(false);
-                    }
-                }
-                customPlot->markeraddbuttonactive = false;
-                customPlot->markerdeletebuttonactive = MarkerDeleteButton->isChecked();
-                MarkerAddButton->setChecked(false);
-                customPlot->MouseMoveMarker->setVisible(customPlot->markeraddbuttonactive);
-                customPlot->MouseMoveLabel->setVisible(customPlot->markeraddbuttonactive);
-                customPlot->replot();
-            }
-            );
-
-
-    DeleteAllMarkersButton = new QPushButton("0");
-    connect(DeleteAllMarkersButton, &QPushButton::clicked, customPlot, &PlotClass::DeleteAllMarkers);
-
-
-    MarkerSettingsButton = new QPushButton("Вид");
-    connect(MarkerSettingsButton, &QPushButton::clicked, this, &WidgetForCustomPlot::OpenMarkerSettings);
-
-
-
+    //Вынести в InitiateSaveGroupBox()---------------------------------------------------
     SaveButton = new QPushButton("Сохранить");
     connect(SaveButton, &QPushButton::clicked, customPlot, &PlotClass::SavePlot);
 
     CopyButton = new QPushButton("Копировать");
     connect(CopyButton, &QPushButton::clicked, customPlot, &PlotClass::CopyPlot);
 
-
-    HorizontalControlsLayout->addWidget(ResetButton);
-
-    MarkerManipulationGroupBox = new QGroupBox("Маркеры");
-    MarkerManipulationLayout = new QVBoxLayout(MarkerManipulationGroupBox);
-    MarkerManipulationGroupBox->setLayout(MarkerManipulationLayout);
-    MarkerStyleLayout = new QHBoxLayout;
-    MarkerAddDeleteLayout = new QHBoxLayout;
-
-    MarkerStyleLayout->addWidget(MarkerSettingsButton);
-
-    MarkerAddDeleteLayout->addWidget(MarkerAddButton);
-    MarkerAddDeleteLayout->addWidget(MarkerDeleteButton);
-
-    MarkerManipulationLayout->addLayout(MarkerStyleLayout);
-    MarkerManipulationLayout->addLayout(MarkerAddDeleteLayout);
-
-    MarkerManipulationLayout->addWidget(DeleteAllMarkersButton);
-
-    HorizontalControlsLayout->addWidget(MarkerManipulationGroupBox);
     HorizontalControlsLayout->addWidget(SaveButton);
     HorizontalControlsLayout->addWidget(CopyButton);
-
+    //Вынести в InitiateSaveGroupBox()---------------------------------------------------
 
     VerticalPlotLayout->addWidget(ControlsWidget);
     VerticalPlotLayout->addWidget(customPlot);
 
 
-    RubberBandButton = new QPushButton("Выделить");
-    RubberBandButton->setCheckable(true);
-    connect(RubberBandButton, &QPushButton::clicked,this,&WidgetForCustomPlot::ActivateRubberBand);
-
-    HorizontalControlsLayout->addWidget(RubberBandButton);
-
-
-    LockXAxisButton = new QPushButton("Блок X");
-    connect(LockXAxisButton, &QPushButton::clicked,this,&WidgetForCustomPlot::LockXAxis);
-    LockXAxisButton->setCheckable(true);
-    LockYAxisButton = new QPushButton("Блок Y");
-    connect(LockYAxisButton, &QPushButton::clicked,this,&WidgetForCustomPlot::LockYAxis);
-    LockYAxisButton->setCheckable(true);
-
-    HorizontalControlsLayout->addWidget(LockXAxisButton);
-    HorizontalControlsLayout->addWidget(LockYAxisButton);
-
-
-
-    MarkerSettingsDialogue = new QDialog;
+    //MarkerSettingsDialogue = new QDialog;
     //MarkerSettingsDialogueButtonBox = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal, MarkerSettingsDialogue);
 
-    QPushButton * OKDialogueButton = new QPushButton("OK");
-    connect(OKDialogueButton, &QPushButton::clicked, this, &WidgetForCustomPlot::DialogueResultAccepted);
+    //QPushButton * OKDialogueButton = new QPushButton("OK");
+    //connect(OKDialogueButton, &QPushButton::clicked, this, &WidgetForCustomPlot::DialogueResultAccepted);
 
 
     //connect(MarkerSettingsDialogueButtonBox, &QDialogButtonBox::rejected, MarkerSettingsDialogue, &QDialog::reject);
@@ -138,35 +59,17 @@ WidgetForCustomPlot::WidgetForCustomPlot(QWidget *parent)
 
 
 
-    MarkerSettingsDialogueLayout = new QVBoxLayout(MarkerSettingsDialogue);
+    //MarkerSettingsDialogueLayout = new QVBoxLayout(MarkerSettingsDialogue);
 
-    MarkerColourButton = new QPushButton("Цвет");
-    connect(MarkerColourButton, &QPushButton::clicked, this, &WidgetForCustomPlot::OpenMarkerColourDialogue);
+    //MarkerColourButton = new QPushButton("Цвет");
+    //connect(MarkerColourButton, &QPushButton::clicked, this, &WidgetForCustomPlot::OpenMarkerColourDialogue);
 
-    MarkerSettingsDialogueLayout->addWidget(MarkerColourButton);
-/*
-    IndexToMarkerStyle =
-        {
-        {0, QCPItemTracer::TracerStyle::tsSquare},
-        {1, QCPItemTracer::TracerStyle::tsCrosshair},
-        {2, QCPItemTracer::TracerStyle::tsPlus},
-        {3,QCPItemTracer::TracerStyle::tsCircle},
-        };
-*/
-    MarkerStyleComboBox = new QComboBox(this);
-    MarkerStyleComboBox->addItem("Плюс");
-    MarkerStyleComboBox->addItem("Прицел");
-    MarkerStyleComboBox->addItem("Круг");
-    MarkerStyleComboBox->addItem("Квадрат");
-    //MarkerStyleComboBox->addItem("Проверка");
-    MarkerStyleComboBox->setCurrentIndex(0);
-    MarkerStyleChoice = 1;
+    //MarkerSettingsDialogueLayout->addWidget(MarkerColourButton);
 
-    connect(MarkerStyleComboBox, &QComboBox::currentIndexChanged,this,&WidgetForCustomPlot::ChangeMarkerStyle);
 
-    MarkerSettingsDialogueLayout->addWidget(MarkerColourButton);
-    MarkerSettingsDialogueLayout->addWidget(MarkerStyleComboBox);
-    MarkerSettingsDialogueLayout->addWidget(OKDialogueButton);
+    //MarkerSettingsDialogueLayout->addWidget(MarkerColourButton);
+    //MarkerSettingsDialogueLayout->addWidget(MarkerStyleComboBox);
+    //MarkerSettingsDialogueLayout->addWidget(OKDialogueButton);
     //MarkerSettingsDialogueLayout->addWidget(MarkerSettingsDialogueButtonBox);
 
     //qDebug()<< customPlot->size();
@@ -187,46 +90,25 @@ WidgetForCustomPlot::WidgetForCustomPlot(QWidget *parent)
 
 void WidgetForCustomPlot::OpenMarkerColourDialogue() // Почему не сразу меняется сразу???
 {
-    MarkerColourChoise = QColorDialog::getColor(Qt::black, this, "Выберите цвет");
+    this->customPlot->MarkerColour = QColorDialog::getColor(Qt::black, this, "Выберите цвет");
     //MarkerColourChoise = ColourDialogue->getColor(Qt::black, this, "Выберите цвет");
-
+    /*
     if (!MarkerColourChoise.isValid())
     {
         return;
     }
+    */
 }
 
-void WidgetForCustomPlot::OpenMarkerSettings() // Лучше наверное вообще без диалога.
-{
-/*
-    if (MarkerSettingsDialogue->exec() == QDialog::Accepted)
-    {
-        customPlot->MarkerColour = MarkerColourChoise;
-        customPlot->MarkerStyle = MarkerStyleChoise + 1;
-        qDebug()<< "Стиль маркера = " << customPlot->MarkerStyle;
-    }
-    else
-    {
-        MarkerColourChoise = customPlot->MarkerColour;
-        MarkerStyleChoise = customPlot->MarkerStyle -1;
-        this->MarkerStyleComboBox->setCurrentIndex(MarkerStyleChoise);
-    }
-*/
-    MarkerSettingsDialogue->show();
-}
 
 
 
 void WidgetForCustomPlot::ChangeMarkerStyle(int ComboIndex) // Почему выдаёт не то до первого изменения
 {
-    MarkerStyleChoise = ComboIndex;
-    //qDebug()<< "Стиль Маркера (КомбоБокс) = " << MarkerStyleChoice + 1;
-    //MarkerStyleChoise = QCPItemTracer::TracerStyle(index);
-    //if ()
-    //MarkerStyleChoise =IndexToMarkerStyle[MarkerStyleComboBox->currentIndex()];
-    //qDebug()<< MarkerStyleChoise;
+    this->customPlot->MarkerStyle = ComboIndex+1;
 }
 
+/*
 void WidgetForCustomPlot::DialogueResultAccepted()
 {
 
@@ -236,8 +118,7 @@ void WidgetForCustomPlot::DialogueResultAccepted()
     //qDebug()<< "Стиль маркера (График Выбор) = " << MarkerStyleChoice + 1;
     MarkerSettingsDialogue->close();
 }
-
-
+*/
 
 void WidgetForCustomPlot::ActivateRubberBand()
 {
@@ -250,7 +131,6 @@ void WidgetForCustomPlot::ActivateRubberBand()
         customPlot->setSelectionRectMode(QCP::srmNone);
     }
 }
-
 
 void WidgetForCustomPlot::LockXAxis()
 {
@@ -285,6 +165,114 @@ void WidgetForCustomPlot::LockYAxis()
         customPlot->axisRect()->setRangeZoomAxes(customPlot->xAxis, customPlot->yAxis);
     }
 }
+
+
+void WidgetForCustomPlot::InitiateMovementGroupBox()
+{
+    MovementGroupBox = new QGroupBox("Движение");
+    MovementGroupBoxLayout = new QVBoxLayout(MovementGroupBox);
+    LockAxesLayout = new QHBoxLayout;
+
+    RubberBandButton = new QPushButton("Выделить");
+    RubberBandButton->setCheckable(true);
+    connect(RubberBandButton, &QPushButton::clicked,this,&WidgetForCustomPlot::ActivateRubberBand);
+
+    LockXAxisButton = new QPushButton("Блок X");
+    connect(LockXAxisButton, &QPushButton::clicked,this,&WidgetForCustomPlot::LockXAxis);
+    LockXAxisButton->setCheckable(true);
+
+    LockYAxisButton = new QPushButton("Блок Y");
+    connect(LockYAxisButton, &QPushButton::clicked,this,&WidgetForCustomPlot::LockYAxis);
+    LockYAxisButton->setCheckable(true);
+
+    ResetButton = new QPushButton("Вернуть");
+    connect(ResetButton, &QPushButton::clicked, customPlot, &PlotClass::ResetPlot);
+
+
+    MovementGroupBoxLayout->addWidget(RubberBandButton);
+
+    LockAxesLayout->addWidget(LockXAxisButton);
+    LockAxesLayout->addWidget(LockYAxisButton);
+    MovementGroupBoxLayout->addLayout(LockAxesLayout);
+
+    MovementGroupBoxLayout->addWidget(ResetButton);
+}
+
+
+
+
+void WidgetForCustomPlot::InitiateMarkerGroupBox()
+{
+
+    MarkerGroupBox = new QGroupBox("Маркеры");
+    MarkerGroupBoxLayout = new QVBoxLayout(MarkerGroupBox);
+    MarkerGroupBox->setLayout(MarkerGroupBoxLayout);
+    MarkerStyleLayout = new QHBoxLayout;
+    MarkerAddDeleteLayout = new QHBoxLayout;
+
+    //ColourDialogue = new QColorDialog;
+    MarkerColourButton = new QPushButton("Цвет");
+    connect(MarkerColourButton, &QPushButton::clicked, this, &WidgetForCustomPlot::OpenMarkerColourDialogue);
+
+    MarkerStyleComboBox = new QComboBox(this);
+    MarkerStyleComboBox->addItem("Плюс");
+    MarkerStyleComboBox->addItem("Прицел");
+    MarkerStyleComboBox->addItem("Круг");
+    MarkerStyleComboBox->addItem("Квадрат");
+    MarkerStyleComboBox->setCurrentIndex(0);
+    connect(MarkerStyleComboBox, &QComboBox::currentIndexChanged,this,&WidgetForCustomPlot::ChangeMarkerStyle);
+
+
+    MarkerAddButton = new QPushButton("+"); //Добавить смену значка и цвета где-нибудь в продвинутых опциях. Переместить лямбда-функцию в PlotClass?
+    MarkerAddButton->setCheckable(true); // Подпись к маркеру QCPItemText должна не вылазить за пределы графика.
+    connect(MarkerAddButton, &QPushButton::clicked, this, [this]()
+            {
+                customPlot->markeraddbuttonactive = MarkerAddButton->isChecked(); //!customPlot->markeraddbuttonactive;
+                customPlot->markerdeletebuttonactive = false;
+                MarkerDeleteButton->setChecked(false);
+                customPlot->MouseMoveMarker->setVisible(customPlot->markeraddbuttonactive);
+                customPlot->MouseMoveLabel->setVisible(customPlot->markeraddbuttonactive);
+                customPlot->replot();
+            }
+            );
+
+    MarkerDeleteButton = new QPushButton("-");
+    MarkerDeleteButton->setCheckable(true);
+    connect(MarkerDeleteButton, &QPushButton::clicked, this, [this]()
+            {
+                for (QCPAbstractItem* item : customPlot->selectedItems())
+                {
+                    if (dynamic_cast<QCPItemTracer*>(item))
+                    {
+                        dynamic_cast<QCPItemTracer*>(item)->setSelected(false);
+                    }
+                }
+                customPlot->markeraddbuttonactive = false;
+                customPlot->markerdeletebuttonactive = MarkerDeleteButton->isChecked();
+                MarkerAddButton->setChecked(false);
+                customPlot->MouseMoveMarker->setVisible(customPlot->markeraddbuttonactive);
+                customPlot->MouseMoveLabel->setVisible(customPlot->markeraddbuttonactive);
+                customPlot->replot();
+            }
+            );
+
+    DeleteAllMarkersButton = new QPushButton("0");
+    connect(DeleteAllMarkersButton, &QPushButton::clicked, customPlot, &PlotClass::DeleteAllMarkers);
+
+
+    MarkerStyleLayout->addWidget(MarkerColourButton);
+    MarkerStyleLayout->addWidget(MarkerStyleComboBox);
+    MarkerGroupBoxLayout->addLayout(MarkerStyleLayout);
+
+    MarkerAddDeleteLayout->addWidget(MarkerAddButton);
+    MarkerAddDeleteLayout->addWidget(MarkerDeleteButton);
+    MarkerGroupBoxLayout->addLayout(MarkerAddDeleteLayout);
+
+    MarkerGroupBoxLayout->addWidget(DeleteAllMarkersButton);
+
+}
+
+
 
 
 

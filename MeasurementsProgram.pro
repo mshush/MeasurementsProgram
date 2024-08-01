@@ -51,3 +51,4 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
 QMAKE_CXXFLAGS += -Wa,-mbig-obj
+#QT_AUTO_SCREEN_SCALE_FACTOR = 0 #? (Так не работает)

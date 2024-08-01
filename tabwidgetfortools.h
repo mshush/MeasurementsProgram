@@ -19,6 +19,13 @@ public:
     TabWidgetForTools();
     QWidget * Tab1;
     QWidget * Tab2;
+
+    QPushButton * StartMeasurementsButton;
+    QPushButton * StopMeasurementsButton;
+    QPushButton * ContinuousMeasurementsButton;
+    QPushButton * SaveDataButton;
+    QPushButton * ImportDataButton;
+
 };
 
 #endif // TABWIDGETFORTOOLS_H

@@ -5,7 +5,7 @@
 #include <QTabWidget>
 #include <QWidget>
 #include <QTabBar>
-#include<widgetforchart.h>
+//#include<widgetforchart.h>
 #include <widgetforcustomplot.h>
 
 class TabWidgetForCharts : public QTabWidget
@@ -13,11 +13,16 @@ class TabWidgetForCharts : public QTabWidget
     Q_OBJECT
 public:
 
-    WidgetForChart * ChartTab;
-    WidgetForCustomPlot * PlotTab;
+    //WidgetForChart * ChartTab;
+    //WidgetForCustomPlot * PlotTab;
     TabWidgetForCharts();
 
+    QVector <WidgetForCustomPlot*> PlotTabs;
 
+public slots:
+    void CreateNewTabFromImportedData();
+    //void SendMeasureSignalToFirstTab();
+    //void SendMeasureContinuouslySignalToFiTab();
 };
 
 

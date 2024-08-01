@@ -2,12 +2,24 @@
 
 PlotClass::PlotClass(QWidget * parent) : QCustomPlot(parent)
 {
+    //this->resize(1800,1000);
+    //this->setSizePolicy(QSizePolicy::Fixed,QSizePolicy::Fixed);
+    RefreshTimer = new QTimer(this);
+    //qDebug()<<"check this";
     MarkerStyle=1;
     AddedMarkersList.clear();
     AddedMarkerLabelsList.clear();
 
     MouseMoveMarker = new QCPItemTracer(this);
     MouseMoveLabel = new QCPItemText(this);
+
+    MouseMoveMarker->setBrush(QBrush(MarkerColour));
+    MouseMoveMarker->setStyle(QCPItemTracer::TracerStyle(2));
+    MouseMoveMarker->setSize(0.1);
+
+    MouseMoveLabel->setPositionAlignment(Qt::AlignRight|Qt::AlignBottom);
+    MouseMoveLabel->setTextAlignment(Qt::AlignLeft);
+    MouseMoveLabel->setFont(QFont(font().family(), 9));
 
     MouseMoveMarker->setVisible(false);
     MouseMoveLabel->setVisible(false);
@@ -23,19 +35,32 @@ PlotClass::PlotClass(QWidget * parent) : QCustomPlot(parent)
     }
     */
 
-    QVector<double> x(1601), y(1601);
+
+    x = QVector <double> (1601);
+    y = QVector <double> (1601);
+
+
     y[0] = 0;
     x[0] = -800;
 
-    std::default_random_engine generator(time(0));
-    std::normal_distribution<double> distribution(0.0, 1.0);
+    generator = std::default_random_engine (time(0));
+    distribution = std::normal_distribution<double> (0.0, 1.0);
+
+    //distribution = std::gamma_distribution<double> (0.0, 1.0);
+    //distribution = std::cauchy_distribution<double> (0.0, 1.0);
 
     for (int i=1; i<1601; ++i)
     {
         x[i] = i - 800;
         y[i] = y[i-1] + distribution(generator);
     }
-
+    for (int i=1; i<1601; ++i)
+    {
+        if (i % 100 == 0)
+            {
+                y[i] += 20.0 * distribution(generator);
+            }
+    }
 
     addGraph();
     graph(0)->setData(x, y);
@@ -61,18 +86,18 @@ void PlotClass::mouseMoveEvent(QMouseEvent *event)
     if (markeraddbuttonactive or markerdeletebuttonactive)
     {
 
-        MouseMoveMarker->setBrush(QBrush(MarkerColour));
-        MouseMoveMarker->setStyle(QCPItemTracer::TracerStyle(2));//QCPItemTracer::TracerStyle::tsCrosshair); //tsCrosshair
+        //MouseMoveMarker->setBrush(QBrush(MarkerColour));
+        //MouseMoveMarker->setStyle(QCPItemTracer::TracerStyle(2));//QCPItemTracer::TracerStyle::tsCrosshair); //tsCrosshair
         MouseMoveMarker->setGraphKey(this->xAxis->pixelToCoord(event->pos().x()));
         MouseMoveMarker->setGraph(graph());
-        MouseMoveMarker->setInterpolating(true);
-        MouseMoveMarker->setSize(0.1);
+        //MouseMoveMarker->setInterpolating(true);
+        //MouseMoveMarker->setSize(0.1);
 
-        MouseMoveLabel->setPositionAlignment(Qt::AlignRight|Qt::AlignBottom);
+        //MouseMoveLabel->setPositionAlignment(Qt::AlignRight|Qt::AlignBottom);
         MouseMoveLabel->position->setCoords(MouseMoveMarker->position->key(),MouseMoveMarker->position->value());
         MouseMoveLabel->setText(QString("(")+QString::number(MouseMoveMarker->position->key())+QString(",")+QString::number(MouseMoveMarker->position->value())+QString(")"));
-        MouseMoveLabel->setTextAlignment(Qt::AlignLeft);
-        MouseMoveLabel->setFont(QFont(font().family(), 9));
+        //MouseMoveLabel->setTextAlignment(Qt::AlignLeft);
+        //MouseMoveLabel->setFont(QFont(font().family(), 9));
         //MouseMoveLabel->setPadding(QMargins(8, 0, 0, 0));
         replot();
     }
@@ -91,7 +116,7 @@ void PlotClass::mousePressEvent(QMouseEvent *event)
         NewMarker->setStyle(QCPItemTracer::TracerStyle(MarkerStyle));
         NewMarker->setGraphKey( this->xAxis->pixelToCoord( event->pos().x() ) ); //Разобраться как работает
         NewMarker->setGraph(graph());
-        NewMarker->setInterpolating(true);
+        //NewMarker->setInterpolating(true);
         NewMarker->setSize(20);
 
         QCPItemText * NewMarkerLabel = new QCPItemText(this);
@@ -103,6 +128,8 @@ void PlotClass::mousePressEvent(QMouseEvent *event)
         NewMarkerLabel->setFont(QFont(font().family(), 9));
         NewMarkerLabel->setVisible(false);
 
+
+        //connect(this,&PlotClass:: // Сделать так, чтобы менялось положение NewMarkerLabel при движении графика.
 
         connect(NewMarker,&QCPItemTracer::selectionChanged,this, [NewMarkerLabel, NewMarker,this]()
                 {
@@ -132,6 +159,7 @@ void PlotClass::ResetPlot()
 {
     rescaleAxes();
     replot();
+    qDebug()<<this->axisRect()->rect().size();
 }
 
 
@@ -196,25 +224,124 @@ void PlotClass::DeleteAllMarkers()
 }
 
 
+
+void PlotClass::Measure()
+{
+    //qDebug()<<"Размер виджета графика = " <<this->rect().size() << ", Размер графика = " << this->axisRect()->rect().size();
+
+    y[0] = y[1600];
+    for (int i=1; i<1601; ++i)
+    {
+        y[i] = y[i-1] + distribution(generator);
+    }
+    for (int i=1; i<1601; ++i)
+    {
+        if (i % 100 == 0)
+        {
+            y[i] += 10.0 * distribution(generator);
+        }
+    }
+    graph(0)->setData(x, y);
+    rescaleAxes();
+    replot();
+}
+
+
+void PlotClass::MeasureContinuously()
+{
+    if (qobject_cast<QPushButton*>(sender())->isChecked())
+    {
+        connect(RefreshTimer, &QTimer::timeout, this, &PlotClass::RefreshPlot);
+
+        RefreshTimer->start(100);
+    }
+    else
+    {
+        disconnect(RefreshTimer, &QTimer::timeout, this, &PlotClass::RefreshPlot);
+    }
+}
+
+
+void PlotClass::RefreshPlot()
+{
+
+    for (int i=0; i<1600; ++i)
+    {
+        y[i] = y[i+1];
+    }
+    y[1600] = y[1599]+distribution(generator);
+
+    if (time(0)%10==0)
+    {
+        y[1599] += distribution(generator)*30.0;
+    }
+
+    graph(0)->setData(x, y);
+    //rescaleAxes();
+    replot();
+}
+
+
+void PlotClass::SaveData()
+{
+    //QString SaveDirectory = QFileDialog::getExistingDirectory(this, "Select Directory", QDir::homePath());
+    QString FilePath = QFileDialog::getSaveFileName(this, "Save File", QDir::homePath() + "/MyData.dat", "Data Files (*.dat);;All Files (*)");
+
+    QFile File(FilePath);
+    if (!File.open(QIODevice::WriteOnly)) {
+        qWarning() << "Could not open file for writing:" << File.errorString();
+        return;
+    }
+
+    QDataStream out(&File);
+    out << x << y;
+    File.close();
+
+}
+
+/*
+void PlotClass::ImportData()
+{
+    QString FilePath = QFileDialog::getOpenFileName(this, "Select File to Load", QDir::homePath(), "Data Files (*.dat)");
+
+    QFile File(FilePath);
+    if (!File.open(QIODevice::ReadOnly)) {
+        qWarning() << "Could not open file for reading:" << File.errorString();
+    }
+
+    QDataStream in(&File);
+    in >> x >> y;
+    File.close();
+
+    graph(0)->setData(x, y);
+    rescaleAxes();
+    replot();
+}
+*/
+
+
+
+
+
 // Убедиться, что ошибается не более чем на один пиксель
 // Размер графика нельзя менять. Люди привыкают как выглядит -- привыкают, могут сказать, что ошибка. Интерфейс как прибор
 // Прорежевание -- опасно, так как острые пики может неправильно показать
 // Посмотреть, как с этим работает QCustomPlot.
 // dynamic_cast не надо использовать. Лучше хранить массив. В Qt есть автоматический сборщик мусора (определяет -- используется или нет, можно не удалять). Всё наследуется из QObject, вся память -- древовидная структура (у всех parent).
 // При удалении виджета рекурсивно удаляются дети. Если удалять вручную, то программа упадёт. не факт, что из-за delete программа падала.
-// Сколько занимает dynamic_cast?
+// Сколько занимает dynamic_cast?+
 // Псевдо бэкенд. Что там нужно?
 // Результаты измерений. Сделать создание, сохранение массива и подгрузку.
 // Как обновляется график? Какой-то сигнал от бэкенда? Измерить -- посылаем данные в backend.
 // Программа должна выглядеть полностью работающей, но с бэкендом.
-// 1. задание параметров, 2. Измер backgr response единичн , многократное, отобр графиков результатов: дальн портрет, диаграмму.
-// Помимо сохранения, копирование в clipboard (чтобы cntrl+V)
+// 1. задание параметров, 2. Измер backgr response единичн , многократное, отобр графиков результатов: дальн портрет, диаграмму. +
+// Помимо сохранения, копирование в clipboard (чтобы cntrl+V) +
 // Кто сохраняет данные в (в .dat) массив из x и y. Чтобы открывать в др программах
 // Кто обрабатывает, существует ли прорежевание, сохраняет (не в .dat, лучше непонятное расширение)(в .dat).
 // Загрузить background и response. RubberBand
 // Добавить Rubberband: квадратный, гориз (увел с запретом на увел по одной из осей), верт
 // valgrind perf perfmon profiler. Попробовать qt профайлер
-//
+// Обрезание графика и сохранение обрезанного
 
 
 

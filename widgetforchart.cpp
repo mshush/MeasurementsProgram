@@ -1,7 +1,8 @@
-#include "widgetforchart.h"
+
+//#include "widgetforchart.h"
 
 
-
+/*
 WidgetForChart::WidgetForChart(QWidget *parent)
     : QWidget{parent}
 {
@@ -28,27 +29,27 @@ WidgetForChart::WidgetForChart(QWidget *parent)
 
     QPen pen;
     pen.setWidth(2);
-    /*
+
     QValueAxis * XAxis = new QValueAxis(Chart);
     XAxis->setLinePen(pen);
     XAxis->setTickCount(5);
     Chart->addAxis(XAxis, Qt::AlignBottom);
     ChartSeries->attachAxis(XAxis);
     XAxis->setGridLineVisible(true);
-    */
+
     QValueAxis *axisX = new QValueAxis;
     axisX->setRange(0, 10);
     axisX->setTickCount(10);
     axisX->setLabelFormat("%.2f");
     Chart->addAxis(axisX, Qt::AlignBottom);
 
-    /*
+
     QValueAxis * axisY = new QValueAxis();
     axisY->setTickCount(5);
     ChartSeries->attachAxis(axisY);
     axisY->setGridLineVisible(true);
     Chart->addAxis(axisY, Qt::AlignLeft);
-    */
+
 
     axisY = new QValueAxis;
     axisY->setRange(0, 10);
@@ -69,13 +70,13 @@ WidgetForChart::WidgetForChart(QWidget *parent)
     //connect(ChartView, &QChartView::rubberBandChanged, this, &WidgetForChart::ScaleToZoom);
 
 
-    /*
+
     connect(ChartView->chart()->plotArea(), &QGraphicsView::rubberBandChanged, [=](const QRectF &rect, const QPointF &fromScenePoint, const QPointF &toScenePoint) {
         qreal minY = ChartView->chart()->mapToValue(fromScenePoint).y();
         qreal maxY = ChartView->chart()->mapToValue(toScenePoint).y();
         axisY->setRange(minY, maxY);
     });
-    */
+
 
 
     HorizontalChartLayout->addWidget(ChartView);
@@ -176,7 +177,7 @@ WidgetForChart::WidgetForChart(QWidget *parent)
 
 
 
-    /*
+
     Freq1Slider = new QSlider(Qt::Horizontal);
     Freq1Slider->setRange(1,100);
     Freq1Slider->setValue(5);
@@ -189,13 +190,13 @@ WidgetForChart::WidgetForChart(QWidget *parent)
     Freq2Slider->setValue(20);
     connect(Freq2Slider, &QSlider::valueChanged, this, &WidgetForChart::RedrawChart);
     LayoutOfParameters->addWidget(Freq2Slider,2,1, Qt::AlignCenter);
-    */
+
 
     //LayoutOfParameters->setRowStretch(2, 1);
     //LayoutOfParameters->setRowStretch(0, 0);
     //LayoutOfParameters->setRowStretch(1, 0);
 
-/*
+
     QHBoxLayout * FrequencyStartLayout = new QHBoxLayout;
     QLabel * FrequencyStartLabel = new QLabel("Начало");
     QLineEdit * FrequencyStartEdit = new QLineEdit;
@@ -266,10 +267,10 @@ WidgetForChart::WidgetForChart(QWidget *parent)
     VerticalLayoutOfParameters->addWidget(ExplanationLabel1);
 
     setLayout(VerticalLayoutOfParameters);
-    */
+
 }
-
-
+*/
+/*
 void WidgetForChart::RedrawChart()
 {
     freq1 = Freq1Slider->value();
@@ -283,7 +284,7 @@ void WidgetForChart::RedrawChart()
     ChartView->update();
 
 }
-
+*/
 
 
 /*

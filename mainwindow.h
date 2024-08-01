@@ -5,21 +5,21 @@
 #include <QLayout>
 #include <QHBoxLayout>
 #include <QVBoxLayout>
-#include <QtCharts/QChartView>
-#include <QtCharts/QLineSeries>
+//#include <QtCharts/QChartView>
+//#include <QtCharts/QLineSeries>
 #include <QtWidgets>
-#include <QtCharts>
+//#include <QtCharts>
 #include <QObject>
-
 #include <tabwidgetforparameters.h>
 #include <tabwidgetfortools.h>
-#include <widgetforchart.h>
+//#include <widgetforchart.h>
 #include <treewidgetforfiles.h>
 #include <QTreeWidget>
 #include <QTreeWidgetItem>
 #include <QDir>
 #include <tabwidgetforcharts.h>
 #include <widgetforcustomplot.h>
+#include <plotclass.h>
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
