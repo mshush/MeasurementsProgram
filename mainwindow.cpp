@@ -8,7 +8,8 @@ MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
 {
-    qputenv("QT_SCALE_FACTOR", "1");
+    qputenv("QT_SCALE_FACTOR", "1.5");
+    //QGuiApplication::setAttribute(Qt::AA_Use96Dpi);
 
     //QGuiApplication::setAttribute(Qt::AA_Use96Dpi); // Разобраться, что делает
     //qputenv("QT_AUTO_SCREEN_SCALE_FACTOR", "0");
@@ -58,8 +59,15 @@ MainWindow::MainWindow(QWidget *parent)
 
     connect(TabOfTools->StopMeasurementsButton, &QPushButton::clicked, this,[this]()
             {
-                qDebug()<<"Размер всего MainWindow = " <<this->size();
-                qDebug()<<"Размер экрана = " << screen()->size();
+                qDebug()<<this->ChartTab->PlotTabs[0]->customPlot->antialiasedElements();
+                if (this->ChartTab->PlotTabs[0]->customPlot->antialiasedElements() & QCP::aeAll)
+                    {
+                        this->ChartTab->PlotTabs[0]->customPlot->setAntialiasedElements(QCP::aeNone);
+                    }
+                else
+                {
+                    this->ChartTab->PlotTabs[0]->customPlot->setAntialiasedElements(QCP::aeAll);
+                }
             }
             );
 

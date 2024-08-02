@@ -24,11 +24,11 @@ public:
     bool markeraddbuttonactive = false;
     bool markerdeletebuttonactive = false;
     int iter = 0;
-    QColor MarkerColour = Qt::black;
+    QColor MarkerColour = QColor(10,10,10);
     int MarkerStyle = 1;
     std::list <QCPItemTracer*> AddedMarkersList;
     std::list <QCPItemText*> AddedMarkerLabelsList;
-    QVector <double> x, y;
+    QVector <double> x, y; // Или QCPVector2D
 
     std::default_random_engine generator;
     std::normal_distribution<double> distribution;

@@ -21,7 +21,9 @@ public:
     QVBoxLayout * VerticalPlotLayout;
     QHBoxLayout * HorizontalControlsLayout;
 
-    //GroupBox для сохранения
+    //Кнопки для сохранения
+    void InitiateSaveLayout();
+    QVBoxLayout * VerticalSaveLayout;
     QPushButton * SaveButton;
     QPushButton * CopyButton;
 
@@ -53,6 +55,9 @@ public:
     QComboBox * MarkerStyleComboBox;
     QPushButton * MarkerColourButton;
     QColorDialog * ColourDialogue;
+    void InitiateMarkerPreviewPlot();
+    QCustomPlot * MarkerPreviewPlot;
+    QCPItemTracer * PreviewMarker;
 
     //Окно с настройкой внешнего вида маркера
     //QDialog * MarkerSettingsDialogue;

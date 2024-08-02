@@ -4,25 +4,22 @@ WidgetForCustomPlot::WidgetForCustomPlot(QWidget *parent)
     : QWidget{parent}
 {
 
-
     this->resize(600,200);
     this->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding);
 
     VerticalPlotLayout = new QVBoxLayout(this);
+
     HorizontalControlsLayout = new QHBoxLayout;
     HorizontalControlsLayout->setAlignment(Qt::AlignLeft);
 
     customPlot = new PlotClass(this);
-    customPlot->resize(600,200);
+    customPlot->resize(600,400);
     customPlot->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding);
 
-
     ControlsWidget = new QWidget(this);
-    ControlsWidget->resize(200,200);
-    ControlsWidget->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding);
+    ControlsWidget->resize(600,50);
+    ControlsWidget->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Fixed);
     ControlsWidget->setLayout(HorizontalControlsLayout);
-    ControlsWidget->resize(50,30);
-    ControlsWidget->setSizePolicy(QSizePolicy::Fixed,QSizePolicy::Fixed);
 
 
     InitiateMovementGroupBox();
@@ -31,48 +28,13 @@ WidgetForCustomPlot::WidgetForCustomPlot(QWidget *parent)
     InitiateMarkerGroupBox();
     HorizontalControlsLayout->addWidget(MarkerGroupBox);
 
-
-    //Вынести в InitiateSaveGroupBox()---------------------------------------------------
-    SaveButton = new QPushButton("Сохранить");
-    connect(SaveButton, &QPushButton::clicked, customPlot, &PlotClass::SavePlot);
-
-    CopyButton = new QPushButton("Копировать");
-    connect(CopyButton, &QPushButton::clicked, customPlot, &PlotClass::CopyPlot);
-
-    HorizontalControlsLayout->addWidget(SaveButton);
-    HorizontalControlsLayout->addWidget(CopyButton);
-    //Вынести в InitiateSaveGroupBox()---------------------------------------------------
+    InitiateSaveLayout();
+    HorizontalControlsLayout->addLayout(VerticalSaveLayout);
 
     VerticalPlotLayout->addWidget(ControlsWidget);
     VerticalPlotLayout->addWidget(customPlot);
 
 
-    //MarkerSettingsDialogue = new QDialog;
-    //MarkerSettingsDialogueButtonBox = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal, MarkerSettingsDialogue);
-
-    //QPushButton * OKDialogueButton = new QPushButton("OK");
-    //connect(OKDialogueButton, &QPushButton::clicked, this, &WidgetForCustomPlot::DialogueResultAccepted);
-
-
-    //connect(MarkerSettingsDialogueButtonBox, &QDialogButtonBox::rejected, MarkerSettingsDialogue, &QDialog::reject);
-
-
-
-
-    //MarkerSettingsDialogueLayout = new QVBoxLayout(MarkerSettingsDialogue);
-
-    //MarkerColourButton = new QPushButton("Цвет");
-    //connect(MarkerColourButton, &QPushButton::clicked, this, &WidgetForCustomPlot::OpenMarkerColourDialogue);
-
-    //MarkerSettingsDialogueLayout->addWidget(MarkerColourButton);
-
-
-    //MarkerSettingsDialogueLayout->addWidget(MarkerColourButton);
-    //MarkerSettingsDialogueLayout->addWidget(MarkerStyleComboBox);
-    //MarkerSettingsDialogueLayout->addWidget(OKDialogueButton);
-    //MarkerSettingsDialogueLayout->addWidget(MarkerSettingsDialogueButtonBox);
-
-    //qDebug()<< customPlot->size();
 
 
     /*
@@ -90,14 +52,14 @@ WidgetForCustomPlot::WidgetForCustomPlot(QWidget *parent)
 
 void WidgetForCustomPlot::OpenMarkerColourDialogue() // Почему не сразу меняется сразу???
 {
-    this->customPlot->MarkerColour = QColorDialog::getColor(Qt::black, this, "Выберите цвет");
-    //MarkerColourChoise = ColourDialogue->getColor(Qt::black, this, "Выберите цвет");
-    /*
-    if (!MarkerColourChoise.isValid())
+    QColor ChosenColour = QColorDialog::getColor(customPlot->MarkerColour, this, "Выберите цвет");
+    if (ChosenColour.isValid())
     {
-        return;
+        customPlot->MarkerColour = ChosenColour;
+        PreviewMarker->setPen(ChosenColour);
+        PreviewMarker->setBrush(ChosenColour);
+        MarkerPreviewPlot->replot();
     }
-    */
 }
 
 
@@ -106,19 +68,9 @@ void WidgetForCustomPlot::OpenMarkerColourDialogue() // Почему не сра
 void WidgetForCustomPlot::ChangeMarkerStyle(int ComboIndex) // Почему выдаёт не то до первого изменения
 {
     this->customPlot->MarkerStyle = ComboIndex+1;
+    this->PreviewMarker->setStyle(QCPItemTracer::TracerStyle(ComboIndex+1));
+    this->MarkerPreviewPlot->replot();
 }
-
-/*
-void WidgetForCustomPlot::DialogueResultAccepted()
-{
-
-    customPlot->MarkerColour = MarkerColourChoise;
-    customPlot->MarkerStyle = MarkerStyleChoise + 1;
-    //qDebug()<< "Стиль маркера (График) = " << customPlot->MarkerStyle;
-    //qDebug()<< "Стиль маркера (График Выбор) = " << MarkerStyleChoice + 1;
-    MarkerSettingsDialogue->close();
-}
-*/
 
 void WidgetForCustomPlot::ActivateRubberBand()
 {
@@ -210,9 +162,10 @@ void WidgetForCustomPlot::InitiateMarkerGroupBox()
     MarkerStyleLayout = new QHBoxLayout;
     MarkerAddDeleteLayout = new QHBoxLayout;
 
-    //ColourDialogue = new QColorDialog;
     MarkerColourButton = new QPushButton("Цвет");
     connect(MarkerColourButton, &QPushButton::clicked, this, &WidgetForCustomPlot::OpenMarkerColourDialogue);
+
+    InitiateMarkerPreviewPlot();
 
     MarkerStyleComboBox = new QComboBox(this);
     MarkerStyleComboBox->addItem("Плюс");
@@ -261,6 +214,7 @@ void WidgetForCustomPlot::InitiateMarkerGroupBox()
 
 
     MarkerStyleLayout->addWidget(MarkerColourButton);
+    MarkerStyleLayout->addWidget(MarkerPreviewPlot);
     MarkerStyleLayout->addWidget(MarkerStyleComboBox);
     MarkerGroupBoxLayout->addLayout(MarkerStyleLayout);
 
@@ -273,7 +227,49 @@ void WidgetForCustomPlot::InitiateMarkerGroupBox()
 }
 
 
+void WidgetForCustomPlot::InitiateSaveLayout()
+{
+    VerticalSaveLayout = new QVBoxLayout;
 
+    SaveButton = new QPushButton("Сохранить");
+    connect(SaveButton, &QPushButton::clicked, customPlot, &PlotClass::SavePlot);
+
+    CopyButton = new QPushButton("Копировать");
+    connect(CopyButton, &QPushButton::clicked, customPlot, &PlotClass::CopyPlot);
+
+    VerticalSaveLayout->addWidget(SaveButton);
+    VerticalSaveLayout->addWidget(CopyButton);
+}
+
+
+
+void WidgetForCustomPlot::InitiateMarkerPreviewPlot()
+{
+    MarkerPreviewPlot = new QCustomPlot;
+
+    MarkerPreviewPlot->resize(20,20);
+    MarkerPreviewPlot->addGraph();
+    MarkerPreviewPlot->graph(0)->setData({0}, {0});
+    MarkerPreviewPlot->xAxis->setVisible(false);
+    MarkerPreviewPlot->yAxis->setVisible(false);
+    MarkerPreviewPlot->xAxis->setTickLabels(false);
+    MarkerPreviewPlot->yAxis->setTickLabels(false);
+
+    PreviewMarker = new QCPItemTracer(MarkerPreviewPlot);
+    PreviewMarker->setStyle(QCPItemTracer::TracerStyle(customPlot->MarkerStyle));
+    PreviewMarker->setPen(QPen(customPlot->MarkerColour));
+    PreviewMarker->setBrush(QBrush(customPlot->MarkerColour));
+    PreviewMarker->setSize(15);
+    PreviewMarker->setGraph(MarkerPreviewPlot->graph(0));
+    PreviewMarker->setGraphKey(0);
+    PreviewMarker->setVisible(true);
+    MarkerPreviewPlot->xAxis->setRange(-0.1, 0.1);
+    MarkerPreviewPlot->yAxis->setRange(-0.1, 0.1);
+    MarkerPreviewPlot->rescaleAxes();
+    MarkerPreviewPlot->setContentsMargins(0,0,0,0);
+    MarkerPreviewPlot->axisRect()->setMargins(QMargins(0,0,0,0));
+
+}
 
 
 /*

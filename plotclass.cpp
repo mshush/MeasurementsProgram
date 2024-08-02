@@ -2,18 +2,20 @@
 
 PlotClass::PlotClass(QWidget * parent) : QCustomPlot(parent)
 {
+    // ??? antialiased
     //this->resize(1800,1000);
     //this->setSizePolicy(QSizePolicy::Fixed,QSizePolicy::Fixed);
     RefreshTimer = new QTimer(this);
-    //qDebug()<<"check this";
     MarkerStyle=1;
     AddedMarkersList.clear();
     AddedMarkerLabelsList.clear();
 
+
     MouseMoveMarker = new QCPItemTracer(this);
     MouseMoveLabel = new QCPItemText(this);
 
-    MouseMoveMarker->setBrush(QBrush(MarkerColour));
+    MouseMoveMarker->setBrush(QBrush(Qt::black));
+    MouseMoveMarker->setPen(QPen(Qt::black));
     MouseMoveMarker->setStyle(QCPItemTracer::TracerStyle(2));
     MouseMoveMarker->setSize(0.1);
 
@@ -26,16 +28,6 @@ PlotClass::PlotClass(QWidget * parent) : QCustomPlot(parent)
     MouseMoveMarker->setSelectable(false);
     MouseMoveLabel->setSelectable(false);
 
-    /*
-    QVector<double> x(101), y(101); // initialize with entries 0..100
-    for (int i=0; i<101; ++i)
-    {
-        x[i] = i/50.0 - 1; // x goes from -1 to 1
-        y[i] = x[i]*x[i]; // let's plot a quadratic function
-    }
-    */
-
-
     x = QVector <double> (1601);
     y = QVector <double> (1601);
 
@@ -45,10 +37,8 @@ PlotClass::PlotClass(QWidget * parent) : QCustomPlot(parent)
 
     generator = std::default_random_engine (time(0));
     distribution = std::normal_distribution<double> (0.0, 1.0);
-
     //distribution = std::gamma_distribution<double> (0.0, 1.0);
     //distribution = std::cauchy_distribution<double> (0.0, 1.0);
-
     for (int i=1; i<1601; ++i)
     {
         x[i] = i - 800;
@@ -65,17 +55,14 @@ PlotClass::PlotClass(QWidget * parent) : QCustomPlot(parent)
     addGraph();
     graph(0)->setData(x, y);
 
-    xAxis->setLabel("x");
-    yAxis->setLabel("y");
+    xAxis->setLabel("Частота");
+    yAxis->setLabel("Амплитуда");
 
-    //xAxis->setRange(-1, 1);
-    //yAxis->setRange(0, 1);
     rescaleAxes();
     replot();
 
     setInteractions(QCP::iRangeZoom | QCP::iRangeDrag | QCP::iSelectItems);
 
-    //RubberBand = new QRubberBand(QRubberBand::Rectangle, this);
 }
 
 
@@ -86,19 +73,11 @@ void PlotClass::mouseMoveEvent(QMouseEvent *event)
     if (markeraddbuttonactive or markerdeletebuttonactive)
     {
 
-        //MouseMoveMarker->setBrush(QBrush(MarkerColour));
-        //MouseMoveMarker->setStyle(QCPItemTracer::TracerStyle(2));//QCPItemTracer::TracerStyle::tsCrosshair); //tsCrosshair
         MouseMoveMarker->setGraphKey(this->xAxis->pixelToCoord(event->pos().x()));
         MouseMoveMarker->setGraph(graph());
-        //MouseMoveMarker->setInterpolating(true);
-        //MouseMoveMarker->setSize(0.1);
 
-        //MouseMoveLabel->setPositionAlignment(Qt::AlignRight|Qt::AlignBottom);
         MouseMoveLabel->position->setCoords(MouseMoveMarker->position->key(),MouseMoveMarker->position->value());
         MouseMoveLabel->setText(QString("(")+QString::number(MouseMoveMarker->position->key())+QString(",")+QString::number(MouseMoveMarker->position->value())+QString(")"));
-        //MouseMoveLabel->setTextAlignment(Qt::AlignLeft);
-        //MouseMoveLabel->setFont(QFont(font().family(), 9));
-        //MouseMoveLabel->setPadding(QMargins(8, 0, 0, 0));
         replot();
     }
 }
@@ -110,14 +89,14 @@ void PlotClass::mousePressEvent(QMouseEvent *event)
 
     if (markeraddbuttonactive)
     {
-        QCPItemTracer * NewMarker = new QCPItemTracer(this);
+        QCPItemTracer * NewMarker = new QCPItemTracer(this); //Чтобы открепить от graph можно NewMarker->setGraph(nullptr);
         NewMarker->setPen(QPen(MarkerColour));
         NewMarker->setBrush(QBrush(MarkerColour));
         NewMarker->setStyle(QCPItemTracer::TracerStyle(MarkerStyle));
         NewMarker->setGraphKey( this->xAxis->pixelToCoord( event->pos().x() ) ); //Разобраться как работает
         NewMarker->setGraph(graph());
         //NewMarker->setInterpolating(true);
-        NewMarker->setSize(20);
+        NewMarker->setSize(15);
 
         QCPItemText * NewMarkerLabel = new QCPItemText(this);
         NewMarkerLabel->setPositionAlignment(Qt::AlignRight|Qt::AlignBottom);
