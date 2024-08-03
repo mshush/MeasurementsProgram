@@ -29,6 +29,7 @@ public:
 
 
 
+
     //GroupBox для движения/приближения
     void InitiateMovementGroupBox();
     QGroupBox * MovementGroupBox;

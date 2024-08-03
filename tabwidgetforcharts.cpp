@@ -99,8 +99,33 @@ void TabWidgetForCharts::CreateNewTabFromImportedData()
                 removeTab(indexOf(TempTabPtr));
             }
             );
+}
 
+
+
+
+
+
+
+
+void TabWidgetForCharts::SetStartStopFrequencies(double StartFreq, double StopFreq)
+{
+
+    QVector <double> xTemp(1601);
+    for (int i=0; i<1601; i++)
+    {
+        xTemp[i] = StartFreq + i * (StopFreq-StartFreq)/1600;
+    }
+    this->PlotTabs[0]->customPlot->x = xTemp;
 
 }
+
+
+
+
+
+
+
+
 
 

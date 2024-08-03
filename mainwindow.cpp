@@ -71,9 +71,10 @@ MainWindow::MainWindow(QWidget *parent)
             }
             );
 
-    connect(TabOfTools->SaveDataButton  , &QPushButton::clicked, ChartTab->PlotTabs[ChartTab->currentIndex()]->customPlot, &PlotClass::SaveData  );
+    connect(TabOfTools->SaveDataButton  , &QPushButton::clicked, ChartTab->PlotTabs[0]->customPlot, &PlotClass::SaveData); // Получше придумать как соединять, чтобы по вкладкам
     connect(TabOfTools->ImportDataButton, &QPushButton::clicked, ChartTab, &TabWidgetForCharts::CreateNewTabFromImportedData);
 
+    connect(TabOfParameters->Tab1, &MeasurementsParametersWidget::StartStopFrequenciesChanged, ChartTab,&TabWidgetForCharts::SetStartStopFrequencies);//Переименовать поудобнее
 
 
 

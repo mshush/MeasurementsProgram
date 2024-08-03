@@ -19,42 +19,61 @@ MeasurementsParametersWidget::MeasurementsParametersWidget(QWidget *parent)
     FrequencyGroupMainLayout->addWidget(ExplanationLabel2);
     */
 
-    QVBoxLayout * FrequencyButtonLayout = new QVBoxLayout;
-    QRadioButton * StartStopButton = new QRadioButton("Начало-Конец");
-    QRadioButton * CenterSpanButton = new QRadioButton("Центр-Диапазон");
+    FrequencyButtonLayout = new QVBoxLayout;
+    StartStopButton = new QRadioButton("Начало-Конец");
+    connect(StartStopButton,&QRadioButton::clicked,this,&MeasurementsParametersWidget::SetStartStopMode);
+    CenterSpanButton = new QRadioButton("Центр-Диапазон");
+    connect(CenterSpanButton,&QRadioButton::clicked,this,&MeasurementsParametersWidget::SetCenterSpanMode);
     FrequencyButtonLayout->addWidget(StartStopButton);
+    StartStopButton->setChecked(true);
     FrequencyButtonLayout->addWidget(CenterSpanButton);
 
-    QHBoxLayout * FrequencyStartLayout = new QHBoxLayout;
-    QLabel * FrequencyStartLabel = new QLabel("Начало");
-    QLineEdit * FrequencyStartEdit = new QLineEdit;
-    QComboBox * FrequencyStartComboBox = new QComboBox;
-    FrequencyStartComboBox->addItem("ГГц");
-    FrequencyStartLayout->addWidget(FrequencyStartLabel);
-    FrequencyStartLayout->addWidget(FrequencyStartEdit);
-    FrequencyStartLayout->addWidget(FrequencyStartComboBox);
+    FrequencyStartCenterLayout = new QHBoxLayout;
+    FrequencyStartCenterLabel = new QLabel("Начало");
+    FrequencyStartCenterEdit = new QLineEdit("-800");
+    //QDoubleValidator * StartCenterDoubleValidator = new QDoubleValidator(FrequencyStopSpanEdit);
+    //FrequencyStopSpanEdit->setValidator(StartCenterDoubleValidator);
+    connect(FrequencyStartCenterEdit, &QLineEdit::textEdited,this, &MeasurementsParametersWidget::ProcessChangedStartSpanEdit);
+    FrequencyStartCenterComboBox = new QComboBox;
+    FrequencyStartCenterComboBox->addItem("ГГц");
+    FrequencyStartCenterLayout->addWidget(FrequencyStartCenterLabel);
+    FrequencyStartCenterLayout->addWidget(FrequencyStartCenterEdit);
+    FrequencyStartCenterLayout->addWidget(FrequencyStartCenterComboBox);
 
 
-    QHBoxLayout * FrequencyStopLayout = new QHBoxLayout;
-    QLabel * FrequencyStopLabel = new QLabel("Конец");
-    QLineEdit * FrequencyStopEdit = new QLineEdit;
-    QComboBox * FrequencyStopComboBox = new QComboBox;
-    FrequencyStopComboBox->addItem("ГГц");
-    FrequencyStopLayout->addWidget(FrequencyStopLabel);
-    FrequencyStopLayout->addWidget(FrequencyStopEdit);
-    FrequencyStopLayout->addWidget(FrequencyStopComboBox);
+    FrequencyStopSpanLayout = new QHBoxLayout;
+    FrequencyStopSpanLabel = new QLabel("Конец");
+    FrequencyStopSpanEdit = new QLineEdit("800");
+    //QDoubleValidator * StopSpanDoubleValidator = new QDoubleValidator(FrequencyStopSpanEdit);
+    //FrequencyStopSpanEdit->setValidator(StopSpanDoubleValidator);
+    connect(FrequencyStartCenterEdit, &QLineEdit::textEdited,this, &MeasurementsParametersWidget::ProcessChangedStopCenterEdit);
+    FrequencyStopSpanComboBox = new QComboBox;
+    FrequencyStopSpanComboBox->addItem("ГГц");
+    FrequencyStopSpanLayout->addWidget(FrequencyStopSpanLabel);
+    FrequencyStopSpanLayout->addWidget(FrequencyStopSpanEdit);
+    FrequencyStopSpanLayout->addWidget(FrequencyStopSpanComboBox);
+
+
+
+
+
+
+
+
+
+
 
     QHBoxLayout * FrequencyNumberOfPointsLayout = new QHBoxLayout;
     QLabel * FrequencyNumberOfPointsLabel = new QLabel("Число точек");
-    QLineEdit * FrequencyNumberOfPointsEdit = new QLineEdit;
+    QLineEdit * FrequencyNumberOfPointsEdit = new QLineEdit ("1601");
     FrequencyNumberOfPointsLayout->addWidget(FrequencyNumberOfPointsLabel);
     FrequencyNumberOfPointsLayout->addWidget(FrequencyNumberOfPointsEdit);
 
 
 
     FrequencyGroupMainLayout->addLayout(FrequencyButtonLayout);
-    FrequencyGroupMainLayout->addLayout(FrequencyStartLayout);
-    FrequencyGroupMainLayout->addLayout(FrequencyStopLayout);
+    FrequencyGroupMainLayout->addLayout(FrequencyStartCenterLayout);
+    FrequencyGroupMainLayout->addLayout(FrequencyStopSpanLayout);
     FrequencyGroupMainLayout->addLayout(FrequencyNumberOfPointsLayout);
 
     FrequencyGroup->setLayout(FrequencyGroupMainLayout);
@@ -117,3 +136,84 @@ MeasurementsParametersWidget::MeasurementsParametersWidget(QWidget *parent)
     //qDebug()<<this->size();
 
 }
+
+
+
+
+
+void MeasurementsParametersWidget::SetStartStopMode (bool StartStopButtonCheckStatus )
+{
+    if (StartStopButtonCheckStatus)
+    {
+        FrequencyStartCenterLabel->setText("Начало");
+        FrequencyStopSpanLabel->setText("Конец");
+        ProcessChangedStartSpanEdit();
+    }
+}
+
+
+
+void MeasurementsParametersWidget::SetCenterSpanMode(bool CenterSpanButtonCheckStatus)
+{
+    if (CenterSpanButtonCheckStatus)
+    {
+        FrequencyStartCenterLabel->setText("Центр");
+        FrequencyStopSpanLabel->setText("Диапазон");
+        ProcessChangedStartSpanEdit();
+    }
+}
+
+
+
+
+
+void MeasurementsParametersWidget::ProcessChangedStartSpanEdit()
+{
+
+    if (StartStopButton->isChecked())
+    {
+        StartFrequency = FrequencyStartCenterEdit->text().toDouble();
+        StopFrequency = FrequencyStopSpanEdit->text().toDouble();
+    }
+    else
+    {
+        double center = FrequencyStartCenterEdit->text().toDouble();
+        double span = FrequencyStopSpanEdit->text().toDouble();
+        StartFrequency = center-span/2;
+        StopFrequency = center+span/2;
+        qDebug()<< "From" << StartFrequency << " to " << StopFrequency;
+    }
+    emit StartStopFrequenciesChanged(StartFrequency,StopFrequency);
+}
+void MeasurementsParametersWidget::ProcessChangedStopCenterEdit()
+{
+
+    if (StartStopButton->isChecked())
+    {
+        StartFrequency = FrequencyStartCenterEdit->text().toDouble();
+        StopFrequency = FrequencyStopSpanEdit->text().toDouble();
+    }
+    else
+    {
+        double center = FrequencyStartCenterEdit->text().toDouble();
+        double span = FrequencyStopSpanEdit->text().toDouble();
+        StartFrequency = center-span/2;
+        StopFrequency = center+span/2;
+    }
+    emit StartStopFrequenciesChanged(StartFrequency,StopFrequency);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

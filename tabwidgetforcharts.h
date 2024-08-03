@@ -22,7 +22,9 @@ public:
 public slots:
     void CreateNewTabFromImportedData();
     //void SendMeasureSignalToFirstTab();
-    //void SendMeasureContinuouslySignalToFiTab();
+    //void SendMeasureContinuouslySignalToFirstTab();
+
+    void SetStartStopFrequencies(double StartFreq, double StopFreq);
 };
 
 
