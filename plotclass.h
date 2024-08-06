@@ -12,6 +12,8 @@
 #include <random>
 #include <QFile>
 #include <QDataStream>
+#include <cmath>
+#include <complex>
 
 class PlotClass : public QCustomPlot
 {
@@ -28,7 +30,8 @@ public:
     int MarkerStyle = 1;
     std::list <QCPItemTracer*> AddedMarkersList;
     std::list <QCPItemText*> AddedMarkerLabelsList;
-    QVector <double> x, y; // Или QCPVector2D
+    QVector <double> x, y; // Или QCPVector2D?
+    QVector <std::complex<double>> f;
 
     std::default_random_engine generator;
     std::normal_distribution<double> distribution;
@@ -47,6 +50,8 @@ public slots:
     void RefreshPlot();
     void SaveData();
     //void ImportData();
+    void FourierTransform();
+    void InverseFourierTransform();
 
 protected:
     void mouseMoveEvent(QMouseEvent *event) override;

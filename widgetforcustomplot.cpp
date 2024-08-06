@@ -7,32 +7,41 @@ WidgetForCustomPlot::WidgetForCustomPlot(QWidget *parent)
     this->resize(600,200);
     this->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding);
 
-    VerticalPlotLayout = new QVBoxLayout(this);
+    HorizontalPlotLayout = new QHBoxLayout(this);
 
-    HorizontalControlsLayout = new QHBoxLayout;
-    HorizontalControlsLayout->setAlignment(Qt::AlignLeft);
+    VerticalControlsLayout = new QVBoxLayout;
+    //VerticalControlsLayout->setAlignment(Qt::AlignLeft);
 
     customPlot = new PlotClass(this);
     customPlot->resize(600,400);
     customPlot->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding);
 
     ControlsWidget = new QWidget(this);
-    ControlsWidget->resize(600,50);
-    ControlsWidget->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Fixed);
-    ControlsWidget->setLayout(HorizontalControlsLayout);
+    ControlsWidget->resize(100,400);
+    ControlsWidget->setSizePolicy(QSizePolicy::Fixed,QSizePolicy::Expanding);
+    ControlsWidget->setLayout(VerticalControlsLayout);
 
 
     InitiateMovementGroupBox();
-    HorizontalControlsLayout->addWidget(MovementGroupBox);
+    VerticalControlsLayout->addWidget(MovementGroupBox);
 
     InitiateMarkerGroupBox();
-    HorizontalControlsLayout->addWidget(MarkerGroupBox);
+    VerticalControlsLayout->addWidget(MarkerGroupBox);
 
     InitiateSaveLayout();
-    HorizontalControlsLayout->addLayout(VerticalSaveLayout);
+    VerticalControlsLayout->addLayout(VerticalSaveLayout);
 
-    VerticalPlotLayout->addWidget(ControlsWidget);
-    VerticalPlotLayout->addWidget(customPlot);
+    QPushButton * FourierButton = new QPushButton("F");
+    connect(FourierButton, &QPushButton::clicked, this->customPlot, &PlotClass::FourierTransform);
+    VerticalControlsLayout->addWidget(FourierButton);
+
+    QPushButton * InverseFourierButton = new QPushButton("InvF");
+    connect(InverseFourierButton, &QPushButton::clicked, this->customPlot, &PlotClass::InverseFourierTransform);
+    VerticalControlsLayout->addWidget(InverseFourierButton);
+
+    HorizontalPlotLayout->addWidget(customPlot);
+    HorizontalPlotLayout->addWidget(ControlsWidget);
+
 
 
 

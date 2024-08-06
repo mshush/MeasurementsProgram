@@ -18,8 +18,8 @@ public:
 
     PlotClass * customPlot;
     QWidget * ControlsWidget;
-    QVBoxLayout * VerticalPlotLayout;
-    QHBoxLayout * HorizontalControlsLayout;
+    QHBoxLayout * HorizontalPlotLayout;
+    QVBoxLayout * VerticalControlsLayout;
 
     //Кнопки для сохранения
     void InitiateSaveLayout();

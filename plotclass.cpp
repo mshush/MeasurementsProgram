@@ -30,6 +30,16 @@ PlotClass::PlotClass(QWidget * parent) : QCustomPlot(parent)
 
     x = QVector <double> (1601);
     y = QVector <double> (1601);
+    f = QVector <std::complex<double>> (1601);
+
+    /*
+    for (int i=0;i<1601;i++)
+    {
+        x[i] = i;
+        f[i] = exp(100.0 * std::complex<double>(0,1) * double( M_PI * i)/double(1600)) + exp(50.0*std::complex<double>(0,1) * double( M_PI * i)/double(1600)) + exp(200.0 * std::complex<double>(0,1) * double( M_PI * i)/double(1600));
+        y[i] = f[i].real();
+    }
+    */
 
 
     y[0] = 0;
@@ -42,26 +52,40 @@ PlotClass::PlotClass(QWidget * parent) : QCustomPlot(parent)
     for (int i=1; i<1601; ++i)
     {
         x[i] = i - 800;
-        y[i] = y[i-1] + distribution(generator);
+        //y[i] = y[i-1] + distribution(generator);
+        f[i] = f[i-1] + std::complex<double> (distribution(generator),distribution(generator)) ;
+        y[i] = abs(f[i]);
     }
+
+    /*
     for (int i=1; i<1601; ++i)
     {
         if (i % 100 == 0)
             {
+                f[i]
                 y[i] += 20.0 * distribution(generator);
             }
     }
+    */
+
+
 
     addGraph();
     graph(0)->setData(x, y);
 
+
     xAxis->setLabel("Частота");
     yAxis->setLabel("Амплитуда");
 
+    graph(0)->
+
     rescaleAxes();
+    //xAxis->setRange(-800,800);
+    //yAxis->setRange(0,2);
     replot();
 
     setInteractions(QCP::iRangeZoom | QCP::iRangeDrag | QCP::iSelectItems);
+
 
 }
 
@@ -277,6 +301,76 @@ void PlotClass::SaveData()
     File.close();
 
 }
+
+
+
+
+
+void PlotClass::FourierTransform()
+{
+
+
+    QVector <std::complex<double>> Transform(1601);
+    for (int i=0;i<1601;i++)
+    {
+        Transform[i] = 0;
+        for (int j=0;j<1601;j++)
+        {
+            Transform[i] += f[j] * exp( - std::complex<double>(0, 2 * M_PI * j * i / 1601));
+        }
+        Transform[i]/=1601;
+
+    }
+    f = Transform;
+    for (int i=0;i<1601;i++)
+    y[i] = abs(Transform[i]);
+
+    graph(0)->setData(x, y);
+    rescaleAxes();
+    replot();
+}
+
+
+
+
+
+
+void PlotClass::InverseFourierTransform()
+{
+
+
+    QVector <std::complex<double>> Transform(1601);
+    for (int i=0;i<1601;i++)
+    {
+        Transform[i] = 0;
+        for (int j=0;j<1601;j++)
+        {
+            Transform[i] += f[j] * exp( std::complex<double>(0, 2 * M_PI * j * i / 1601));
+        }
+
+    }
+    f = Transform;
+    for (int i=0;i<1601;i++)
+        y[i] = abs(Transform[i]);
+
+    graph(0)->setData(x, y);
+    rescaleAxes();
+    replot();
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 /*
 void PlotClass::ImportData()

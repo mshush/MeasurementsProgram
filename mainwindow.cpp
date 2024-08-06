@@ -8,7 +8,7 @@ MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
 {
-    qputenv("QT_SCALE_FACTOR", "1.5");
+    //qputenv("QT_SCALE_FACTOR", "1.5");
     //QGuiApplication::setAttribute(Qt::AA_Use96Dpi);
 
     //QGuiApplication::setAttribute(Qt::AA_Use96Dpi); // Разобраться, что делает
@@ -79,9 +79,11 @@ MainWindow::MainWindow(QWidget *parent)
 
 
     //this->resize(2560,1440); Не работает
-    QScreen *screen = QGuiApplication::primaryScreen();
-    screen->setProperty("QT_SCREEN_SCALE_FACTOR", "0");
+    //QScreen *screen = QGuiApplication::primaryScreen();
+    //screen->setProperty("QT_SCREEN_SCALE_FACTOR", "0");
     //qreal devicePixelRatio = screen->devicePixelRatio();
+
+    this->setWindowState(Qt::WindowMaximized);
 }
 
 MainWindow::~MainWindow()
