@@ -41,3 +41,9 @@ void TreeWidgetForFiles::SetRootDirectory(const QDir &RootDirectory)
     this->addTopLevelItem(RootItem);
     AddItems(RootDirectory, RootItem, 0);
 }
+
+
+TreeWidgetForFiles::~TreeWidgetForFiles()
+{
+    delete RootItem;
+}

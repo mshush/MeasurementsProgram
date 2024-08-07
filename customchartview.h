@@ -1,3 +1,4 @@
+/*
 #ifndef CUSTOMCHARTVIEW_H
 #define CUSTOMCHARTVIEW_H
 

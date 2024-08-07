@@ -2,7 +2,7 @@
 
 PlotClass::PlotClass(QWidget * parent) : QCustomPlot(parent)
 {
-    // ??? antialiased
+
     //this->resize(1800,1000);
     //this->setSizePolicy(QSizePolicy::Fixed,QSizePolicy::Fixed);
     RefreshTimer = new QTimer(this);
@@ -44,6 +44,8 @@ PlotClass::PlotClass(QWidget * parent) : QCustomPlot(parent)
 
     y[0] = 0;
     x[0] = -800;
+    f[0] = std::complex<double>(0,0);
+
 
     generator = std::default_random_engine (time(0));
     distribution = std::normal_distribution<double> (0.0, 1.0);
@@ -77,7 +79,7 @@ PlotClass::PlotClass(QWidget * parent) : QCustomPlot(parent)
     xAxis->setLabel("Частота");
     yAxis->setLabel("Амплитуда");
 
-    graph(0)->
+    graph(0)->pen().setWidth(1);
 
     rescaleAxes();
     //xAxis->setRange(-800,800);
@@ -86,6 +88,8 @@ PlotClass::PlotClass(QWidget * parent) : QCustomPlot(parent)
 
     setInteractions(QCP::iRangeZoom | QCP::iRangeDrag | QCP::iSelectItems);
 
+
+    //qDebug()<< "QPen " << this->graph(0)->pen();
 
 }
 
@@ -113,45 +117,7 @@ void PlotClass::mousePressEvent(QMouseEvent *event)
 
     if (markeraddbuttonactive)
     {
-        QCPItemTracer * NewMarker = new QCPItemTracer(this); //Чтобы открепить от graph можно NewMarker->setGraph(nullptr);
-        NewMarker->setPen(QPen(MarkerColour));
-        NewMarker->setBrush(QBrush(MarkerColour));
-        NewMarker->setStyle(QCPItemTracer::TracerStyle(MarkerStyle));
-        NewMarker->setGraphKey( this->xAxis->pixelToCoord( event->pos().x() ) ); //Разобраться как работает
-        NewMarker->setGraph(graph());
-        //NewMarker->setInterpolating(true);
-        NewMarker->setSize(15);
-
-        QCPItemText * NewMarkerLabel = new QCPItemText(this);
-        NewMarkerLabel->setPositionAlignment(Qt::AlignRight|Qt::AlignBottom);
-        NewMarkerLabel->position->setCoords(NewMarker->position->key(),NewMarker->position->value());
-        QString LabelText = "(" + QString::number(NewMarker->position->key()) + "," + QString::number(NewMarker->position->value()) + ")";
-        NewMarkerLabel->setText(LabelText);
-        NewMarkerLabel->setTextAlignment(Qt::AlignLeft);
-        NewMarkerLabel->setFont(QFont(font().family(), 9));
-        NewMarkerLabel->setVisible(false);
-
-
-        //connect(this,&PlotClass:: // Сделать так, чтобы менялось положение NewMarkerLabel при движении графика.
-
-        connect(NewMarker,&QCPItemTracer::selectionChanged,this, [NewMarkerLabel, NewMarker,this]()
-                {
-                    NewMarkerLabel->setVisible(NewMarker->selected());
-
-                    if (markerdeletebuttonactive && NewMarker->selected())
-                    {
-                        removeItem(NewMarker);
-                        removeItem(NewMarkerLabel);
-                        AddedMarkersList.remove(NewMarker);
-                        AddedMarkerLabelsList.remove(NewMarkerLabel);
-                    }
-                 }
-                );
-
-
-        AddedMarkersList.push_back(NewMarker); //Почему аварийно завершается?
-        AddedMarkerLabelsList.push_back(NewMarkerLabel);
-
+        AddNewMarker(this->xAxis->pixelToCoord( event->pos().x()), MarkerStyle, MarkerColour);
         replot();
     }
 
@@ -162,7 +128,7 @@ void PlotClass::ResetPlot()
 {
     rescaleAxes();
     replot();
-    qDebug()<<this->axisRect()->rect().size();
+    //qDebug()<<this->axisRect()->rect().size();
 }
 
 
@@ -230,8 +196,30 @@ void PlotClass::DeleteAllMarkers()
 
 void PlotClass::Measure()
 {
+
+
+
+    y[0] = 0;
+    x[0] = -800;
+    f[0] = std::complex<double>(0,0);
+
+    for (int i=1; i<1601; ++i)
+    {
+        x[i] = i - 800;
+        //y[i] = y[i-1] + distribution(generator);
+        f[i] = f[i-1] + std::complex<double> (distribution(generator),distribution(generator)) ;
+        y[i] = abs(f[i]);
+    }
+
+    graph(0)->setData(x, y);
+    rescaleAxes();
+    replot();
+
+
+
     //qDebug()<<"Размер виджета графика = " <<this->rect().size() << ", Размер графика = " << this->axisRect()->rect().size();
 
+    /*
     y[0] = y[1600];
     for (int i=1; i<1601; ++i)
     {
@@ -247,6 +235,7 @@ void PlotClass::Measure()
     graph(0)->setData(x, y);
     rescaleAxes();
     replot();
+    */
 }
 
 
@@ -267,7 +256,20 @@ void PlotClass::MeasureContinuously()
 
 void PlotClass::RefreshPlot()
 {
+    /*
+    y[0] = 0;
+    f[0] = std::complex<double>(0,0);
 
+    for (int i=1; i<1601; ++i)
+    {
+        //y[i] = y[i-1] + distribution(generator);
+        f[i] = f[i-1] + std::complex<double> (distribution(generator),distribution(generator)) ;
+        y[i] = abs(f[i]);
+    }
+    */
+
+
+    {
     for (int i=0; i<1600; ++i)
     {
         y[i] = y[i+1];
@@ -282,24 +284,14 @@ void PlotClass::RefreshPlot()
     graph(0)->setData(x, y);
     //rescaleAxes();
     replot();
+    }
+
 }
 
 
 void PlotClass::SaveData()
 {
-    //QString SaveDirectory = QFileDialog::getExistingDirectory(this, "Select Directory", QDir::homePath());
-    QString FilePath = QFileDialog::getSaveFileName(this, "Save File", QDir::homePath() + "/MyData.dat", "Data Files (*.dat);;All Files (*)");
-
-    QFile File(FilePath);
-    if (!File.open(QIODevice::WriteOnly)) {
-        qWarning() << "Could not open file for writing:" << File.errorString();
-        return;
-    }
-
-    QDataStream out(&File);
-    out << x << y;
-    File.close();
-
+//Перенесено в TabWidgetForCharts
 }
 
 
@@ -362,11 +354,64 @@ void PlotClass::InverseFourierTransform()
 
 
 
+void PlotClass::AddNewMarker(int Key, int Style, QColor Colour)
+{
+
+    QCPItemTracer * NewMarker = new QCPItemTracer(this); //Чтобы открепить от graph можно NewMarker->setGraph(nullptr);
+    NewMarker->setPen(QPen(Colour));
+    NewMarker->setBrush(QBrush(Colour));
+    NewMarker->setStyle(QCPItemTracer::TracerStyle(Style));
+    NewMarker->setGraphKey( Key ); //Разобраться как работает pixelToCoord
+    NewMarker->setGraph(graph());
+    //NewMarker->setInterpolating(true); // Плавное передвижение вдоль линий
+    NewMarker->setSize(15);
+
+    QCPItemText * NewMarkerLabel = new QCPItemText(this);
+    NewMarkerLabel->setPositionAlignment(Qt::AlignRight|Qt::AlignBottom);
+    NewMarkerLabel->position->setCoords(NewMarker->position->key(),NewMarker->position->value());
+    QString LabelText = "(" + QString::number(NewMarker->position->key()) + "," + QString::number(NewMarker->position->value()) + ")";
+    NewMarkerLabel->setText(LabelText);
+    NewMarkerLabel->setTextAlignment(Qt::AlignLeft);
+    NewMarkerLabel->setFont(QFont(font().family(), 9));
+    NewMarkerLabel->setColor(Colour);
+    NewMarkerLabel->setVisible(false);
+
+
+    connect(NewMarker,&QCPItemTracer::selectionChanged,this, [NewMarkerLabel, NewMarker,this]()
+            {
+                NewMarkerLabel->setVisible(NewMarker->selected());
+
+                if (markerdeletebuttonactive && NewMarker->selected())
+                {
+                    removeItem(NewMarker);
+                    removeItem(NewMarkerLabel);
+                    AddedMarkersList.remove(NewMarker);
+                    AddedMarkerLabelsList.remove(NewMarkerLabel);
+                }
+            }
+            );
+
+
+    AddedMarkersList.push_back(NewMarker);
+    AddedMarkerLabelsList.push_back(NewMarkerLabel);
+
+}
 
 
 
+PlotClass::~PlotClass()
+{
+    delete MouseMoveMarker;
+    delete MouseMoveLabel;
 
-
+    for (auto marker : AddedMarkersList) {
+        delete marker;
+    }
+    for (auto label : AddedMarkerLabelsList) {
+        delete label;
+    }
+    delete RefreshTimer;
+}
 
 
 
@@ -416,6 +461,7 @@ void PlotClass::ImportData()
 // valgrind perf perfmon profiler. Попробовать qt профайлер
 // Обрезание графика и сохранение обрезанного
 
+// Measure в новой вкладке + сразу название файла с датой и временем.
 
 
 

@@ -1,3 +1,5 @@
+/*
+
 #include "customchartview.h"
 
 
@@ -62,3 +64,4 @@ void CustomChartView::mouseReleaseEvent(QMouseEvent *event)
     }
     QChartView::mouseReleaseEvent(event);
 }
+*/

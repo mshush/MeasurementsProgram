@@ -210,7 +210,22 @@ void MeasurementsParametersWidget::ProcessChangedStopCenterEdit()
 
 
 
+MeasurementsParametersWidget::~MeasurementsParametersWidget()
+{
+    delete FrequencyButtonLayout;
+    delete StartStopButton;
+    delete CenterSpanButton;
 
+    delete FrequencyStartCenterLayout;
+    delete FrequencyStartCenterLabel;
+    delete FrequencyStartCenterEdit;
+    delete FrequencyStartCenterComboBox;
+
+    delete FrequencyStopSpanLayout;
+    delete FrequencyStopSpanLabel;
+    delete FrequencyStopSpanEdit;
+    delete FrequencyStopSpanComboBox;
+}
 
 
 

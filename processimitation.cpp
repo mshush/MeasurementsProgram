@@ -1,4 +1,8 @@
+// Пока не используется (в коде дублируется)
+/*
 #include "processimitation.h"
+
+
 
 ProcessImitation::ProcessImitation()
 {
@@ -16,3 +20,4 @@ ProcessImitation::ProcessImitation()
     }
 
 }
+*/

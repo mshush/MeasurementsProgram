@@ -13,3 +13,4 @@ signals:
 };
 
 #endif // PROCESSINGPARAMETERSWIDGET_H
+

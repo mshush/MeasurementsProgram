@@ -17,6 +17,8 @@ class TabWidgetForTools : public QTabWidget
     Q_OBJECT
 public:
     TabWidgetForTools();
+    ~TabWidgetForTools();
+
     QWidget * Tab1;
     QWidget * Tab2;
 

@@ -13,6 +13,7 @@ class TreeWidgetForFiles : public QTreeWidget // Переделать, чтоб�
     Q_OBJECT
 public:
     TreeWidgetForFiles();
+    ~TreeWidgetForFiles();
     void AddItems(const QDir &CurrentDirectory, QTreeWidgetItem *parent, int CurrentDepth);
     QDir RootDirectory;
     QTreeWidgetItem *RootItem;

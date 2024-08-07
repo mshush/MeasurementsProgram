@@ -66,3 +66,16 @@ TabWidgetForTools::TabWidgetForTools()
     //resize(800,200);
     //setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
 }
+
+
+TabWidgetForTools::~TabWidgetForTools()
+{
+
+    delete StartMeasurementsButton;
+    delete StopMeasurementsButton;
+    delete ContinuousMeasurementsButton;
+    delete SaveDataButton;
+    delete ImportDataButton;
+    delete Tab1;
+    delete Tab2;
+}

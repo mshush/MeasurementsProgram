@@ -16,7 +16,7 @@ public:
     //WidgetForChart * ChartTab;
     //WidgetForCustomPlot * PlotTab;
     TabWidgetForCharts();
-
+    ~TabWidgetForCharts();
     QVector <WidgetForCustomPlot*> PlotTabs;
 
 public slots:
@@ -25,6 +25,9 @@ public slots:
     //void SendMeasureContinuouslySignalToFirstTab();
 
     void SetStartStopFrequencies(double StartFreq, double StopFreq);
+    void AddMeasuredTabs();
+    void SaveData();
+    void InitiateCloseTabButton();
 };
 
 

@@ -54,7 +54,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     centralWidget()->setLayout(OutermostVerticalLayout);
 
-    connect(TabOfTools->StartMeasurementsButton, &QPushButton::clicked, ChartTab->PlotTabs[0]->customPlot, &PlotClass::Measure);
+    connect(TabOfTools->StartMeasurementsButton, &QPushButton::clicked, ChartTab, &TabWidgetForCharts::AddMeasuredTabs);
     connect(TabOfTools->ContinuousMeasurementsButton, &QPushButton::clicked, ChartTab->PlotTabs[0]->customPlot, &PlotClass::MeasureContinuously);
 
     connect(TabOfTools->StopMeasurementsButton, &QPushButton::clicked, this,[this]()
@@ -71,7 +71,8 @@ MainWindow::MainWindow(QWidget *parent)
             }
             );
 
-    connect(TabOfTools->SaveDataButton  , &QPushButton::clicked, ChartTab->PlotTabs[0]->customPlot, &PlotClass::SaveData); // Получше придумать как соединять, чтобы по вкладкам
+    connect(TabOfTools->SaveDataButton  , &QPushButton::clicked, ChartTab, &TabWidgetForCharts::SaveData); // Получше придумать как соединять, чтобы по вкладкам
+
     connect(TabOfTools->ImportDataButton, &QPushButton::clicked, ChartTab, &TabWidgetForCharts::CreateNewTabFromImportedData);
 
     connect(TabOfParameters->Tab1, &MeasurementsParametersWidget::StartStopFrequenciesChanged, ChartTab,&TabWidgetForCharts::SetStartStopFrequencies);//Переименовать поудобнее
@@ -89,6 +90,11 @@ MainWindow::MainWindow(QWidget *parent)
 MainWindow::~MainWindow()
 {
     delete ui;
+    delete TabOfParameters;
+    delete TabOfTools;
+    delete ChartTab;
+    delete FileTreeWidget;
+    delete CustomPlotWidget;
 }
 
 

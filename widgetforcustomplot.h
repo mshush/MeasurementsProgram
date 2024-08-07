@@ -15,6 +15,7 @@ class WidgetForCustomPlot : public QWidget
     Q_OBJECT
 public:
     explicit WidgetForCustomPlot(QWidget *parent = nullptr);
+    ~WidgetForCustomPlot();
 
     PlotClass * customPlot;
     QWidget * ControlsWidget;
@@ -23,7 +24,7 @@ public:
 
     //Кнопки для сохранения
     void InitiateSaveLayout();
-    QVBoxLayout * VerticalSaveLayout;
+    QHBoxLayout * HorizontalSaveLayout;
     QPushButton * SaveButton;
     QPushButton * CopyButton;
 
@@ -39,6 +40,20 @@ public:
     QPushButton * RubberBandButton;
     QPushButton * LockXAxisButton;
     QPushButton * LockYAxisButton;
+    //GroupBox для установки диапазона вручную
+    void InitiateSetRangeGroupBox();
+    QGroupBox * SetRangeGroupBox;
+    QGridLayout * SetRangeLayout;
+    QLabel * XRangeLabel1;
+    QLineEdit *XRangeEditFrom;
+    QLabel * XRangeLabel2;
+    QLineEdit *XRangeEditTo;
+    QLabel * YRangeLabel1;
+    QLineEdit *YRangeEditFrom;
+    QLabel * YRangeLabel2;
+    QLineEdit *YRangeEditTo;
+    QComboBox * XRangeComboBox;
+    QComboBox * YRangeComboBox;
 
 
     //GroupBox для манипуляций с маркерами
@@ -59,6 +74,8 @@ public:
     void InitiateMarkerPreviewPlot();
     QCustomPlot * MarkerPreviewPlot;
     QCPItemTracer * PreviewMarker;
+
+
 
     //Окно с настройкой внешнего вида маркера
     //QDialog * MarkerSettingsDialogue;

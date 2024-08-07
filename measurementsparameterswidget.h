@@ -17,6 +17,7 @@ class MeasurementsParametersWidget : public QWidget
     Q_OBJECT
 public:
     explicit MeasurementsParametersWidget(QWidget *parent = nullptr);
+    ~MeasurementsParametersWidget();
 
     //Область задания частоты
     QVBoxLayout * FrequencyButtonLayout;

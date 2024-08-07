@@ -20,6 +20,7 @@ class PlotClass : public QCustomPlot
     Q_OBJECT
 public:
     PlotClass(QWidget *parent = nullptr);
+    ~PlotClass();
 
     QCPItemTracer * MouseMoveMarker;
     QCPItemText * MouseMoveLabel;
@@ -52,6 +53,7 @@ public slots:
     //void ImportData();
     void FourierTransform();
     void InverseFourierTransform();
+    void AddNewMarker(int Key, int Style, QColor Colour);
 
 protected:
     void mouseMoveEvent(QMouseEvent *event) override;
