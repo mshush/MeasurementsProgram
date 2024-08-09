@@ -14,6 +14,7 @@ MainWindow::MainWindow(QWidget *parent)
     //QGuiApplication::setAttribute(Qt::AA_Use96Dpi); // Разобраться, что делает
     //qputenv("QT_AUTO_SCREEN_SCALE_FACTOR", "0");
 
+    Process = new ProcessImitation(this);
 
     ui->setupUi(this);
 
@@ -21,7 +22,7 @@ MainWindow::MainWindow(QWidget *parent)
     this->menuBar()->addMenu("Файл");
     this->menuBar()->addMenu("Свойства");
     this->menuBar()->addMenu("Постобработка");
-    this->menuBar()->addMenu("...");
+    this->menuBar()->addMenu("Вид");
 
 
     QVBoxLayout *OutermostVerticalLayout = new QVBoxLayout;
@@ -44,19 +45,22 @@ MainWindow::MainWindow(QWidget *parent)
 
     QHBoxLayout * BottomHorizontalLayout = new QHBoxLayout;
 
-    MiddleHorizontalLayout->addLayout(InnerVerticalLayout);
 
     MiddleHorizontalLayout->addWidget(TabOfParameters);
+    MiddleHorizontalLayout->addLayout(InnerVerticalLayout);
 
     OutermostVerticalLayout->addLayout(MiddleHorizontalLayout);
-
     OutermostVerticalLayout->addLayout(BottomHorizontalLayout);
 
     centralWidget()->setLayout(OutermostVerticalLayout);
 
-    connect(TabOfTools->StartMeasurementsButton, &QPushButton::clicked, ChartTab, &TabWidgetForCharts::AddMeasuredTabs);
-    connect(TabOfTools->ContinuousMeasurementsButton, &QPushButton::clicked, ChartTab->PlotTabs[0]->customPlot, &PlotClass::MeasureContinuously);
+    connect(TabOfTools->StartMeasurementsButton, &QPushButton::clicked, Process, &ProcessImitation::Measure);
+    connect(TabOfTools->ContinuousMeasurementsButton, &QPushButton::clicked, Process, &ProcessImitation::MeasureContinuously);
+    connect(TabOfTools->ContinuousMeasurementsButton, &QPushButton::clicked, ChartTab, &TabWidgetForCharts::ContinuousMeasurementModeChanged);
+    connect(Process, &ProcessImitation::MeasurementPerformed, ChartTab,&TabWidgetForCharts::UpdateMeasurementPlot);
 
+
+    /*
     connect(TabOfTools->StopMeasurementsButton, &QPushButton::clicked, this,[this]()
             {
                 qDebug()<<this->ChartTab->PlotTabs[0]->customPlot->antialiasedElements();
@@ -70,14 +74,16 @@ MainWindow::MainWindow(QWidget *parent)
                 }
             }
             );
+    */
 
     connect(TabOfTools->SaveDataButton  , &QPushButton::clicked, ChartTab, &TabWidgetForCharts::SaveData); // Получше придумать как соединять, чтобы по вкладкам
-
     connect(TabOfTools->ImportDataButton, &QPushButton::clicked, ChartTab, &TabWidgetForCharts::CreateNewTabFromImportedData);
 
-    connect(TabOfParameters->Tab1, &MeasurementsParametersWidget::StartStopFrequenciesChanged, ChartTab,&TabWidgetForCharts::SetStartStopFrequencies);//Переименовать поудобнее
+    connect(TabOfParameters->ParametersTab, &MeasurementsParametersWidget::ParametersOfMeasurementsChanged, ChartTab,&TabWidgetForCharts::SetMeasurementParameters);
 
 
+    connect(TabOfTools->FourierTransformButton, &QPushButton::clicked, ChartTab, &TabWidgetForCharts::PerformFourierTransformOfCurrentPlot);
+    connect(TabOfTools->InverseFourierTransformButton, &QPushButton::clicked, ChartTab, &TabWidgetForCharts::PerformInverseFourierTransformOfCurrentPlot);
 
     //this->resize(2560,1440); Не работает
     //QScreen *screen = QGuiApplication::primaryScreen();
@@ -90,11 +96,12 @@ MainWindow::MainWindow(QWidget *parent)
 MainWindow::~MainWindow()
 {
     delete ui;
+    /*
     delete TabOfParameters;
     delete TabOfTools;
     delete ChartTab;
-    delete FileTreeWidget;
     delete CustomPlotWidget;
+    */
 }
 
 

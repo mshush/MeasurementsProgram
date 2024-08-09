@@ -5,7 +5,7 @@ PlotClass::PlotClass(QWidget * parent) : QCustomPlot(parent)
 
     //this->resize(1800,1000);
     //this->setSizePolicy(QSizePolicy::Fixed,QSizePolicy::Fixed);
-    RefreshTimer = new QTimer(this);
+    //RefreshTimer = new QTimer(this);
     MarkerStyle=1;
     AddedMarkersList.clear();
     AddedMarkerLabelsList.clear();
@@ -28,68 +28,29 @@ PlotClass::PlotClass(QWidget * parent) : QCustomPlot(parent)
     MouseMoveMarker->setSelectable(false);
     MouseMoveLabel->setSelectable(false);
 
-    x = QVector <double> (1601);
-    y = QVector <double> (1601);
-    f = QVector <std::complex<double>> (1601);
-
-    /*
-    for (int i=0;i<1601;i++)
+    double FreqStart = 0;
+    double FreqStop = 1600;
+    x = QVector <double> (NumberOfPoints);
+    for (int i=0;i<NumberOfPoints;i++)
     {
-        x[i] = i;
-        f[i] = exp(100.0 * std::complex<double>(0,1) * double( M_PI * i)/double(1600)) + exp(50.0*std::complex<double>(0,1) * double( M_PI * i)/double(1600)) + exp(200.0 * std::complex<double>(0,1) * double( M_PI * i)/double(1600));
-        y[i] = f[i].real();
+        x[i] = FreqStart + i* (FreqStop-FreqStart)/(NumberOfPoints-1);
     }
-    */
-
-
-    y[0] = 0;
-    x[0] = -800;
-    f[0] = std::complex<double>(0,0);
-
-
-    generator = std::default_random_engine (time(0));
-    distribution = std::normal_distribution<double> (0.0, 1.0);
-    //distribution = std::gamma_distribution<double> (0.0, 1.0);
-    //distribution = std::cauchy_distribution<double> (0.0, 1.0);
-    for (int i=1; i<1601; ++i)
-    {
-        x[i] = i - 800;
-        //y[i] = y[i-1] + distribution(generator);
-        f[i] = f[i-1] + std::complex<double> (distribution(generator),distribution(generator)) ;
-        y[i] = abs(f[i]);
-    }
-
-    /*
-    for (int i=1; i<1601; ++i)
-    {
-        if (i % 100 == 0)
-            {
-                f[i]
-                y[i] += 20.0 * distribution(generator);
-            }
-    }
-    */
-
-
+    y = QVector <double> (NumberOfPoints);
+    f = QVector <std::complex<double>> (NumberOfPoints);
 
     addGraph();
-    graph(0)->setData(x, y);
+    //graph(0)->setData(x, y);
 
 
     xAxis->setLabel("Частота");
     yAxis->setLabel("Амплитуда");
 
-    graph(0)->pen().setWidth(1);
-
-    rescaleAxes();
-    //xAxis->setRange(-800,800);
-    //yAxis->setRange(0,2);
-    replot();
+    //graph(0)->pen().setWidth(1);
+    xAxis->setRange(0,1600);
+    //rescaleAxes();
+    //replot();
 
     setInteractions(QCP::iRangeZoom | QCP::iRangeDrag | QCP::iSelectItems);
-
-
-    //qDebug()<< "QPen " << this->graph(0)->pen();
 
 }
 
@@ -175,118 +136,8 @@ void PlotClass::DeleteAllMarkers()
 
     replot();
 
-    /*
-    //qDebug()<<itemCount();
-    for (int i=0; i < itemCount();i++)
-    {   //Зря итерируемся по всем элементам. Так оставлять нельзя, чтобы не итерироваться долго в будущем, когда появятся новые элементы
-        if (dynamic_cast<QCPItemText*>(item(i)) && dynamic_cast<QCPItemText*>(item(i))!=MouseMoveLabel) // Проверить, сколько itemов, Сохранять в QList
-        { //Не всё сразу удаляет, оставляет label,
-            removeItem(item(i));
-        }
-        else if (dynamic_cast<QCPItemTracer*>(item(i)) && dynamic_cast<QCPItemTracer*>(item(i))!=MouseMoveMarker)
-        {
-            removeItem(item(i));
-        }
-    }
-    replot();
-    */
 }
 
-
-
-void PlotClass::Measure()
-{
-
-
-
-    y[0] = 0;
-    x[0] = -800;
-    f[0] = std::complex<double>(0,0);
-
-    for (int i=1; i<1601; ++i)
-    {
-        x[i] = i - 800;
-        //y[i] = y[i-1] + distribution(generator);
-        f[i] = f[i-1] + std::complex<double> (distribution(generator),distribution(generator)) ;
-        y[i] = abs(f[i]);
-    }
-
-    graph(0)->setData(x, y);
-    rescaleAxes();
-    replot();
-
-
-
-    //qDebug()<<"Размер виджета графика = " <<this->rect().size() << ", Размер графика = " << this->axisRect()->rect().size();
-
-    /*
-    y[0] = y[1600];
-    for (int i=1; i<1601; ++i)
-    {
-        y[i] = y[i-1] + distribution(generator);
-    }
-    for (int i=1; i<1601; ++i)
-    {
-        if (i % 100 == 0)
-        {
-            y[i] += 10.0 * distribution(generator);
-        }
-    }
-    graph(0)->setData(x, y);
-    rescaleAxes();
-    replot();
-    */
-}
-
-
-void PlotClass::MeasureContinuously()
-{
-    if (qobject_cast<QPushButton*>(sender())->isChecked())
-    {
-        connect(RefreshTimer, &QTimer::timeout, this, &PlotClass::RefreshPlot);
-
-        RefreshTimer->start(100);
-    }
-    else
-    {
-        disconnect(RefreshTimer, &QTimer::timeout, this, &PlotClass::RefreshPlot);
-    }
-}
-
-
-void PlotClass::RefreshPlot()
-{
-    /*
-    y[0] = 0;
-    f[0] = std::complex<double>(0,0);
-
-    for (int i=1; i<1601; ++i)
-    {
-        //y[i] = y[i-1] + distribution(generator);
-        f[i] = f[i-1] + std::complex<double> (distribution(generator),distribution(generator)) ;
-        y[i] = abs(f[i]);
-    }
-    */
-
-
-    {
-    for (int i=0; i<1600; ++i)
-    {
-        y[i] = y[i+1];
-    }
-    y[1600] = y[1599]+distribution(generator);
-
-    if (time(0)%10==0)
-    {
-        y[1599] += distribution(generator)*30.0;
-    }
-
-    graph(0)->setData(x, y);
-    //rescaleAxes();
-    replot();
-    }
-
-}
 
 
 void PlotClass::SaveData()
@@ -300,7 +151,6 @@ void PlotClass::SaveData()
 
 void PlotClass::FourierTransform()
 {
-
 
     QVector <std::complex<double>> Transform(1601);
     for (int i=0;i<1601;i++)
@@ -339,13 +189,12 @@ void PlotClass::InverseFourierTransform()
         {
             Transform[i] += f[j] * exp( std::complex<double>(0, 2 * M_PI * j * i / 1601));
         }
-
     }
     f = Transform;
     for (int i=0;i<1601;i++)
         y[i] = abs(Transform[i]);
 
-    graph(0)->setData(x, y);
+    graph(0)->setData(x,y);
     rescaleAxes();
     replot();
 }
@@ -398,9 +247,33 @@ void PlotClass::AddNewMarker(int Key, int Style, QColor Colour)
 }
 
 
+void PlotClass::UpdateMeasuredData(QVector <std::complex<double>> MeasuredData)
+{
+    f = MeasuredData;
+    for (int i=0;i<NumberOfPoints;i++)
+    {
+        y[i] = abs(f[i]);
+    }
+    graph(0)->setData(x, y);
+    if (!ContinuousMeasurementMode)
+    {
+        rescaleAxes();
+    }
+    replot();
+}
+
+
+
+
+
+
+
+
+
 
 PlotClass::~PlotClass()
 {
+    /*
     delete MouseMoveMarker;
     delete MouseMoveLabel;
 
@@ -411,6 +284,7 @@ PlotClass::~PlotClass()
         delete label;
     }
     delete RefreshTimer;
+    */
 }
 
 
@@ -438,6 +312,98 @@ void PlotClass::ImportData()
 */
 
 
+/*
+void PlotClass::Measure()
+{
+    y[0] = 0;
+    x[0] = 0;
+    f[0] = std::complex<double>(0,0);
+
+    for (int i=1; i<1601; ++i)
+    {
+        x[i] = i;
+        //y[i] = y[i-1] + distribution(generator);
+        f[i] = f[i-1] + std::complex<double> (distribution(generator),distribution(generator)) ;
+        y[i] = abs(f[i]);
+    }
+
+    graph(0)->setData(x, y);
+    rescaleAxes();
+    replot();
+
+
+    //qDebug()<<"Размер виджета графика = " <<this->rect().size() << ", Размер графика = " << this->axisRect()->rect().size();
+
+    // Не используется
+    y[0] = y[1600];
+    for (int i=1; i<1601; ++i)
+    {
+        y[i] = y[i-1] + distribution(generator);
+    }
+    for (int i=1; i<1601; ++i)
+    {
+        if (i % 100 == 0)
+        {
+            y[i] += 10.0 * distribution(generator);
+        }
+    }
+    graph(0)->setData(x, y);
+    rescaleAxes();
+    replot();
+    // ----
+
+}
+
+
+void PlotClass::MeasureContinuously()
+{
+    if (qobject_cast<QPushButton*>(sender())->isChecked())
+    {
+        connect(RefreshTimer, &QTimer::timeout, this, &PlotClass::RefreshPlot);
+
+        RefreshTimer->start(100);
+    }
+    else
+    {
+        disconnect(RefreshTimer, &QTimer::timeout, this, &PlotClass::RefreshPlot);
+    }
+}
+
+
+void PlotClass::RefreshPlot()
+{
+    //не используется----
+    y[0] = 0;
+    f[0] = std::complex<double>(0,0);
+
+    for (int i=1; i<1601; ++i)
+    {
+        //y[i] = y[i-1] + distribution(generator);
+        f[i] = f[i-1] + std::complex<double> (distribution(generator),distribution(generator)) ;
+        y[i] = abs(f[i]);
+    }
+    //-------------------
+
+
+    {
+    for (int i=0; i<1600; ++i)
+    {
+        y[i] = y[i+1];
+    }
+    y[1600] = y[1599]+distribution(generator);
+
+    if (time(0)%10==0)
+    {
+        y[1599] += distribution(generator)*30.0;
+    }
+
+    graph(0)->setData(x, y);
+    //rescaleAxes();
+    replot();
+    }
+}
+*/
+
 
 
 
@@ -462,6 +428,9 @@ void PlotClass::ImportData()
 // Обрезание графика и сохранение обрезанного
 
 // Measure в новой вкладке + сразу название файла с датой и временем.
+
+// Сколько точек
+// ЭПР сферы
 
 
 

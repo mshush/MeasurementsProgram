@@ -4,79 +4,70 @@ MeasurementsParametersWidget::MeasurementsParametersWidget(QWidget *parent)
     : QWidget{parent}
 {
 
-    resize(200,500);
+    //resize(300,900);
     setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
+    //qDebug()<<size();
 
-    QVBoxLayout *VerticalLayoutOfParameters = new QVBoxLayout(this);
 
-
-    QGroupBox * FrequencyGroup = new QGroupBox("Частотный диапазон");
-    QVBoxLayout * FrequencyGroupMainLayout = new QVBoxLayout;
-
-    /*
-    QLabel * ExplanationLabel2 = new QLabel("Переключение кнопки меняет поля ввода. Единицы измерений через QComboBox возможно слишком громоздко");
-    ExplanationLabel2->setWordWrap(true);
-    FrequencyGroupMainLayout->addWidget(ExplanationLabel2);
-    */
-
-    FrequencyButtonLayout = new QVBoxLayout;
+    VerticalLayoutOfParameters = new QVBoxLayout(this);
+    FrequencyGroupBox = new QGroupBox("Диапазон частот измерения",this);
+    //FrequencyGroupBox->setFixedSize(280,250);
+    FrequencyGroupBox->setSizePolicy(QSizePolicy::Fixed,QSizePolicy::Fixed);
+    FrequencyGroupBoxLayout = new QVBoxLayout;
     StartStopButton = new QRadioButton("Начало-Конец");
-    connect(StartStopButton,&QRadioButton::clicked,this,&MeasurementsParametersWidget::SetStartStopMode);
+    connect(StartStopButton,&QRadioButton::clicked,this,&MeasurementsParametersWidget::StartStopButtonClicked);
     CenterSpanButton = new QRadioButton("Центр-Диапазон");
-    connect(CenterSpanButton,&QRadioButton::clicked,this,&MeasurementsParametersWidget::SetCenterSpanMode);
-    FrequencyButtonLayout->addWidget(StartStopButton);
+    connect(CenterSpanButton,&QRadioButton::clicked,this,&MeasurementsParametersWidget::CenterSpanButtonClicked);
+    FrequencyGroupBoxLayout->addWidget(StartStopButton);
     StartStopButton->setChecked(true);
-    FrequencyButtonLayout->addWidget(CenterSpanButton);
+    FrequencyGroupBoxLayout->addWidget(CenterSpanButton);
 
-    FrequencyStartCenterLayout = new QHBoxLayout;
+    FrequencyRangeLayout = new QGridLayout(this);
     FrequencyStartCenterLabel = new QLabel("Начало");
-    FrequencyStartCenterEdit = new QLineEdit("-800");
+    FrequencyStartCenterEdit = new QLineEdit("0");
     //QDoubleValidator * StartCenterDoubleValidator = new QDoubleValidator(FrequencyStopSpanEdit);
     //FrequencyStopSpanEdit->setValidator(StartCenterDoubleValidator);
-    connect(FrequencyStartCenterEdit, &QLineEdit::textEdited,this, &MeasurementsParametersWidget::ProcessChangedStartSpanEdit);
-    FrequencyStartCenterComboBox = new QComboBox;
-    FrequencyStartCenterComboBox->addItem("ГГц");
-    FrequencyStartCenterLayout->addWidget(FrequencyStartCenterLabel);
-    FrequencyStartCenterLayout->addWidget(FrequencyStartCenterEdit);
-    FrequencyStartCenterLayout->addWidget(FrequencyStartCenterComboBox);
 
+    FrequencyStartCenterUnitsLabel = new QLabel("ГГц", this);
+    //FrequencyStartCenterComboBox = new QComboBox(this);
+    //FrequencyStartCenterComboBox->addItem("ГГц");
 
-    FrequencyStopSpanLayout = new QHBoxLayout;
     FrequencyStopSpanLabel = new QLabel("Конец");
-    FrequencyStopSpanEdit = new QLineEdit("800");
+    FrequencyStopSpanEdit = new QLineEdit("1600");
     //QDoubleValidator * StopSpanDoubleValidator = new QDoubleValidator(FrequencyStopSpanEdit);
     //FrequencyStopSpanEdit->setValidator(StopSpanDoubleValidator);
-    connect(FrequencyStartCenterEdit, &QLineEdit::textEdited,this, &MeasurementsParametersWidget::ProcessChangedStopCenterEdit);
-    FrequencyStopSpanComboBox = new QComboBox;
-    FrequencyStopSpanComboBox->addItem("ГГц");
-    FrequencyStopSpanLayout->addWidget(FrequencyStopSpanLabel);
-    FrequencyStopSpanLayout->addWidget(FrequencyStopSpanEdit);
-    FrequencyStopSpanLayout->addWidget(FrequencyStopSpanComboBox);
+    //connect(FrequencyStartCenterEdit, &QLineEdit::textEdited,this, &MeasurementsParametersWidget::ProcessChangedStopCenterEdit);
 
+    FrequencyStopSpanUnitsLabel = new QLabel("ГГц", this);
+    //FrequencyStopSpanComboBox = new QComboBox(this);
+    //FrequencyStopSpanComboBox->addItem("ГГц");
 
+    FrequencyStartCenterEdit->setFixedWidth(60);
+    FrequencyStopSpanEdit   ->setFixedWidth(60);
+    FrequencyRangeLayout->addWidget(FrequencyStartCenterLabel      ,0,0);
+    FrequencyRangeLayout->addWidget(FrequencyStartCenterEdit       ,0,1);
+    FrequencyRangeLayout->addWidget(FrequencyStartCenterUnitsLabel ,0,2);
 
+    FrequencyRangeLayout->addWidget(FrequencyStopSpanLabel         ,1,0);
+    FrequencyRangeLayout->addWidget(FrequencyStopSpanEdit          ,1,1);
+    FrequencyRangeLayout->addWidget(FrequencyStopSpanUnitsLabel    ,1,2);
 
+    FrequencyGroupBoxLayout->addLayout(FrequencyRangeLayout);
 
-
-
-
-
-
-
-    QHBoxLayout * FrequencyNumberOfPointsLayout = new QHBoxLayout;
-    QLabel * FrequencyNumberOfPointsLabel = new QLabel("Число точек");
-    QLineEdit * FrequencyNumberOfPointsEdit = new QLineEdit ("1601");
+    FrequencyNumberOfPointsLayout = new QHBoxLayout(this);
+    FrequencyNumberOfPointsLabel = new QLabel("Число точек",this);
+    FrequencyNumberOfPointsEdit = new QLineEdit ("1601",this);
     FrequencyNumberOfPointsLayout->addWidget(FrequencyNumberOfPointsLabel);
     FrequencyNumberOfPointsLayout->addWidget(FrequencyNumberOfPointsEdit);
 
+    SetFrequencyParametersButton = new QPushButton("Установить", this);
+    connect(SetFrequencyParametersButton,&QPushButton::clicked,this,&MeasurementsParametersWidget::OnSetFrequencyParametersButtonClicked);
 
 
-    FrequencyGroupMainLayout->addLayout(FrequencyButtonLayout);
-    FrequencyGroupMainLayout->addLayout(FrequencyStartCenterLayout);
-    FrequencyGroupMainLayout->addLayout(FrequencyStopSpanLayout);
-    FrequencyGroupMainLayout->addLayout(FrequencyNumberOfPointsLayout);
-
-    FrequencyGroup->setLayout(FrequencyGroupMainLayout);
+    FrequencyGroupBoxLayout->addLayout(FrequencyRangeLayout);
+    FrequencyGroupBoxLayout->addLayout(FrequencyNumberOfPointsLayout);
+    FrequencyGroupBoxLayout->addWidget(SetFrequencyParametersButton);
+    FrequencyGroupBox->setLayout(FrequencyGroupBoxLayout);
 
     QGroupBox * AngleGroup = new QGroupBox("Диапазон углов");
     QGridLayout * AngleLayout = new QGridLayout(AngleGroup);
@@ -88,52 +79,34 @@ MeasurementsParametersWidget::MeasurementsParametersWidget(QWidget *parent)
     AngleGroup->setLayout(AngleLayout);
 
 
-    QGroupBox * CalibrationSampleGroup = new QGroupBox("Калибровочный образец");
+    CalibrationSampleGroup = new QGroupBox("Калибровочный образец");
 
 
 
-    QVBoxLayout * CalibrationSampleMainLayout = new QVBoxLayout;
-    /*
-    QLabel * ExplanationLabel4 = new QLabel("Здесь QComboBox образцов и набор параметров \nобразца, определяемый QComboBox-ом");
-    CalibrationSampleGroupMainLayout->addWidget(ExplanationLabel4);
-    */
-    QHBoxLayout * CalibrationSampleTypeLayout = new QHBoxLayout();
+    CalibrationSampleMainLayout = new QVBoxLayout;
+
+    CalibrationSampleTypeLayout = new QHBoxLayout();
     CalibrationSampleTypeLayout->addWidget(new QLabel("Вид образца"));
-    QComboBox * CalibrationSampleComboBox = new QComboBox;
+    CalibrationSampleComboBox = new QComboBox;
     CalibrationSampleComboBox->addItem("Цилиндр");
     CalibrationSampleTypeLayout->addWidget(CalibrationSampleComboBox);
     CalibrationSampleMainLayout->addLayout(CalibrationSampleTypeLayout);
 
-    QHBoxLayout * CalibrationSampleParametersLayout = new QHBoxLayout();
+    CalibrationSampleParametersLayout = new QHBoxLayout();
     CalibrationSampleParametersLayout->addWidget(new QLabel("Параметры"));
     CalibrationSampleParametersLayout->addWidget(new QLineEdit("Введите параметр"));
 
     CalibrationSampleMainLayout->addLayout(CalibrationSampleParametersLayout);
 
-
     CalibrationSampleGroup->setLayout(CalibrationSampleMainLayout);
-    //QPushButton * button1 = new QPushButton("Press!!!");
 
-    /*
-    QLabel * ExplanationLabel = new QLabel("Здесь меняются параметры измерений \n(В другой вкладке будут параметры для работы с полученными данными)");
-    ExplanationLabel->setWordWrap(true);
-    VerticalLayoutOfParameters->addWidget(ExplanationLabel);
-    */
-
-    VerticalLayoutOfParameters->addWidget(FrequencyGroup);
+    VerticalLayoutOfParameters->addWidget(FrequencyGroupBox);
     VerticalLayoutOfParameters->addWidget(AngleGroup);
     VerticalLayoutOfParameters->addWidget(CalibrationSampleGroup);
 
-    /*
-    QLabel * ExplanationLabel1 = new QLabel("Справа, также как в старой программе,\nчтобы было привычнее. Последовательность,\nв которой расположены параметры если менять,\nто перераспределить в порядке частоты\nиспользования, чтобы далеко мышку не вести");
-    ExplanationLabel1->setWordWrap(true);
-    ExplanationLabel->resize(160,50);
-    ExplanationLabel1->setSizePolicy(QSizePolicy::Fixed,QSizePolicy::Fixed);
-    VerticalLayoutOfParameters->addWidget(ExplanationLabel1);
-    */
+
     setLayout(VerticalLayoutOfParameters);
 
-    //qDebug()<<this->size();
 
 }
 
@@ -141,90 +114,81 @@ MeasurementsParametersWidget::MeasurementsParametersWidget(QWidget *parent)
 
 
 
-void MeasurementsParametersWidget::SetStartStopMode (bool StartStopButtonCheckStatus )
+void MeasurementsParametersWidget::StartStopButtonClicked (bool StartStopButtonCheckStatus)
 {
     if (StartStopButtonCheckStatus)
     {
+        double FreqCenter = FrequencyStartCenterEdit->text().toDouble();
+        double FreqSpan   = FrequencyStopSpanEdit   ->text().toDouble();
+
+        double FreqStart = FreqCenter-FreqSpan/2;
+        double FreqStop  = FreqCenter+FreqSpan/2;
+
+        FrequencyStartCenterEdit->setText(QString::number(FreqStart));
+        FrequencyStopSpanEdit   ->setText(QString::number(FreqStop ));
+
         FrequencyStartCenterLabel->setText("Начало");
-        FrequencyStopSpanLabel->setText("Конец");
-        ProcessChangedStartSpanEdit();
+        FrequencyStopSpanLabel   ->setText("Конец" );
     }
 }
 
 
 
-void MeasurementsParametersWidget::SetCenterSpanMode(bool CenterSpanButtonCheckStatus)
+void MeasurementsParametersWidget::CenterSpanButtonClicked(bool CenterSpanButtonCheckStatus)
 {
     if (CenterSpanButtonCheckStatus)
     {
-        FrequencyStartCenterLabel->setText("Центр");
-        FrequencyStopSpanLabel->setText("Диапазон");
-        ProcessChangedStartSpanEdit();
+        double FreqStart = FrequencyStartCenterEdit->text().toDouble();
+        double FreqStop  = FrequencyStopSpanEdit   ->text().toDouble();
+
+        double FreqCenter = (FreqStart + FreqStop)/2;
+        double FreqSpan   = FreqStop - FreqStart;
+
+        FrequencyStartCenterEdit->setText(QString::number(FreqCenter));
+        FrequencyStopSpanEdit   ->setText(QString::number(FreqSpan  ));
+
+        FrequencyStartCenterLabel->setText("Центр"    );
+        FrequencyStopSpanLabel   ->setText("Диапазон" );
     }
 }
 
 
-
-
-
-void MeasurementsParametersWidget::ProcessChangedStartSpanEdit()
+void MeasurementsParametersWidget::OnSetFrequencyParametersButtonClicked()
 {
-
     if (StartStopButton->isChecked())
     {
         StartFrequency = FrequencyStartCenterEdit->text().toDouble();
-        StopFrequency = FrequencyStopSpanEdit->text().toDouble();
+        StopFrequency  = FrequencyStopSpanEdit   ->text().toDouble();
     }
     else
     {
-        double center = FrequencyStartCenterEdit->text().toDouble();
-        double span = FrequencyStopSpanEdit->text().toDouble();
-        StartFrequency = center-span/2;
-        StopFrequency = center+span/2;
-        qDebug()<< "From" << StartFrequency << " to " << StopFrequency;
+        StartFrequency = FrequencyStartCenterEdit->text().toDouble() - FrequencyStopSpanEdit->text().toDouble()/2;
+        StopFrequency  = FrequencyStartCenterEdit->text().toDouble() + FrequencyStopSpanEdit->text().toDouble()/2;
     }
-    emit StartStopFrequenciesChanged(StartFrequency,StopFrequency);
+    NumberOfPoints = FrequencyNumberOfPointsEdit->text().toDouble();
+
+    emit ParametersOfMeasurementsChanged(StartFrequency, StopFrequency, NumberOfPoints);
 }
-void MeasurementsParametersWidget::ProcessChangedStopCenterEdit()
-{
-
-    if (StartStopButton->isChecked())
-    {
-        StartFrequency = FrequencyStartCenterEdit->text().toDouble();
-        StopFrequency = FrequencyStopSpanEdit->text().toDouble();
-    }
-    else
-    {
-        double center = FrequencyStartCenterEdit->text().toDouble();
-        double span = FrequencyStopSpanEdit->text().toDouble();
-        StartFrequency = center-span/2;
-        StopFrequency = center+span/2;
-    }
-    emit StartStopFrequenciesChanged(StartFrequency,StopFrequency);
-}
-
-
-
-
 
 
 
 
 MeasurementsParametersWidget::~MeasurementsParametersWidget()
 {
-    delete FrequencyButtonLayout;
+    /*
+    delete FrequencyGroupBox;
+    delete FrequencyGroupBoxLayout;
     delete StartStopButton;
     delete CenterSpanButton;
-
-    delete FrequencyStartCenterLayout;
+    delete FrequencyRangeLayout;
     delete FrequencyStartCenterLabel;
     delete FrequencyStartCenterEdit;
     delete FrequencyStartCenterComboBox;
-
-    delete FrequencyStopSpanLayout;
+    delete SetFrequencyParametersButton;
     delete FrequencyStopSpanLabel;
     delete FrequencyStopSpanEdit;
     delete FrequencyStopSpanComboBox;
+    */
 }
 
 

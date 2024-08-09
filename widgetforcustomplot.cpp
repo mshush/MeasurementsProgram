@@ -17,9 +17,10 @@ WidgetForCustomPlot::WidgetForCustomPlot(QWidget *parent)
     customPlot->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding);
 
     ControlsWidget = new QWidget(this);
-    ControlsWidget->setFixedSize(250,800);
-    ControlsWidget->setSizePolicy(QSizePolicy::Fixed,QSizePolicy::Expanding);
+    //ControlsWidget->setFixedSize(260,500);
+    //ControlsWidget->setSizePolicy(QSizePolicy::Fixed,QSizePolicy::Expanding);
     ControlsWidget->setLayout(VerticalControlsLayout);
+    //qDebug()<<"Размер="<<ControlsWidget->size();
 
 
     InitiateMovementGroupBox();
@@ -44,13 +45,9 @@ WidgetForCustomPlot::WidgetForCustomPlot(QWidget *parent)
 
 
 
+    //connect(customPlot->xAxis, &QCPAxis::rangeChanged, this, &WidgetForCustomPlot::XAxisRangeChanged);
+    //connect(customPlot->yAxis, &QCPAxis::rangeChanged, this, &WidgetForCustomPlot::YAxisRangeChanged);
 
-
-    /*
-    ColourDialogue = new QColorDialog;
-    ColourDialogue->setModal(true);
-    ColourDialogue->setFocus();
-    */
 }
 
 
@@ -59,8 +56,35 @@ WidgetForCustomPlot::WidgetForCustomPlot(QWidget *parent)
 
 
 
-void WidgetForCustomPlot::OpenMarkerColourDialogue() // Почему не сразу меняется сразу???
+void WidgetForCustomPlot::OpenMarkerColourDialogue() // Почему не меняется сразу???
 {
+
+    /*
+    QColorDialog *colorDialog = new QColorDialog();
+
+    //colorDialog->setCurrentColor(Qt::black);
+    //colorDialog->setCustomColor(0,QColor(1,1,1));
+    colorDialog->setCurrentColor(Qt::red);
+    //colorDialog->setCurrentColor(Qt::black);
+
+    colorDialog->setWindowTitle("Выберите цвет");
+
+
+    connect(colorDialog, &QColorDialog::accepted, this,  [this, colorDialog]()
+            {
+                QColor chosenColor = colorDialog->currentColor();
+                customPlot->MarkerColour = chosenColor;
+                delete colorDialog;
+            }
+            );
+
+    connect(colorDialog, &QColorDialog::rejected, [colorDialog]() {
+        delete colorDialog;
+    });
+
+    colorDialog->open();
+    */
+
     QColor ChosenColour = QColorDialog::getColor(customPlot->MarkerColour, this, "Выберите цвет");
     if (ChosenColour.isValid())
     {
@@ -130,8 +154,10 @@ void WidgetForCustomPlot::LockYAxis()
 
 void WidgetForCustomPlot::InitiateMovementGroupBox()
 {
+
+
     MovementGroupBox = new QGroupBox("Движение");
-    MovementGroupBox->setFixedSize(250,200);
+    MovementGroupBox->setFixedSize(250,250);
     MovementGroupBox->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
 
     MovementGroupBoxLayout = new QVBoxLayout(MovementGroupBox);
@@ -173,7 +199,7 @@ void WidgetForCustomPlot::InitiateMarkerGroupBox()
 {
 
     MarkerGroupBox = new QGroupBox("Маркеры");
-    MarkerGroupBox->setFixedSize(250,100);
+    MarkerGroupBox->setFixedSize(250,200);
     MarkerGroupBox->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
     MarkerGroupBoxLayout = new QVBoxLayout(MarkerGroupBox);
     MarkerGroupBox->setLayout(MarkerGroupBoxLayout);
@@ -181,6 +207,7 @@ void WidgetForCustomPlot::InitiateMarkerGroupBox()
     MarkerAddDeleteLayout = new QHBoxLayout;
 
     MarkerColourButton = new QPushButton("Цвет");
+    //qDebug()<< "Размер кнопки" <<MarkerColourButton->size();
     connect(MarkerColourButton, &QPushButton::clicked, this, &WidgetForCustomPlot::OpenMarkerColourDialogue);
 
     MarkerStyleComboBox = new QComboBox(this);
@@ -264,27 +291,30 @@ void WidgetForCustomPlot::InitiateMarkerPreviewPlot()
 {
     MarkerPreviewPlot = new QCustomPlot;
 
-    MarkerPreviewPlot->setFixedSize(20,20);
-    MarkerPreviewPlot->setSizePolicy(QSizePolicy::Fixed,QSizePolicy::Fixed);
-    MarkerPreviewPlot->setContentsMargins(0,0,0,0);
+    MarkerPreviewPlot->setFixedSize(50,50);
+    MarkerPreviewPlot->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding);
+    //MarkerPreviewPlot->setMaximumSize(30,30);
     MarkerPreviewPlot->addGraph();
     MarkerPreviewPlot->graph(0)->setData({0}, {0});
+    //MarkerPreviewPlot->graph(0)->setVisible(false);
     MarkerPreviewPlot->xAxis->setVisible(false);
     MarkerPreviewPlot->yAxis->setVisible(false);
     MarkerPreviewPlot->xAxis->setTickLabels(false);
     MarkerPreviewPlot->yAxis->setTickLabels(false);
+    MarkerPreviewPlot->xAxis->setRange(-1, 1);
+    MarkerPreviewPlot->yAxis->setRange(-1, 1);
+    //MarkerPreviewPlot->rescaleAxes();
 
+    //MarkerPreviewPlot->setStyleSheet("QCustomPlot { border: 2px solid black; }");
     PreviewMarker = new QCPItemTracer(MarkerPreviewPlot);
     PreviewMarker->setStyle(QCPItemTracer::TracerStyle(customPlot->MarkerStyle));
     PreviewMarker->setPen(QPen(customPlot->MarkerColour));
     PreviewMarker->setBrush(QBrush(customPlot->MarkerColour));
-    PreviewMarker->setSize(15);
+    PreviewMarker->setSize(14);
     PreviewMarker->setGraph(MarkerPreviewPlot->graph(0));
     PreviewMarker->setGraphKey(0);
     PreviewMarker->setVisible(true);
-    MarkerPreviewPlot->xAxis->setRange(-0.1, 0.1);
-    MarkerPreviewPlot->yAxis->setRange(-0.1, 0.1);
-    MarkerPreviewPlot->rescaleAxes();
+
     MarkerPreviewPlot->setContentsMargins(0,0,0,0);
     MarkerPreviewPlot->axisRect()->setMargins(QMargins(0,0,0,0));
 
@@ -293,15 +323,21 @@ void WidgetForCustomPlot::InitiateMarkerPreviewPlot()
 void WidgetForCustomPlot::InitiateSetRangeGroupBox()
 {
 
-    //Тоже можно бы отдельно этот QGroupBox инициализировать
+    DoubleValidator = new QDoubleValidator(this);
+    DoubleValidator->setNotation(QDoubleValidator::ScientificNotation);
+    DoubleValidator->setLocale(QLocale("en_US"));
+
+    //DoubleValidator->setRange(-1e6, 1e6);
+
     QString XLower = QString::number(this->customPlot->xAxis->range().lower);
     QString XUpper = QString::number(this->customPlot->xAxis->range().upper);
     QString YLower = QString::number(this->customPlot->yAxis->range().lower);
     QString YUpper = QString::number(this->customPlot->yAxis->range().upper);
 
     SetRangeGroupBox = new QGroupBox("Установка вручную");
-    SetRangeGroupBox->setFixedSize(230,80);
+    SetRangeGroupBox->setFixedSize(230,120);
     SetRangeGroupBox->setSizePolicy(QSizePolicy::Fixed,QSizePolicy::Expanding);
+    SetRangeVerticalLayout = new QVBoxLayout;
     SetRangeLayout = new QGridLayout;
     XRangeLabel1 = new QLabel("X от");
     XRangeEditFrom = new QLineEdit(XLower);
@@ -315,7 +351,24 @@ void WidgetForCustomPlot::InitiateSetRangeGroupBox()
     YRangeLabel2 = new QLabel("до");
     YRangeEditTo = new QLineEdit(YUpper);
     YRangeComboBox = new QComboBox;
-    YRangeComboBox->addItem("ГГц");
+    YRangeComboBox->addItem("Вт");
+
+    XRangeEditFrom->setValidator(DoubleValidator);
+    XRangeEditTo->setValidator(DoubleValidator);
+    YRangeEditFrom->setValidator(DoubleValidator);
+    YRangeEditTo->setValidator(DoubleValidator);
+
+    SetRangeButton = new QPushButton("Установить");
+    connect(SetRangeButton, &QPushButton::clicked, this,[this]()
+            {
+                this->customPlot->xAxis->setRange(XRangeEditFrom->text().toDouble(),XRangeEditTo->text().toDouble());
+                this->customPlot->yAxis->setRange(YRangeEditFrom->text().toDouble(),YRangeEditTo->text().toDouble());
+                this->customPlot->replot();
+             }
+            );
+
+
+
 
     SetRangeLayout->addWidget(XRangeLabel1,  0,0);
     SetRangeLayout->addWidget(XRangeEditFrom,0,1);
@@ -329,15 +382,42 @@ void WidgetForCustomPlot::InitiateSetRangeGroupBox()
     SetRangeLayout->addWidget(YRangeEditTo,  1,3);
     SetRangeLayout->addWidget(YRangeComboBox,1,4);
 
-    SetRangeGroupBox->setLayout(SetRangeLayout);
+
+    SetRangeVerticalLayout->addLayout(SetRangeLayout);
+    SetRangeVerticalLayout->addWidget(SetRangeButton);
+
+    SetRangeGroupBox->setLayout(SetRangeVerticalLayout);
 }
 
 
 
 
+void WidgetForCustomPlot::XAxisRangeChanged(QCPRange range)
+{
+    //double XMin = customPlot->xAxis->range().lower;
+    //double XMax = customPlot->xAxis->range().upper;
 
 
-WidgetForCustomPlot::~WidgetForCustomPlot() {
+    this->XRangeEditFrom->setText(QString::number(range.lower));
+    this->XRangeEditTo  ->setText(QString::number(range.upper));
+
+}
+
+void WidgetForCustomPlot::YAxisRangeChanged(QCPRange range)
+{
+    //double YMin = customPlot->xAxis->range().lower;
+    //double YMax = customPlot->xAxis->range().upper;
+
+    this->YRangeEditFrom->setText(QString::number(range.lower));
+    this->YRangeEditTo  ->setText(QString::number(range.upper));
+}
+
+
+
+
+WidgetForCustomPlot::~WidgetForCustomPlot()
+{
+    /*
     delete customPlot;
     delete ControlsWidget;
     delete HorizontalPlotLayout;
@@ -377,6 +457,7 @@ WidgetForCustomPlot::~WidgetForCustomPlot() {
     delete PreviewMarker;
     delete XRangeComboBox;
     delete YRangeComboBox;
+    */
 }
 
 

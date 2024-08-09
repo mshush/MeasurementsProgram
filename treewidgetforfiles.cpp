@@ -45,5 +45,5 @@ void TreeWidgetForFiles::SetRootDirectory(const QDir &RootDirectory)
 
 TreeWidgetForFiles::~TreeWidgetForFiles()
 {
-    delete RootItem;
+    //delete RootItem;
 }

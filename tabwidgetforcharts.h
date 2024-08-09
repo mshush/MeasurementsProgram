@@ -7,6 +7,7 @@
 #include <QTabBar>
 //#include<widgetforchart.h>
 #include <widgetforcustomplot.h>
+//#include <QMdiArea> Можно попробовать наследовать отсюда
 
 class TabWidgetForCharts : public QTabWidget
 {
@@ -17,17 +18,19 @@ public:
     //WidgetForCustomPlot * PlotTab;
     TabWidgetForCharts();
     ~TabWidgetForCharts();
-    QVector <WidgetForCustomPlot*> PlotTabs;
+    QVector <WidgetForCustomPlot*> PlotTabs; // Сделать листом
 
 public slots:
     void CreateNewTabFromImportedData();
     //void SendMeasureSignalToFirstTab();
     //void SendMeasureContinuouslySignalToFirstTab();
-
-    void SetStartStopFrequencies(double StartFreq, double StopFreq);
-    void AddMeasuredTabs();
+    void SetMeasurementParameters(double FreqStart, double FreqStop, int NumberOfPoints);
+    void UpdateMeasurementPlot(QVector <std::complex<double>> f);
     void SaveData();
     void InitiateCloseTabButton();
+    void ContinuousMeasurementModeChanged();
+    void PerformFourierTransformOfCurrentPlot();
+    void PerformInverseFourierTransformOfCurrentPlot();
 };
 
 

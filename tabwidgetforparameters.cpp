@@ -2,13 +2,13 @@
 
 TabWidgetForParameters::TabWidgetForParameters(QWidget *parent) : QTabWidget(parent)
 {
-    Tab1 = new MeasurementsParametersWidget();
+    ParametersTab = new MeasurementsParametersWidget();
     //Tab2 = new ProcessingParametersWidget();
-    Tab3 = new TreeWidgetForFiles();
+    FileTreeTab = new TreeWidgetForFiles();
 
-    addTab(Tab1, "Измерение");
+    addTab(ParametersTab, "Измерение");
     //addTab(Tab2, "Обработка");
-    addTab(Tab3, "Открыть");
+    addTab(FileTreeTab, "Открыть");
 
     resize(200,500);
     setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
@@ -19,9 +19,9 @@ TabWidgetForParameters::TabWidgetForParameters(QWidget *parent) : QTabWidget(par
 
 TabWidgetForParameters::~TabWidgetForParameters()
 {
+    /*
     delete Tab1;
     //delete Tab2;
     delete Tab3;
-    delete StartFrequencyLineEdit;
-    delete StopFrequencyLineEdit;
+    */
 }

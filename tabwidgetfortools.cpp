@@ -6,12 +6,12 @@ TabWidgetForTools::TabWidgetForTools()
 
     Tab1 = new QWidget;
     //QLabel * ExplanationLabel = new QLabel("Место для Инструментов: запуск и приостановка измерений будут здесь, а не выше в меню, так как нужно часто(я полагаю)\nТакже здесь можно в Обработке разместить переключение на дальностный портрет и работу с ним");
-    QHBoxLayout * Tab1Layout = new QHBoxLayout;
+    QHBoxLayout * Tab1Layout = new QHBoxLayout(this);
     //ExplanationLabel->setWordWrap(true);
 
 
 
-    StartMeasurementsButton = new QPushButton("►");
+    StartMeasurementsButton = new QPushButton("►",this);
     //StartMeasurementsButton->setIcon(QIcon("C://Users/HP/Documents/MeasurementsProgram/startbuttonicon.png"));
     StartMeasurementsButton->setFont(QFont("Arial", 30, QFont::Bold));
     StartMeasurementsButton->setStyleSheet("QPushButton { color: green; padding-top: 0px; padding-bottom: 0px; }");
@@ -20,7 +20,7 @@ TabWidgetForTools::TabWidgetForTools()
 
     Tab1Layout->addWidget(StartMeasurementsButton);
 
-    StopMeasurementsButton = new QPushButton("🟥"); //■🟥
+    StopMeasurementsButton = new QPushButton("🟥",this); //■🟥
     //StopMeasurementsButton->setIcon(QIcon("C://Users/HP/Documents/MeasurementsProgram/stopbuttonicon.png"));
     StopMeasurementsButton->setFont(QFont("Arial", 20, QFont::Bold));
     StopMeasurementsButton->setStyleSheet("QPushButton { color: red; padding-top: 0px; padding-bottom: 5px; padding-left: 5px; padding-right: 5px; }");
@@ -29,7 +29,7 @@ TabWidgetForTools::TabWidgetForTools()
     Tab1Layout->addWidget(StopMeasurementsButton);
 
 
-    ContinuousMeasurementsButton = new QPushButton("∞");
+    ContinuousMeasurementsButton = new QPushButton("∞",this);
     ContinuousMeasurementsButton->setFont(QFont("Arial", 30, QFont::Bold));
     ContinuousMeasurementsButton->setStyleSheet("QPushButton { color: blue; padding-top: 0px; padding-bottom: 0px; padding-left: 5px; padding-right: 5px; }");
     ContinuousMeasurementsButton->resize(30,30);
@@ -37,20 +37,27 @@ TabWidgetForTools::TabWidgetForTools()
     ContinuousMeasurementsButton->setCheckable(true);
     Tab1Layout->addWidget(ContinuousMeasurementsButton);
 
-    SaveDataButton = new QPushButton("⇩"); //⤓⇩
+    SaveDataButton = new QPushButton("⇩",this); //⤓⇩
     SaveDataButton->setFont(QFont("Arial", 30, QFont::Bold));
     SaveDataButton->setStyleSheet("QPushButton { color: orange; padding-top: 0px; padding-bottom: 0px; padding-left: 5px; padding-right: 5px; }");
     SaveDataButton->resize(30,30);
     SaveDataButton->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
     Tab1Layout->addWidget(SaveDataButton);
 
-    ImportDataButton = new QPushButton("⇧"); //⇧
+    ImportDataButton = new QPushButton("⇧",this); //⇧
     ImportDataButton->setFont(QFont("Arial", 30, QFont::Bold));
     ImportDataButton->setStyleSheet("QPushButton { color: orange; padding-top: 0px; padding-bottom: 0px; padding-left: 5px; padding-right: 5px; }");
     ImportDataButton->resize(30,30);
     ImportDataButton->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
     Tab1Layout->addWidget(ImportDataButton);
 
+    FourierTransformButton = new QPushButton("F",this);
+    FourierTransformButton->resize(30,30);
+    Tab1Layout->addWidget(FourierTransformButton);
+
+    InverseFourierTransformButton = new QPushButton ("InvF",this);
+    InverseFourierTransformButton->resize(30,30);
+    Tab1Layout->addWidget(InverseFourierTransformButton);
 
     Tab1Layout->setAlignment(Qt::AlignLeft);
 
@@ -70,7 +77,7 @@ TabWidgetForTools::TabWidgetForTools()
 
 TabWidgetForTools::~TabWidgetForTools()
 {
-
+    /*
     delete StartMeasurementsButton;
     delete StopMeasurementsButton;
     delete ContinuousMeasurementsButton;
@@ -78,4 +85,5 @@ TabWidgetForTools::~TabWidgetForTools()
     delete ImportDataButton;
     delete Tab1;
     delete Tab2;
+    */
 }

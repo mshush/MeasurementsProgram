@@ -17,12 +17,9 @@ public:
     TabWidgetForParameters(QWidget *parent = nullptr);
     ~TabWidgetForParameters();
 
-    MeasurementsParametersWidget * Tab1;
+    MeasurementsParametersWidget * ParametersTab;
     //ProcessingParametersWidget * Tab2;
-    TreeWidgetForFiles * Tab3;
-
-    QLineEdit * StartFrequencyLineEdit;
-    QLineEdit * StopFrequencyLineEdit;
+    TreeWidgetForFiles * FileTreeTab;
 };
 
 #endif // TABWIDGETFORPARAMETERS_H

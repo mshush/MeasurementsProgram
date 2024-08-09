@@ -8,6 +8,7 @@
 #include <qcustomplot.h>
 #include <QFileDialog>
 #include <plotclass.h>
+#include <QDoubleValidator>
 
 
 class WidgetForCustomPlot : public QWidget
@@ -54,7 +55,9 @@ public:
     QLineEdit *YRangeEditTo;
     QComboBox * XRangeComboBox;
     QComboBox * YRangeComboBox;
-
+    QVBoxLayout * SetRangeVerticalLayout;
+    QPushButton * SetRangeButton;
+    QDoubleValidator * DoubleValidator;
 
     //GroupBox для манипуляций с маркерами
     void InitiateMarkerGroupBox();
@@ -93,6 +96,8 @@ public slots:
     void ActivateRubberBand();
     void LockXAxis();
     void LockYAxis();
+    void XAxisRangeChanged(QCPRange range);
+    void YAxisRangeChanged(QCPRange range);
 };
 
 #endif // WIDGETFORCUSTOMPLOT_H

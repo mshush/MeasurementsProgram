@@ -20,6 +20,7 @@
 #include <tabwidgetforcharts.h>
 #include <widgetforcustomplot.h>
 #include <plotclass.h>
+#include <processimitation.h>
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -40,10 +41,11 @@ public:
     TabWidgetForTools * TabOfTools;
     //WidgetForChart * ChartWidget;
     TabWidgetForCharts * ChartTab;
-    TreeWidgetForFiles * FileTreeWidget;
+    //TreeWidgetForFiles * FileTreeWidget;
     WidgetForCustomPlot * CustomPlotWidget;
+    ProcessImitation * Process;
 
-    void addItems(const QDir &directory, QTreeWidgetItem *parent); // Перенести в отдельный класс для дерева
+    //void addItems(const QDir &directory, QTreeWidgetItem *parent); // Перенести в отдельный класс для дерева
 
 private:
     Ui::MainWindow *ui;

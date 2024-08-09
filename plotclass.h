@@ -27,28 +27,32 @@ public:
     bool markeraddbuttonactive = false;
     bool markerdeletebuttonactive = false;
     int iter = 0;
-    QColor MarkerColour = QColor(10,10,10);
+    QColor MarkerColour = Qt::black;
     int MarkerStyle = 1;
     std::list <QCPItemTracer*> AddedMarkersList;
     std::list <QCPItemText*> AddedMarkerLabelsList;
-    QVector <double> x, y; // Или QCPVector2D?
-    QVector <std::complex<double>> f;
+    int NumberOfPoints = 1601;
+    QVector <double> x, y; // Или лучше QCPVector2D?
+    QVector <std::complex<double>> f; //Перенести в имитацию процесса?
+    bool ContinuousMeasurementMode = false;
 
-    std::default_random_engine generator;
-    std::normal_distribution<double> distribution;
+    //Перенести в имитацию процесса-------------------------
+    //std::default_random_engine generator;
+    //std::normal_distribution<double> distribution;
     //std::gamma_distribution<double> distribution;
     //std::cauchy_distribution<double> distribution;
-
-    QTimer * RefreshTimer;
+    //QTimer * RefreshTimer;
+    //-------------------------------------------------------
 
 public slots:
+    void UpdateMeasuredData(QVector <std::complex<double>> MeasuredData);
     void ResetPlot();
     void SavePlot();
     void DeleteAllMarkers();
     void CopyPlot();
-    void Measure();
-    void MeasureContinuously();
-    void RefreshPlot();
+    //void Measure();
+    //void MeasureContinuously();
+    //void RefreshPlot();
     void SaveData();
     //void ImportData();
     void FourierTransform();

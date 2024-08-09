@@ -10,6 +10,7 @@
 #include <QGroupBox>
 #include <QComboBox>
 #include <QLineEdit>
+#include <QDoubleValidator>
 
 
 class MeasurementsParametersWidget : public QWidget
@@ -19,34 +20,46 @@ public:
     explicit MeasurementsParametersWidget(QWidget *parent = nullptr);
     ~MeasurementsParametersWidget();
 
+    QVBoxLayout * VerticalLayoutOfParameters;
+
     //Область задания частоты
-    QVBoxLayout * FrequencyButtonLayout;
+    QGroupBox * FrequencyGroupBox;
+    QVBoxLayout * FrequencyGroupBoxLayout;
     QRadioButton * StartStopButton;
     QRadioButton * CenterSpanButton;
-
-    QHBoxLayout * FrequencyStartCenterLayout;
+    QGridLayout * FrequencyRangeLayout;
     QLabel * FrequencyStartCenterLabel;
     QLineEdit * FrequencyStartCenterEdit;
-    QComboBox * FrequencyStartCenterComboBox;
-
-    QHBoxLayout * FrequencyStopSpanLayout;
+    //QComboBox * FrequencyStartCenterComboBox;
+    QLabel * FrequencyStartCenterUnitsLabel;
     QLabel * FrequencyStopSpanLabel;
     QLineEdit * FrequencyStopSpanEdit;
-    QComboBox * FrequencyStopSpanComboBox;
+    //QComboBox * FrequencyStopSpanComboBox;
+    QLabel * FrequencyStopSpanUnitsLabel;
+    QPushButton * SetFrequencyParametersButton;
+    QHBoxLayout * FrequencyNumberOfPointsLayout;
+    QLabel * FrequencyNumberOfPointsLabel;
+    QLineEdit * FrequencyNumberOfPointsEdit;
 
 
+    //Область параметров калибровочного образца
+    QGroupBox * CalibrationSampleGroup;
+    QVBoxLayout * CalibrationSampleMainLayout;
+    QHBoxLayout * CalibrationSampleTypeLayout;
+    QComboBox * CalibrationSampleComboBox;
+    QHBoxLayout * CalibrationSampleParametersLayout;
 
-    double StartFrequency;
-    double StopFrequency;
+
+    double StartFrequency = 0;
+    double StopFrequency = 1600;
+    int NumberOfPoints = 1601;
 
 public slots:
-    void SetStartStopMode (bool StartStopButtonCheckStatus );
-    void SetCenterSpanMode(bool CenterSpanButtonCheckStatus);
-    void ProcessChangedStartSpanEdit();
-    void ProcessChangedStopCenterEdit();
-
+    void StartStopButtonClicked  (bool StartStopButtonCheckStatus );
+    void CenterSpanButtonClicked (bool CenterSpanButtonCheckStatus);
+    void OnSetFrequencyParametersButtonClicked();
 signals:
-    void StartStopFrequenciesChanged(double StartFreq, double StopFreq);
+    void ParametersOfMeasurementsChanged(double FreqStart, double FreqStop, int PointsNumber);
 };
 
 #endif // MEASUREMENTSPARAMETERSWIDGET_H

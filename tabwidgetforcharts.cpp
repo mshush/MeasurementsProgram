@@ -6,47 +6,17 @@ TabWidgetForCharts::TabWidgetForCharts()
     //ChartTabBar = new QTabBar(this);
 
 
-    AddMeasuredTabs();
-    /*
-    WidgetForCustomPlot * PlotTab = new WidgetForCustomPlot;
-    addTab(PlotTab,"График" +QString::number(this->count()+1));
-    PlotTabs.push_back(PlotTab);
-    */
+    //AddMeasuredTabs();
 
-    //ChartTab = new WidgetForChart;
-    //addTab(ChartTab,"График 2");
+    WidgetForCustomPlot * MeasurementPlotTab = new WidgetForCustomPlot(this);
+    addTab(MeasurementPlotTab,"Текущее измерение");
+    PlotTabs.push_back(MeasurementPlotTab);
 
-    /*
-    QWidget * Tab2 = new QWidget;
-    addTab(Tab2,"График 2");
-    QWidget * Tab3 = new QWidget;
-    addTab(Tab3,"График 3");
-    */
-
-    /*
-    QPushButton* TempCloseButton = new QPushButton("X");
-
-    TempCloseButton->setStyleSheet("QPushButton {"
-                                   "background-color: #FF6F61;"
-                                   "color: white;"
-                                   "border-radius: 0px;" // Adjust the value to make it more circular
-                                   "width: 15px;"
-                                   "height: 15px;"
-                                   "}");
-    TempCloseButton->setFixedSize(15,15);
-
-    tabBar()->setTabButton(0, QTabBar::RightSide, TempCloseButton);
-
-    QWidget * TempTabPtr = this->widget(0);
-
-    connect(TempCloseButton, &QPushButton::clicked, this, [TempTabPtr,this]()
-            {
-                removeTab(indexOf(TempTabPtr));
-            }
-            );
+    //setTabsClosable(true); Можно было так.
+    //this->setTabsMovable(true);
 
     this->setTabToolTip(0, "Вкладка по умолчанию, на которую влияют кнопки запуска и непрерывного измерения");
-    */
+
 }
 
 
@@ -61,7 +31,7 @@ void TabWidgetForCharts::CreateNewTabFromImportedData()
         return;
     }
 
-    WidgetForCustomPlot * PlotTab = new WidgetForCustomPlot;
+    WidgetForCustomPlot * PlotTab = new WidgetForCustomPlot(this);
 
     QFileInfo FileInfo(FilePath);
     addTab(PlotTab, FileInfo.baseName());
@@ -109,25 +79,26 @@ void TabWidgetForCharts::CreateNewTabFromImportedData()
 
 
 
-void TabWidgetForCharts::SetStartStopFrequencies(double StartFreq, double StopFreq)
+void TabWidgetForCharts::SetMeasurementParameters(double StartFreq, double StopFreq, int NumberOfPoints)
 {
-
-    QVector <double> xTemp(1601);
+    QVector <double> xTemp(NumberOfPoints);
     for (int i=0; i<1601; i++)
     {
         xTemp[i] = StartFreq + i * (StopFreq-StartFreq)/1600;
     }
     this->PlotTabs[0]->customPlot->x = xTemp;
-
 }
 
 
 void TabWidgetForCharts::SaveData()
 {
+    QString DateString = QDate::currentDate().toString("yyyy-MM-dd");
+    QString TimeString = QTime::currentTime().toString("HH-mm");
+
+    QString NameOfSavedFile = "Измерение_" + DateString + "_" + TimeString;
+
     //QString SaveDirectory = QFileDialog::getExistingDirectory(this, "Select Directory", QDir::homePath());
-
-
-    QString Path = QDir::homePath() + "/" + QString(tabToolTip(currentIndex())) + ".dat";
+    QString Path = QDir::homePath() + "/" + NameOfSavedFile + ".dat";
     qDebug()<< "Путь = " + Path + ", Индекс = " + QString::number(currentIndex());
     QString FilePath = QFileDialog::getSaveFileName(this, "Save File", Path, "Data Files (*.dat);;All Files (*)");
 
@@ -170,12 +141,13 @@ void TabWidgetForCharts::SaveData()
 
 
 
-void TabWidgetForCharts::AddMeasuredTabs()
+void TabWidgetForCharts::UpdateMeasurementPlot(QVector <std::complex<double>> f)
 {
+    PlotTabs[0]->customPlot->UpdateMeasuredData(f);
 
+    /*
     QString DateString = QDate::currentDate().toString("yyyy-MM-dd");
     QString TimeString = QTime::currentTime().toString("HH-mm");
-
 
     WidgetForCustomPlot * NewPlotTab = new WidgetForCustomPlot;
     addTab(NewPlotTab, "Результат измерений");
@@ -184,6 +156,7 @@ void TabWidgetForCharts::AddMeasuredTabs()
     this->setTabToolTip(count()-1, "Результат_измерений_" + DateString + "_" + TimeString);
 
     InitiateCloseTabButton();
+
 
     WidgetForCustomPlot * NewPlotTabF = new WidgetForCustomPlot;
     NewPlotTabF->customPlot->f = NewPlotTab->customPlot->f;
@@ -194,6 +167,7 @@ void TabWidgetForCharts::AddMeasuredTabs()
     this->setTabToolTip(count()-1, "Дальностный_портрет_" + DateString + "_" + TimeString);
 
     InitiateCloseTabButton();
+    */
 }
 
 
@@ -201,6 +175,7 @@ void TabWidgetForCharts::InitiateCloseTabButton()
 {
 
     QPushButton* TempCloseButton = new QPushButton("X");
+
 
     TempCloseButton->setStyleSheet("QPushButton {"
                                    "background-color: #FF6F61;"
@@ -223,10 +198,80 @@ void TabWidgetForCharts::InitiateCloseTabButton()
 }
 
 
+void TabWidgetForCharts::ContinuousMeasurementModeChanged()
+{
+    PlotTabs[0]->customPlot->ContinuousMeasurementMode = dynamic_cast<QPushButton*>(sender())->isChecked();
+}
+
+
+
+
+
+
+
 TabWidgetForCharts::~TabWidgetForCharts()
 {
+    /*
     qDeleteAll(PlotTabs);
     PlotTabs.clear();
+    */
+}
+
+
+void TabWidgetForCharts::PerformFourierTransformOfCurrentPlot()
+{
+    PlotClass * CurrentPlot = PlotTabs[currentIndex()]->customPlot;
+    QVector <std::complex<double>> F = CurrentPlot->f;
+    QVector <std::complex<double>> Transform(F.size());
+    QString TabName = tabText(currentIndex());
+    int N = F.size();
+
+    for (int i=0;i<N;i++)
+    {
+        Transform[i] = 0;
+        for (int j=0;j<N;j++)
+        {
+            Transform[i] += F[j] * exp( - std::complex<double>(0, 2 * M_PI * j * i / N));
+        }
+        Transform[i]/=N;
+    }
+
+    WidgetForCustomPlot * NewTab = new WidgetForCustomPlot(this);
+    PlotTabs.append(NewTab);
+    addTab(NewTab, "F(" + TabName + ")");
+    InitiateCloseTabButton();
+
+    NewTab->customPlot->UpdateMeasuredData(Transform);
+    NewTab->customPlot->rescaleAxes();
+    NewTab->customPlot->replot();
+}
+
+
+void TabWidgetForCharts::PerformInverseFourierTransformOfCurrentPlot()
+{
+    PlotClass * CurrentPlot = PlotTabs[currentIndex()]->customPlot;
+    QVector <std::complex<double>> Transform = CurrentPlot->f;
+    QVector <std::complex<double>> F(Transform.size());
+    QString TabName = tabText(currentIndex());
+    int N = F.size();
+
+    for (int i=0;i<N;i++)
+    {
+        F[i] = 0;
+        for (int j=0;j<N;j++)
+        {
+            F[i] += Transform[j] * exp( std::complex<double>(0, 2 * M_PI * j * i / N));
+        }
+    }
+
+    WidgetForCustomPlot * NewTab = new WidgetForCustomPlot(this);
+    PlotTabs.append(NewTab);
+    addTab(NewTab, "InvF(" + TabName + ")");
+    InitiateCloseTabButton();
+
+    NewTab->customPlot->UpdateMeasuredData(F);
+    NewTab->customPlot->rescaleAxes();
+    NewTab->customPlot->replot();
 }
 
 
