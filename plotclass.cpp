@@ -52,6 +52,9 @@ PlotClass::PlotClass(QWidget * parent) : QCustomPlot(parent)
 
     setInteractions(QCP::iRangeZoom | QCP::iRangeDrag | QCP::iSelectItems);
 
+
+    SelectionRectClass * SelectionRectangle = new SelectionRectClass(this);
+    this->setSelectionRect(SelectionRectangle);
 }
 
 

@@ -44,14 +44,12 @@ WidgetForCustomPlot::WidgetForCustomPlot(QWidget *parent)
     HorizontalPlotLayout->addWidget(ControlsWidget);
 
 
-
     //connect(customPlot->xAxis, &QCPAxis::rangeChanged, this, &WidgetForCustomPlot::XAxisRangeChanged);
     //connect(customPlot->yAxis, &QCPAxis::rangeChanged, this, &WidgetForCustomPlot::YAxisRangeChanged);
 
+    connect(customPlot->xAxis, SIGNAL(rangeChanged(QCPRange)), this, SLOT(XAxisRangeChanged(QCPRange)));
+    connect(customPlot->yAxis, SIGNAL(rangeChanged(QCPRange)), this, SLOT(YAxisRangeChanged(QCPRange)));
 }
-
-
-
 
 
 
@@ -105,6 +103,8 @@ void WidgetForCustomPlot::ChangeMarkerStyle(int ComboIndex) // Почему вы
     this->MarkerPreviewPlot->replot();
 }
 
+
+
 void WidgetForCustomPlot::ActivateRubberBand()
 {
     if (this->RubberBandButton->isChecked())
@@ -121,16 +121,19 @@ void WidgetForCustomPlot::LockXAxis()
 {
     if (this->LockXAxisButton->isChecked())
     {
-
         customPlot->axisRect()->setRangeZoom(Qt::Vertical);
         QList <QCPAxis * > ZoomableAxesList = {customPlot->yAxis};
         customPlot->axisRect()->setRangeZoomAxes(ZoomableAxesList);
         this->LockYAxisButton->setChecked(false);
+        qobject_cast<SelectionRectClass*>(customPlot->selectionRect())->XAxisLocked = true;
+        qobject_cast<SelectionRectClass*>(customPlot->selectionRect())->YAxisLocked = false;
     }
     else
     {
         customPlot->axisRect()->setRangeZoom(Qt::Horizontal | Qt::Vertical);
         customPlot->axisRect()->setRangeZoomAxes(customPlot->xAxis, customPlot->yAxis);
+        qobject_cast<SelectionRectClass*>(customPlot->selectionRect())->XAxisLocked = false;
+        qobject_cast<SelectionRectClass*>(customPlot->selectionRect())->YAxisLocked = false;
     }
 }
 
@@ -138,16 +141,19 @@ void WidgetForCustomPlot::LockYAxis()
 {
     if (this->LockYAxisButton->isChecked())
     {
-
         customPlot->axisRect()->setRangeZoom(Qt::Horizontal);
         QList <QCPAxis * > ZoomableAxesList = {customPlot->xAxis};
         customPlot->axisRect()->setRangeZoomAxes(ZoomableAxesList);
         this->LockXAxisButton->setChecked(false);
+        qobject_cast<SelectionRectClass*>(customPlot->selectionRect())->YAxisLocked = true;
+        qobject_cast<SelectionRectClass*>(customPlot->selectionRect())->XAxisLocked = false;
     }
     else
     {
         customPlot->axisRect()->setRangeZoom(Qt::Horizontal | Qt::Vertical);
         customPlot->axisRect()->setRangeZoomAxes(customPlot->xAxis, customPlot->yAxis);
+        qobject_cast<SelectionRectClass*>(customPlot->selectionRect())->XAxisLocked = false;
+        qobject_cast<SelectionRectClass*>(customPlot->selectionRect())->YAxisLocked = false;
     }
 }
 
@@ -392,7 +398,7 @@ void WidgetForCustomPlot::InitiateSetRangeGroupBox()
 
 
 
-void WidgetForCustomPlot::XAxisRangeChanged(QCPRange range)
+void WidgetForCustomPlot::XAxisRangeChanged(const QCPRange &range)
 {
     //double XMin = customPlot->xAxis->range().lower;
     //double XMax = customPlot->xAxis->range().upper;
@@ -403,7 +409,7 @@ void WidgetForCustomPlot::XAxisRangeChanged(QCPRange range)
 
 }
 
-void WidgetForCustomPlot::YAxisRangeChanged(QCPRange range)
+void WidgetForCustomPlot::YAxisRangeChanged(const QCPRange &range)
 {
     //double YMin = customPlot->xAxis->range().lower;
     //double YMax = customPlot->xAxis->range().upper;

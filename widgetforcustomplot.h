@@ -9,6 +9,7 @@
 #include <QFileDialog>
 #include <plotclass.h>
 #include <QDoubleValidator>
+#include <selectionrectclass.h>
 
 
 class WidgetForCustomPlot : public QWidget
@@ -96,8 +97,8 @@ public slots:
     void ActivateRubberBand();
     void LockXAxis();
     void LockYAxis();
-    void XAxisRangeChanged(QCPRange range);
-    void YAxisRangeChanged(QCPRange range);
+    void XAxisRangeChanged(const QCPRange &range);
+    void YAxisRangeChanged(const QCPRange &range);
 };
 
 #endif // WIDGETFORCUSTOMPLOT_H

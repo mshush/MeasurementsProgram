@@ -14,6 +14,7 @@
 #include <QDataStream>
 #include <cmath>
 #include <complex>
+#include <selectionrectclass.h>
 
 class PlotClass : public QCustomPlot
 {
@@ -32,17 +33,12 @@ public:
     std::list <QCPItemTracer*> AddedMarkersList;
     std::list <QCPItemText*> AddedMarkerLabelsList;
     int NumberOfPoints = 1601;
-    QVector <double> x, y; // Или лучше QCPVector2D?
-    QVector <std::complex<double>> f; //Перенести в имитацию процесса?
+    QVector <double> x, y;
+    QVector <std::complex<double>> f;
     bool ContinuousMeasurementMode = false;
 
-    //Перенести в имитацию процесса-------------------------
-    //std::default_random_engine generator;
-    //std::normal_distribution<double> distribution;
-    //std::gamma_distribution<double> distribution;
-    //std::cauchy_distribution<double> distribution;
-    //QTimer * RefreshTimer;
-    //-------------------------------------------------------
+    SelectionRectClass * SelectionRectangle;
+
 
 public slots:
     void UpdateMeasuredData(QVector <std::complex<double>> MeasuredData);
