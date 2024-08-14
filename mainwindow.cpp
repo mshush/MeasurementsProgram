@@ -14,7 +14,8 @@ MainWindow::MainWindow(QWidget *parent)
     //QGuiApplication::setAttribute(Qt::AA_Use96Dpi); // Разобраться, что делает
     //qputenv("QT_AUTO_SCREEN_SCALE_FACTOR", "0");
 
-    Process = new ProcessImitation(this);
+    QFont Font("Segoe UI", 12); // Был QFont(Segoe UI,9,-1,5,400,0,0,0,0,0,0,0,0,0,0,1)
+    QApplication::setFont(Font);
 
     ui->setupUi(this);
 
@@ -23,6 +24,9 @@ MainWindow::MainWindow(QWidget *parent)
     this->menuBar()->addMenu("Свойства");
     this->menuBar()->addMenu("Постобработка");
     this->menuBar()->addMenu("Вид");
+
+
+    Process = new ProcessImitation(this);
 
 
     QVBoxLayout *OutermostVerticalLayout = new QVBoxLayout;
@@ -79,7 +83,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(TabOfTools->SaveDataButton  , &QPushButton::clicked, ChartTab, &TabWidgetForCharts::SaveData); // Получше придумать как соединять, чтобы по вкладкам
     connect(TabOfTools->ImportDataButton, &QPushButton::clicked, ChartTab, &TabWidgetForCharts::CreateNewTabFromImportedData);
 
-    connect(TabOfParameters->ParametersTab, &MeasurementsParametersWidget::ParametersOfMeasurementsChanged, ChartTab,&TabWidgetForCharts::SetMeasurementParameters);
+    connect(TabOfParameters->MeasurementTab, &MeasurementsParametersWidget::ParametersOfMeasurementsChanged, ChartTab,&TabWidgetForCharts::SetMeasurementParameters);
 
 
     connect(TabOfTools->FourierTransformButton, &QPushButton::clicked, ChartTab, &TabWidgetForCharts::PerformFourierTransformOfCurrentPlot);

@@ -3,7 +3,7 @@
 PlotClass::PlotClass(QWidget * parent) : QCustomPlot(parent)
 {
 
-    //this->resize(1800,1000);
+    this->setMinimumSize(1000,600);
     //this->setSizePolicy(QSizePolicy::Fixed,QSizePolicy::Fixed);
     //RefreshTimer = new QTimer(this);
     MarkerStyle=1;
@@ -101,10 +101,8 @@ void PlotClass::SavePlot()
     QString filePath = QFileDialog::getSaveFileName(this, "Сохранить как", "", "PNG File (*.png);;JPEG File (*.jpg);;PDF File (*.pdf)");
 
     if (!filePath.isEmpty()) {
-        // Determine the file format based on the file extension
         QString fileFormat = QFileInfo(filePath).suffix();
 
-        // Save the plot in the selected format
         if (fileFormat == "png") {
             savePng(filePath);
         } else if (fileFormat == "jpg") {
@@ -132,7 +130,6 @@ void PlotClass::DeleteAllMarkers()
     }
     for (QCPItemText* MarkerLabelIterator : AddedMarkerLabelsList) {
         removeItem(MarkerLabelIterator);
-        //qDebug()<<"Was Here";
     }
     AddedMarkersList.clear();
     AddedMarkerLabelsList.clear();
@@ -267,6 +264,24 @@ void PlotClass::UpdateMeasuredData(QVector <std::complex<double>> MeasuredData)
 
 
 
+
+
+QVector <std::complex<double>> PlotClass::FourierTransformVector(QVector <std::complex<double>> Vector) // Перенести куда-нибудь (наверное в TabWidgetForCharts)
+{
+    int VectorSize = Vector.size();
+
+    QVector <std::complex<double>> Transform(1601);
+    for (int i=0;i<VectorSize;i++)
+    {
+        Transform[i] = 0;
+        for (int j=0;j<VectorSize;j++)
+        {
+            Transform[i] += Vector[j] * exp( - std::complex<double>(0, 2 * M_PI * j * i / VectorSize));
+        }
+        Transform[i]/=VectorSize;
+    }
+    return Transform;
+}
 
 
 

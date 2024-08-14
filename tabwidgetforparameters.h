@@ -5,10 +5,9 @@
 #include <QTabWidget>
 #include <QWidget>
 #include <measurementsparameterswidget.h>
-//#include <processingparameterswidget.h> // Пока не используется
 #include <QLineEdit>
 #include <treewidgetforfiles.h>
-
+#include <resultparameterswidget.h>
 
 class TabWidgetForParameters : public QTabWidget
 {
@@ -17,8 +16,8 @@ public:
     TabWidgetForParameters(QWidget *parent = nullptr);
     ~TabWidgetForParameters();
 
-    MeasurementsParametersWidget * ParametersTab;
-    //ProcessingParametersWidget * Tab2;
+    MeasurementsParametersWidget * MeasurementTab;
+    ResultParametersWidget * ResultTab;
     TreeWidgetForFiles * FileTreeTab;
 };
 

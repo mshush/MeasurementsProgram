@@ -4,13 +4,15 @@ TabWidgetForCharts::TabWidgetForCharts()
 
 {
     //ChartTabBar = new QTabBar(this);
-
-
     //AddMeasuredTabs();
 
-    WidgetForCustomPlot * MeasurementPlotTab = new WidgetForCustomPlot(this);
+    MeasurementPlotTab = new WidgetForCustomPlot(this);
     addTab(MeasurementPlotTab,"Текущее измерение");
     PlotTabs.push_back(MeasurementPlotTab);
+
+    TimeOfFlightPlotTab = new WidgetForCustomPlot(this);
+    addTab(TimeOfFlightPlotTab,"Дальностный портрет");
+    PlotTabs.push_back(TimeOfFlightPlotTab);
 
     //setTabsClosable(true); Можно было так.
     //this->setTabsMovable(true);
@@ -144,6 +146,7 @@ void TabWidgetForCharts::SaveData()
 void TabWidgetForCharts::UpdateMeasurementPlot(QVector <std::complex<double>> f)
 {
     PlotTabs[0]->customPlot->UpdateMeasuredData(f);
+    PlotTabs[1]->customPlot->UpdateMeasuredData(PlotTabs[1]->customPlot->FourierTransformVector(f));
 
     /*
     QString DateString = QDate::currentDate().toString("yyyy-MM-dd");

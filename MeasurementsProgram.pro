@@ -18,6 +18,7 @@ SOURCES += \
     plotclass.cpp \
     processimitation.cpp \
     qcustomplot.cpp \
+    resultparameterswidget.cpp \
     selectionrectclass.cpp \
     tabwidgetforcharts.cpp \
     tabwidgetforparameters.cpp \
@@ -31,6 +32,7 @@ HEADERS += \
     plotclass.h \
     processimitation.h \
     qcustomplot.h \
+    resultparameterswidget.h \
     selectionrectclass.h \
     tabwidgetforcharts.h \
     tabwidgetforparameters.h \

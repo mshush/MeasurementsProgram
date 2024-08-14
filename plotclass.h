@@ -52,6 +52,7 @@ public slots:
     void SaveData();
     //void ImportData();
     void FourierTransform();
+    QVector <std::complex<double>> FourierTransformVector(QVector <std::complex<double>> f);
     void InverseFourierTransform();
     void AddNewMarker(int Key, int Style, QColor Colour);
 

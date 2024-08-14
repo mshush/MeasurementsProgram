@@ -32,6 +32,7 @@ WidgetForCustomPlot::WidgetForCustomPlot(QWidget *parent)
     InitiateSaveLayout();
     VerticalControlsLayout->addLayout(HorizontalSaveLayout);
 
+    /*
     QPushButton * FourierButton = new QPushButton("F");
     connect(FourierButton, &QPushButton::clicked, this->customPlot, &PlotClass::FourierTransform);
     VerticalControlsLayout->addWidget(FourierButton);
@@ -39,6 +40,9 @@ WidgetForCustomPlot::WidgetForCustomPlot(QWidget *parent)
     QPushButton * InverseFourierButton = new QPushButton("InvF");
     connect(InverseFourierButton, &QPushButton::clicked, this->customPlot, &PlotClass::InverseFourierTransform);
     VerticalControlsLayout->addWidget(InverseFourierButton);
+    */
+
+
 
     HorizontalPlotLayout->addWidget(customPlot);
     HorizontalPlotLayout->addWidget(ControlsWidget);
@@ -96,7 +100,7 @@ void WidgetForCustomPlot::OpenMarkerColourDialogue() // Почему не мен
 
 
 
-void WidgetForCustomPlot::ChangeMarkerStyle(int ComboIndex) // Почему выдаёт не то до первого изменения
+void WidgetForCustomPlot::ChangeMarkerStyle(int ComboIndex)
 {
     this->customPlot->MarkerStyle = ComboIndex+1;
     this->PreviewMarker->setStyle(QCPItemTracer::TracerStyle(ComboIndex+1));
@@ -163,7 +167,7 @@ void WidgetForCustomPlot::InitiateMovementGroupBox()
 
 
     MovementGroupBox = new QGroupBox("Движение");
-    MovementGroupBox->setFixedSize(250,250);
+    MovementGroupBox->setFixedSize(260,260);
     MovementGroupBox->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
 
     MovementGroupBoxLayout = new QVBoxLayout(MovementGroupBox);
@@ -263,6 +267,21 @@ void WidgetForCustomPlot::InitiateMarkerGroupBox()
     connect(DeleteAllMarkersButton, &QPushButton::clicked, customPlot, &PlotClass::DeleteAllMarkers);
 
 
+    SelectLocalMarkerLayout = new QHBoxLayout();
+
+    SelectLocalMaxButton = new QPushButton("Найти максимум", this);
+    SelectLocalMaxButton->setCheckable(true);
+    connect(SelectLocalMaxButton,&QPushButton::clicked, this, &WidgetForCustomPlot::EnterSelectLocalMaxMode);
+
+    SelectLocalMinButton = new QPushButton("Найти минимум", this);
+    SelectLocalMinButton->setCheckable(true);
+    connect(SelectLocalMinButton,&QPushButton::clicked, this, &WidgetForCustomPlot::EnterSelectLocalMinMode);
+
+    SelectLocalMarkerLayout->addWidget(SelectLocalMaxButton);
+    SelectLocalMarkerLayout->addWidget(SelectLocalMinButton);
+    MarkerGroupBoxLayout->addLayout(SelectLocalMarkerLayout);
+
+
     MarkerStyleLayout->addWidget(MarkerPreviewPlot);
     MarkerStyleLayout->addWidget(MarkerColourButton);
     MarkerStyleLayout->addWidget(MarkerStyleComboBox);
@@ -273,6 +292,10 @@ void WidgetForCustomPlot::InitiateMarkerGroupBox()
     MarkerGroupBoxLayout->addLayout(MarkerAddDeleteLayout);
 
     MarkerGroupBoxLayout->addWidget(DeleteAllMarkersButton);
+
+
+
+
 
 }
 
@@ -341,23 +364,25 @@ void WidgetForCustomPlot::InitiateSetRangeGroupBox()
     QString YUpper = QString::number(this->customPlot->yAxis->range().upper);
 
     SetRangeGroupBox = new QGroupBox("Установка вручную");
-    SetRangeGroupBox->setFixedSize(230,120);
+    SetRangeGroupBox->setFixedSize(240,120);
     SetRangeGroupBox->setSizePolicy(QSizePolicy::Fixed,QSizePolicy::Expanding);
     SetRangeVerticalLayout = new QVBoxLayout;
     SetRangeLayout = new QGridLayout;
-    XRangeLabel1 = new QLabel("X от");
+    XRangeLabel1 = new QLabel("X:");
     XRangeEditFrom = new QLineEdit(XLower);
-    XRangeLabel2 = new QLabel("до");
+    XRangeEditFrom->setAlignment(Qt::AlignLeft);
+    XRangeLabel2 = new QLabel("-");
     XRangeEditTo = new QLineEdit(XUpper);
-    XRangeComboBox = new QComboBox;
-    XRangeComboBox->addItem("ГГц");
+    XRangeEditTo->setAlignment(Qt::AlignLeft);
+    XRangeUnitsLabel = new QLabel("ГГц",this);
 
-    YRangeLabel1 = new QLabel("Y от");
-    YRangeEditFrom = new QLineEdit(YLower);
-    YRangeLabel2 = new QLabel("до");
-    YRangeEditTo = new QLineEdit(YUpper);
-    YRangeComboBox = new QComboBox;
-    YRangeComboBox->addItem("Вт");
+    YRangeLabel1 = new QLabel("Y:",this);
+    YRangeEditFrom = new QLineEdit(YLower,this);
+    YRangeEditFrom->setAlignment(Qt::AlignLeft);
+    YRangeLabel2 = new QLabel("-",this);
+    YRangeEditTo = new QLineEdit(YUpper,this);
+    YRangeEditTo->setAlignment(Qt::AlignLeft);
+    YRangeUnitsLabel = new QLabel("Вт",this);
 
     XRangeEditFrom->setValidator(DoubleValidator);
     XRangeEditTo->setValidator(DoubleValidator);
@@ -376,17 +401,17 @@ void WidgetForCustomPlot::InitiateSetRangeGroupBox()
 
 
 
-    SetRangeLayout->addWidget(XRangeLabel1,  0,0);
-    SetRangeLayout->addWidget(XRangeEditFrom,0,1);
-    SetRangeLayout->addWidget(XRangeLabel2,  0,2);
-    SetRangeLayout->addWidget(XRangeEditTo,  0,3);
-    SetRangeLayout->addWidget(XRangeComboBox,0,4);
+    SetRangeLayout->addWidget(XRangeLabel1,    0,0);
+    SetRangeLayout->addWidget(XRangeEditFrom,  0,1);
+    SetRangeLayout->addWidget(XRangeLabel2,    0,2);
+    SetRangeLayout->addWidget(XRangeEditTo,    0,3);
+    SetRangeLayout->addWidget(XRangeUnitsLabel,0,4);
 
-    SetRangeLayout->addWidget(YRangeLabel1,  1,0);
-    SetRangeLayout->addWidget(YRangeEditFrom,1,1);
-    SetRangeLayout->addWidget(YRangeLabel2,  1,2);
-    SetRangeLayout->addWidget(YRangeEditTo,  1,3);
-    SetRangeLayout->addWidget(YRangeComboBox,1,4);
+    SetRangeLayout->addWidget(YRangeLabel1,    1,0);
+    SetRangeLayout->addWidget(YRangeEditFrom,  1,1);
+    SetRangeLayout->addWidget(YRangeLabel2,    1,2);
+    SetRangeLayout->addWidget(YRangeEditTo,    1,3);
+    SetRangeLayout->addWidget(YRangeUnitsLabel,1,4);
 
 
     SetRangeVerticalLayout->addLayout(SetRangeLayout);
@@ -419,52 +444,88 @@ void WidgetForCustomPlot::YAxisRangeChanged(const QCPRange &range)
 }
 
 
-
-
-WidgetForCustomPlot::~WidgetForCustomPlot()
+void WidgetForCustomPlot::EnterSelectLocalMaxMode()
 {
-    /*
-    delete customPlot;
-    delete ControlsWidget;
-    delete HorizontalPlotLayout;
-    delete VerticalControlsLayout;
-    delete HorizontalSaveLayout;
-    delete SaveButton;
-    delete CopyButton;
-    delete MovementGroupBox;
-    delete MovementGroupBoxLayout;
-    delete LockAxesLayout;
-    delete ResetButton;
-    delete RubberBandButton;
-    delete LockXAxisButton;
-    delete LockYAxisButton;
-    delete SetRangeGroupBox;
-    delete SetRangeLayout;
-    delete XRangeLabel1;
-    delete XRangeEditFrom;
-    delete XRangeLabel2;
-    delete XRangeEditTo;
-    delete YRangeLabel1;
-    delete YRangeEditFrom;
-    delete YRangeLabel2;
-    delete YRangeEditTo;
-    delete MarkerGroupBox;
-    delete MarkerGroupBoxLayout;
-    delete MarkerStyleLayout;
-    delete MarkerAddDeleteLayout;
-    delete MarkerAddButton;
-    delete MarkerDeleteButton;
-    delete DeleteAllMarkersButton;
-    delete MarkerSettingsButton;
-    delete MarkerStyleComboBox;
-    delete MarkerColourButton;
-    delete ColourDialogue;
-    delete MarkerPreviewPlot;
-    delete PreviewMarker;
-    delete XRangeComboBox;
-    delete YRangeComboBox;
-    */
+    this->RubberBandButton->setChecked(false);
+    customPlot->setInteractions(QCP::iSelectPlottables| QCP::iRangeDrag | QCP::iRangeZoom);
+    customPlot->setSelectionRectMode(QCP::srmSelect);
+    customPlot->graph(0)->setSelectable(QCP::stDataRange);
+    connect(customPlot, &QCustomPlot::selectionChangedByUser, this, &WidgetForCustomPlot::PutMarkerAtLocalMax);
 }
+
+void WidgetForCustomPlot::PutMarkerAtLocalMax()
+{
+    QCPDataSelection SelectedData = this->customPlot->graph(0)->selection();
+    SelectedData.enforceType(QCP::stDataRange);
+    QCPDataRange DataRange = SelectedData.dataRange();
+    if (DataRange.size() > 0) {
+        double MaxValue = this->customPlot->graph(0)->data()->at(DataRange.begin())->value;
+        int MaxKey = 0;
+        for (int i = DataRange.begin(); i <= DataRange.end(); i++) {
+            double CurrentValue = this->customPlot->graph(0)->data()->at(i)->value;
+            if (MaxValue < CurrentValue)
+            {
+                MaxKey = i;
+                MaxValue = CurrentValue;
+            }
+        }
+        customPlot->AddNewMarker(MaxKey,customPlot->MarkerStyle, customPlot->MarkerColour);
+    }
+    customPlot->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom);
+    this->SelectLocalMaxButton->setChecked(false);
+    disconnect(customPlot, &QCustomPlot::selectionChangedByUser, this, &WidgetForCustomPlot::PutMarkerAtLocalMax);
+    customPlot->setSelectionRectMode(QCP::srmNone);
+    this->customPlot->graph(0)->selection().clear();
+}
+
+
+
+
+
+void WidgetForCustomPlot::EnterSelectLocalMinMode()
+{
+    this->RubberBandButton->setChecked(false);
+    customPlot->setInteractions(QCP::iSelectPlottables| QCP::iRangeDrag | QCP::iRangeZoom);
+    customPlot->setSelectionRectMode(QCP::srmSelect);
+    customPlot->graph(0)->setSelectable(QCP::stDataRange);
+    connect(customPlot, &QCustomPlot::selectionChangedByUser, this, &WidgetForCustomPlot::PutMarkerAtLocalMin);
+    //Проверка, что график не пустой перед исполнением, так как тогда не будет выпускаться сигнал
+    //customPlot->graph()->data()->;
+    //Убрать отжатие кнопки выделения. (Добавить) Сделать все кнопки, меняющие режим выделения, взаимо-исключающими
+}
+
+void WidgetForCustomPlot::PutMarkerAtLocalMin()
+{
+    QCPDataSelection SelectedData = this->customPlot->graph(0)->selection();
+    SelectedData.enforceType(QCP::stDataRange);
+    QCPDataRange DataRange = SelectedData.dataRange();
+    if (DataRange.size() > 0) {
+        double MinValue = this->customPlot->graph(0)->data()->at(DataRange.begin())->value;
+        int MinKey = 0;
+        for (int i = DataRange.begin(); i <= DataRange.end(); i++) {
+            double CurrentValue = this->customPlot->graph(0)->data()->at(i)->value;
+            if (MinValue > CurrentValue)
+            {
+                MinKey = i;
+                MinValue = CurrentValue;
+            }
+        }
+        customPlot->AddNewMarker(MinKey,customPlot->MarkerStyle, customPlot->MarkerColour);
+    }
+    customPlot->setInteractions(QCP::iRangeDrag | QCP::iRangeZoom);
+    this->SelectLocalMinButton->setChecked(false);
+    disconnect(customPlot, &QCustomPlot::selectionChangedByUser, this, &WidgetForCustomPlot::PutMarkerAtLocalMin);
+    customPlot->setSelectionRectMode(QCP::srmNone);
+    this->customPlot->graph(0)->selection().clear();
+}
+
+
+
+
+
+
+
+
 
 
 /*

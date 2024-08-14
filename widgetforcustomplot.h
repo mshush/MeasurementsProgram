@@ -17,7 +17,6 @@ class WidgetForCustomPlot : public QWidget
     Q_OBJECT
 public:
     explicit WidgetForCustomPlot(QWidget *parent = nullptr);
-    ~WidgetForCustomPlot();
 
     PlotClass * customPlot;
     QWidget * ControlsWidget;
@@ -54,8 +53,8 @@ public:
     QLineEdit *YRangeEditFrom;
     QLabel * YRangeLabel2;
     QLineEdit *YRangeEditTo;
-    QComboBox * XRangeComboBox;
-    QComboBox * YRangeComboBox;
+    QLabel * XRangeUnitsLabel;
+    QLabel * YRangeUnitsLabel;
     QVBoxLayout * SetRangeVerticalLayout;
     QPushButton * SetRangeButton;
     QDoubleValidator * DoubleValidator;
@@ -79,7 +78,14 @@ public:
     QCustomPlot * MarkerPreviewPlot;
     QCPItemTracer * PreviewMarker;
 
+    QHBoxLayout * SelectLocalMarkerLayout;
+    QPushButton * SelectLocalMaxButton;
+    QPushButton * SelectLocalMinButton;
 
+    void EnterSelectLocalMinMode();
+    void PutMarkerAtLocalMin();
+    void EnterSelectLocalMaxMode();
+    void PutMarkerAtLocalMax();
 
     //Окно с настройкой внешнего вида маркера
     //QDialog * MarkerSettingsDialogue;

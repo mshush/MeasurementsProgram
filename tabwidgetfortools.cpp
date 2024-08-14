@@ -4,7 +4,7 @@ TabWidgetForTools::TabWidgetForTools()
 
 {
 
-    Tab1 = new QWidget;
+    //Tab1 = new QWidget;
     //QLabel * ExplanationLabel = new QLabel("Место для Инструментов: запуск и приостановка измерений будут здесь, а не выше в меню, так как нужно часто(я полагаю)\nТакже здесь можно в Обработке разместить переключение на дальностный портрет и работу с ним");
     QHBoxLayout * Tab1Layout = new QHBoxLayout(this);
     //ExplanationLabel->setWordWrap(true);
@@ -61,13 +61,14 @@ TabWidgetForTools::TabWidgetForTools()
 
     Tab1Layout->setAlignment(Qt::AlignLeft);
 
+    this->setLayout(Tab1Layout);
     //Tab1Layout->addWidget(ExplanationLabel);
-    Tab1->setLayout(Tab1Layout);
-    Tab2 = new QWidget;
+    //Tab1->setLayout(Tab1Layout);
+    //Tab2 = new QWidget;
 
 
-    addTab(Tab1, "Запуск");
-    addTab(Tab2, "Управление");
+    //addTab(Tab1, "Запуск");
+    //addTab(Tab2, "Управление");
 
 
     //resize(800,200);

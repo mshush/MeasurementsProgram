@@ -2,12 +2,12 @@
 
 TabWidgetForParameters::TabWidgetForParameters(QWidget *parent) : QTabWidget(parent)
 {
-    ParametersTab = new MeasurementsParametersWidget();
-    //Tab2 = new ProcessingParametersWidget();
+    MeasurementTab = new MeasurementsParametersWidget();
+    ResultTab = new ResultParametersWidget();
     FileTreeTab = new TreeWidgetForFiles();
 
-    addTab(ParametersTab, "Измерение");
-    //addTab(Tab2, "Обработка");
+    addTab(MeasurementTab, "Измерение");
+    addTab(ResultTab, "Результат");
     addTab(FileTreeTab, "Открыть");
 
     resize(200,500);

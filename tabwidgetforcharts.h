@@ -18,7 +18,10 @@ public:
     //WidgetForCustomPlot * PlotTab;
     TabWidgetForCharts();
     ~TabWidgetForCharts();
-    QVector <WidgetForCustomPlot*> PlotTabs; // Сделать листом
+    QVector <WidgetForCustomPlot*> PlotTabs; // Сделать листом?
+
+    WidgetForCustomPlot * MeasurementPlotTab;
+    WidgetForCustomPlot * TimeOfFlightPlotTab;
 
 public slots:
     void CreateNewTabFromImportedData();
