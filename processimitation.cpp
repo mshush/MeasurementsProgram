@@ -12,23 +12,32 @@ ProcessImitation::ProcessImitation(QObject * parent) : QObject(parent)
 
 void ProcessImitation::Measure()
 {
-    /*
-    f = QVector <std::complex<double>> (NumberOfPoints);
+    F.Resize(FrequencyNumber,RotationAngleNumber,TiltAngleNumber);
 
-    f[0] = std::complex<double>(0,0);
-
-    for (int i=1; i<NumberOfPoints; ++i)
+    for (int t = 0; t < TiltAngleNumber; t++)
     {
-        f[i] = f[i-1] + std::complex<double> (distribution(generator),distribution(generator)) ;
+        for (int r = 0; r < RotationAngleNumber; r++)
+        {
+            for (int f=0; f < FrequencyNumber; f++)
+            {
+                double Real = t*r*f;
+                double Imag = 0;
+                F.WriteTo(f,r,t,std::complex<double>(Real, Imag));
+                //qDebug() << "Cycle: double= " <<  Real << ", F= " <<  F.ReadFrom(f,r,t).real();
+            }
+        }
     }
 
-    emit MeasurementPerformed(f);
-    */
+    qDebug() << "PI=" << F.ReadFrom(5,5,5).real();
+
+    emit MeasurementFinished(F);
+
 }
 
 
 void ProcessImitation::MeasureContinuously(bool ContinuousModeIsOn)
 {
+    /*
     if (ContinuousModeIsOn)
     {
         Measure();
@@ -39,6 +48,7 @@ void ProcessImitation::MeasureContinuously(bool ContinuousModeIsOn)
     {
         disconnect(RefreshTimer, &QTimer::timeout, this, &ProcessImitation::PerformNextMeasurement);
     }
+    */
 }
 
 
@@ -87,4 +97,17 @@ ProcessImitation::~ProcessImitation()
 
 
 
+
+/* // Старая функция измерений
+    f = QVector <std::complex<double>> (NumberOfPoints);
+
+    f[0] = std::complex<double>(0,0);
+
+    for (int i=1; i<NumberOfPoints; ++i)
+    {
+        f[i] = f[i-1] + std::complex<double> (distribution(generator),distribution(generator)) ;
+    }
+
+    emit MeasurementPerformed(f);
+*/
 

@@ -59,12 +59,12 @@ MainWindow::MainWindow(QWidget *parent)
     centralWidget()->setLayout(OutermostVerticalLayout);
 
     connect(TabOfTools->StartMeasurementsButton, &QPushButton::clicked, Process, &ProcessImitation::Measure);
+    connect(Process, &ProcessImitation::MeasurementFinished, this, &MainWindow::ProcessMeasuredFunction);
 
 
 
-    connect(TabOfTools->ContinuousMeasurementsButton, &QPushButton::clicked, Process, &ProcessImitation::MeasureContinuously);
-    connect(TabOfTools->ContinuousMeasurementsButton, &QPushButton::clicked, ChartTab, &TabWidgetForCharts::ContinuousMeasurementModeChanged);
-    connect(Process, &ProcessImitation::MeasurementPerformed, ChartTab,&TabWidgetForCharts::UpdateMeasurementPlot);
+    //connect(TabOfTools->ContinuousMeasurementsButton, &QPushButton::clicked, Process, &ProcessImitation::MeasureContinuously);
+    //connect(TabOfTools->ContinuousMeasurementsButton, &QPushButton::clicked, ChartTab, &TabWidgetForCharts::ContinuousMeasurementModeChanged);
 
 
 
@@ -94,6 +94,34 @@ MainWindow::MainWindow(QWidget *parent)
 
     this->setWindowState(Qt::WindowMaximized);
 }
+
+
+
+
+void MainWindow::ProcessMeasuredFunction(MeasuredFunction F)
+{
+    StoredFunction = F;
+    qDebug() << "MW=" << F.ReadFrom(5,5,5).real();
+    int r = TabOfParameters->ResultTab->SetCurrentRotationAngleEdit->text().toInt();
+    int t = TabOfParameters->ResultTab->SetCurrentTiltAngleEdit    ->text().toInt();
+    QVector <std::complex<double>> FreqVectorAtChosenAngle = F.GetFrequencyVectorAt(r,t);
+
+    this->ChartTab->UpdateMeasurementPlot(FreqVectorAtChosenAngle);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 MainWindow::~MainWindow()
 {

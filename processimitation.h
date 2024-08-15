@@ -5,6 +5,8 @@
 #include <QObject>
 #include <complex>
 #include <QTimer>
+#include <measuredfunction.h>
+#include <QDebug>
 
 class ProcessImitation : public QObject {
     Q_OBJECT
@@ -18,15 +20,15 @@ public:
     int FrequencyNumber = 1601;
 
     double RotationAngleStart = 0;
-    double RotationAngleStop = 360;
+    double RotationAngleStop = 359;
     int RotationAngleNumber = 360;
 
     double TiltAngleStart = 0;
-    double TiltAngleStop = 10;
-    int TiltAngleNumber = 5;
+    double TiltAngleStop = 9;
+    int TiltAngleNumber = 10;
 
 
-    QVector <QVector <QVector <std::complex<double>>>> f;
+    MeasuredFunction F;
 
     std::default_random_engine generator;
     std::normal_distribution<double> distribution;
@@ -35,7 +37,7 @@ public:
 
 
 signals:
-    void MeasurementPerformed(QVector <std::complex<double>> f);
+    void MeasurementFinished(MeasuredFunction F_ForSending);
 
 public slots:
     void Measure();

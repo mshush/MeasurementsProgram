@@ -44,8 +44,10 @@ public:
     //TreeWidgetForFiles * FileTreeWidget;
     WidgetForCustomPlot * CustomPlotWidget;
     ProcessImitation * Process;
-
     //void addItems(const QDir &directory, QTreeWidgetItem *parent); // Перенести в отдельный класс для дерева
+    MeasuredFunction StoredFunction;
+
+    void ProcessMeasuredFunction(MeasuredFunction F);
 
 private:
     Ui::MainWindow *ui;

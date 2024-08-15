@@ -84,9 +84,9 @@ void TabWidgetForCharts::CreateNewTabFromImportedData()
 void TabWidgetForCharts::SetFrequencyParameters(double StartFreq, double StopFreq, int NumberOfPoints)
 {
     QVector <double> xTemp(NumberOfPoints);
-    for (int i=0; i<1601; i++)
+    for (int i=0; i<NumberOfPoints; i++)
     {
-        xTemp[i] = StartFreq + i * (StopFreq-StartFreq)/1600;
+        xTemp[i] = StartFreq + i * (StopFreq-StartFreq)/(NumberOfPoints-1);
     }
     this->PlotTabs[0]->customPlot->x = xTemp;
 }
