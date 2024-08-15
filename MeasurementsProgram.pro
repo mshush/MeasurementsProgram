@@ -14,6 +14,7 @@ CONFIG += c++17
 SOURCES += \
     main.cpp \
     mainwindow.cpp \
+    measuredfunction.cpp \
     measurementsparameterswidget.cpp \
     plotclass.cpp \
     processimitation.cpp \
@@ -28,6 +29,7 @@ SOURCES += \
 
 HEADERS += \
     mainwindow.h \
+    measuredfunction.h \
     measurementsparameterswidget.h \
     plotclass.h \
     processimitation.h \

@@ -12,13 +12,27 @@ public:
     explicit ProcessImitation(QObject * parent = nullptr);
     ~ProcessImitation();
 
-    int NumberOfPoints = 1601;
-    QVector <std::complex<double>> f;
+
+    double FrequencyStart = 1;
+    double FrequencyStop = 2;
+    int FrequencyNumber = 1601;
+
+    double RotationAngleStart = 0;
+    double RotationAngleStop = 360;
+    int RotationAngleNumber = 360;
+
+    double TiltAngleStart = 0;
+    double TiltAngleStop = 10;
+    int TiltAngleNumber = 5;
+
+
+    QVector <QVector <QVector <std::complex<double>>>> f;
 
     std::default_random_engine generator;
     std::normal_distribution<double> distribution;
 
     QTimer * RefreshTimer;
+
 
 signals:
     void MeasurementPerformed(QVector <std::complex<double>> f);
@@ -26,7 +40,13 @@ signals:
 public slots:
     void Measure();
     void MeasureContinuously(bool ContinuousModeIsOn);
-    void ChangeParameters(double FreqStart, double FreqStop, double PointsNumber);
+
+    void SetFrequencyRange (double FreqStart, double FreqStop, double PointsNumber);
+    void SetAngleRanges (double RotStart, double RotStop, double RotNumber, double TiltStart, double TiltStop, double TiltNumber);
+
+    //void ChangeRotationAngleRange (double RotStart, double RotStop, double RotNumber);
+    //void ChangeTiltAngleRange (double TiltStart, double TiltStop, double TiltNumber);
+
     void PerformNextMeasurement();
 };
 

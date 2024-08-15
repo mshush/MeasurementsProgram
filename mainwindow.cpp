@@ -47,46 +47,44 @@ MainWindow::MainWindow(QWidget *parent)
 
     TabOfParameters = new TabWidgetForParameters;
 
-    QHBoxLayout * BottomHorizontalLayout = new QHBoxLayout;
+    //QHBoxLayout * BottomHorizontalLayout = new QHBoxLayout;
 
 
     MiddleHorizontalLayout->addWidget(TabOfParameters);
     MiddleHorizontalLayout->addLayout(InnerVerticalLayout);
 
     OutermostVerticalLayout->addLayout(MiddleHorizontalLayout);
-    OutermostVerticalLayout->addLayout(BottomHorizontalLayout);
+    //OutermostVerticalLayout->addLayout(BottomHorizontalLayout);
 
     centralWidget()->setLayout(OutermostVerticalLayout);
 
     connect(TabOfTools->StartMeasurementsButton, &QPushButton::clicked, Process, &ProcessImitation::Measure);
+
+
+
     connect(TabOfTools->ContinuousMeasurementsButton, &QPushButton::clicked, Process, &ProcessImitation::MeasureContinuously);
     connect(TabOfTools->ContinuousMeasurementsButton, &QPushButton::clicked, ChartTab, &TabWidgetForCharts::ContinuousMeasurementModeChanged);
     connect(Process, &ProcessImitation::MeasurementPerformed, ChartTab,&TabWidgetForCharts::UpdateMeasurementPlot);
 
 
-    /*
+
     connect(TabOfTools->StopMeasurementsButton, &QPushButton::clicked, this,[this]()
             {
-                qDebug()<<this->ChartTab->PlotTabs[0]->customPlot->antialiasedElements();
-                if (this->ChartTab->PlotTabs[0]->customPlot->antialiasedElements() & QCP::aeAll)
-                    {
-                        this->ChartTab->PlotTabs[0]->customPlot->setAntialiasedElements(QCP::aeNone);
-                    }
-                else
-                {
-                    this->ChartTab->PlotTabs[0]->customPlot->setAntialiasedElements(QCP::aeAll);
-                }
+                qDebug()<<this->size();
             }
             );
-    */
 
-    connect(TabOfTools->SaveDataButton  , &QPushButton::clicked, ChartTab, &TabWidgetForCharts::SaveData); // Получше придумать как соединять, чтобы по вкладкам
+
+    connect(TabOfTools->SaveDataButton  , &QPushButton::clicked, ChartTab, &TabWidgetForCharts::SaveData); // Получше придумать как соединять, чтобы по вкладкам (возможно лучше в QidgetForCustomPlot перенести)
     connect(TabOfTools->ImportDataButton, &QPushButton::clicked, ChartTab, &TabWidgetForCharts::CreateNewTabFromImportedData);
 
-    connect(TabOfParameters->MeasurementTab, &MeasurementsParametersWidget::ParametersOfMeasurementsChanged, ChartTab,&TabWidgetForCharts::SetMeasurementParameters);
+    connect(TabOfParameters->MeasurementTab, &MeasurementsParametersWidget::FrequencyParametersChanged, ChartTab,&TabWidgetForCharts::SetFrequencyParameters);
+    //connect(TabOfParameters->MeasurementTab, &MeasurementsParametersWidget::AngleParametersChanged,     ChartTab,&TabWidgetForCharts::SetAngleParameters); // Нужно ли()
 
+    connect(TabOfParameters->MeasurementTab, &MeasurementsParametersWidget::FrequencyParametersChanged, Process, &ProcessImitation::SetFrequencyRange);
+    connect(TabOfParameters->MeasurementTab, &MeasurementsParametersWidget::AngleParametersChanged,     Process, &ProcessImitation::SetAngleRanges);
 
-    connect(TabOfTools->FourierTransformButton, &QPushButton::clicked, ChartTab, &TabWidgetForCharts::PerformFourierTransformOfCurrentPlot);
+    connect(TabOfTools->FourierTransformButton,        &QPushButton::clicked, ChartTab, &TabWidgetForCharts::PerformFourierTransformOfCurrentPlot);
     connect(TabOfTools->InverseFourierTransformButton, &QPushButton::clicked, ChartTab, &TabWidgetForCharts::PerformInverseFourierTransformOfCurrentPlot);
 
     //this->resize(2560,1440); Не работает

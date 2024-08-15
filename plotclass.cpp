@@ -4,7 +4,7 @@ PlotClass::PlotClass(QWidget * parent) : QCustomPlot(parent)
 {
 
     this->setMinimumSize(1000,600);
-    //this->setSizePolicy(QSizePolicy::Fixed,QSizePolicy::Fixed);
+    this->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding);
     //RefreshTimer = new QTimer(this);
     MarkerStyle=1;
     AddedMarkersList.clear();
@@ -441,7 +441,7 @@ void PlotClass::RefreshPlot()
 // Кто сохраняет данные в (в .dat) массив из x и y. Чтобы открывать в др программах
 // Кто обрабатывает, существует ли прорежевание, сохраняет (не в .dat, лучше непонятное расширение)(в .dat).
 // Загрузить background и response. RubberBand
-// Добавить Rubberband: квадратный, гориз (увел с запретом на увел по одной из осей), верт
+// +Добавить Rubberband: квадратный, гориз (увел с запретом на увел по одной из осей), верт
 // valgrind perf perfmon profiler. Попробовать qt профайлер
 // Обрезание графика и сохранение обрезанного
 
@@ -450,7 +450,8 @@ void PlotClass::RefreshPlot()
 // Сколько точек
 // ЭПР сферы
 
-
+// IntValidator
+// Добавить ProgressBar в QMainWindow
 
 
 

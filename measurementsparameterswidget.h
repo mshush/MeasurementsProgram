@@ -69,16 +69,23 @@ public:
 
     QGroupBox * AngleGroupBox;
     QVBoxLayout * AngleGroupBoxLayout;
-    QLabel * AngleFromLabel;
-    QLabel * AngleToLabel;
-    QLineEdit * AngleFromEdit;
-    QLineEdit * AngleToEdit;
-    QGridLayout * AngleFromToGridLayout;
-    QHBoxLayout * AngleNumberOfPointsLayout;
-    QLabel * AngleNumberOfPointsLabel;
-    QLineEdit * AngleNumberOfPointsEdit;
+    QGridLayout * AngleGridLayout;
 
+    QLabel * RotationAngleStartLabel;
+    QLabel * RotationAngleStopLabel;
+    QLineEdit * RotationAngleStartEdit;
+    QLineEdit * RotationAngleStopEdit;
+    QLabel * RotationAngleNumberOfPointsLabel;
+    QLineEdit * RotationAngleNumberOfPointsEdit;
 
+    QLabel * TiltAngleStartLabel;
+    QLabel * TiltAngleStopLabel;
+    QLineEdit * TiltAngleStartEdit;
+    QLineEdit * TiltAngleStopEdit;
+    QLabel * TiltAngleNumberOfPointsLabel;
+    QLineEdit * TiltAngleNumberOfPointsEdit;
+
+    QPushButton * SetAngleParametersButton;
 
 
     //Область параметров калибровочного образца
@@ -90,9 +97,19 @@ public:
     QHBoxLayout * CalibrationSampleParametersLayout;
 
 
-    double StartFrequency = 0;
-    double StopFrequency = 1600;
-    int NumberOfPoints = 1601;
+
+    double FrequencyStart = 1;
+    double FrequencyStop = 2;
+    int FrequencyNumber = 1601;
+
+    double RotationAngleStart = 0;
+    double RotationAngleStop = 360;
+    int RotationAngleNumber = 360;
+
+    double TiltAngleStart = 0;
+    double TiltAngleStop = 10;
+    int TiltAngleNumber = 5;
+
 
 
 
@@ -100,12 +117,15 @@ public slots:
     void StartStopButtonClicked  (bool StartStopButtonCheckStatus );
     void CenterSpanButtonClicked (bool CenterSpanButtonCheckStatus);
     void OnSetFrequencyParametersButtonClicked();
+    void OnSetAngleParametersButtonClicked();
     void FrequencyRangeButtonPressed(int ChosenRangeId);
     void FrequencyRangeButtonClicked(int ChosenRangeId);
     void RenewStartStopFrequencies();
 
 signals:
-    void ParametersOfMeasurementsChanged(double FreqStart, double FreqStop, int PointsNumber);
+    void FrequencyParametersChanged(double FreqStart, double FreqStop, int FreqNum); //Объединить с углами?
+    void AngleParametersChanged(double RotStart, double RotStop, int RotNum, double TiltStart, double TiltStop, int TiltNum);
+
 };
 
 #endif // MEASUREMENTSPARAMETERSWIDGET_H

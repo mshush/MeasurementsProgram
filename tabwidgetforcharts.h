@@ -27,7 +27,7 @@ public slots:
     void CreateNewTabFromImportedData();
     //void SendMeasureSignalToFirstTab();
     //void SendMeasureContinuouslySignalToFirstTab();
-    void SetMeasurementParameters(double FreqStart, double FreqStop, int NumberOfPoints);
+    void SetFrequencyParameters(double FreqStart, double FreqStop, int NumberOfPoints);
     void UpdateMeasurementPlot(QVector <std::complex<double>> f);
     void SaveData();
     void InitiateCloseTabButton();

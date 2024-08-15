@@ -10,7 +10,7 @@ TabWidgetForParameters::TabWidgetForParameters(QWidget *parent) : QTabWidget(par
     addTab(ResultTab, "Результат");
     addTab(FileTreeTab, "Открыть");
 
-    resize(200,500);
+    setFixedWidth(300);
     setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
 }
 

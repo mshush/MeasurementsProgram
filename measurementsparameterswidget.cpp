@@ -27,9 +27,6 @@ MeasurementsParametersWidget::MeasurementsParametersWidget(QWidget *parent)
     VerticalLayoutOfParameters->addWidget(CalibrationSampleGroupBox);
 
 
-
-
-
     setLayout(VerticalLayoutOfParameters);
 }
 
@@ -41,8 +38,8 @@ void MeasurementsParametersWidget::StartStopButtonClicked (bool StartStopButtonC
 {
     if (StartStopButtonCheckStatus)
     {
-        FrequencyStartCenterEdit->setText(QString::number(StartFrequency));
-        FrequencyStopSpanEdit   ->setText(QString::number(StopFrequency ));
+        FrequencyStartCenterEdit->setText(QString::number(FrequencyStart));
+        FrequencyStopSpanEdit   ->setText(QString::number(FrequencyStop ));
 
         FrequencyStartCenterLabel->setText("Начало");
         FrequencyStopSpanLabel   ->setText("Конец" );
@@ -53,8 +50,8 @@ void MeasurementsParametersWidget::CenterSpanButtonClicked(bool CenterSpanButton
 {
     if (CenterSpanButtonCheckStatus)
     {
-        double FreqCenter = (StartFrequency + StopFrequency)/2;
-        double FreqSpan   = StopFrequency - StartFrequency;
+        double FreqCenter = (FrequencyStart + FrequencyStop)/2;
+        double FreqSpan   = FrequencyStop - FrequencyStart;
 
         FrequencyStartCenterEdit->setText(QString::number(FreqCenter));
         FrequencyStopSpanEdit   ->setText(QString::number(FreqSpan  ));
@@ -69,18 +66,37 @@ void MeasurementsParametersWidget::OnSetFrequencyParametersButtonClicked()
 {
     if (StartStopButton->isChecked())
     {
-        StartFrequency = FrequencyStartCenterEdit->text().toDouble();
-        StopFrequency  = FrequencyStopSpanEdit   ->text().toDouble();
+        FrequencyStart = FrequencyStartCenterEdit->text().toDouble();
+        FrequencyStop  = FrequencyStopSpanEdit   ->text().toDouble();
     }
     else
     {
-        StartFrequency = FrequencyStartCenterEdit->text().toDouble() - FrequencyStopSpanEdit->text().toDouble()/2;
-        StopFrequency  = FrequencyStartCenterEdit->text().toDouble() + FrequencyStopSpanEdit->text().toDouble()/2;
+        FrequencyStart = FrequencyStartCenterEdit->text().toDouble() - FrequencyStopSpanEdit->text().toDouble()/2;
+        FrequencyStop  = FrequencyStartCenterEdit->text().toDouble() + FrequencyStopSpanEdit->text().toDouble()/2;
     }
-    NumberOfPoints = FrequencyNumberOfPointsEdit->text().toDouble();
+    FrequencyNumber = FrequencyNumberOfPointsEdit->text().toDouble();
 
-    emit ParametersOfMeasurementsChanged(StartFrequency, StopFrequency, NumberOfPoints);
+    emit FrequencyParametersChanged(FrequencyStart, FrequencyStop, FrequencyNumber);
 }
+
+
+void MeasurementsParametersWidget::OnSetAngleParametersButtonClicked()
+{
+    RotationAngleStart  = RotationAngleStartEdit->text().toDouble();
+    RotationAngleStop   = RotationAngleStopEdit->text().toDouble();
+    RotationAngleNumber = RotationAngleNumberOfPointsEdit->text().toDouble();
+
+    TiltAngleStart      = TiltAngleStartEdit->text().toDouble();
+    TiltAngleStop       = TiltAngleStopEdit->text().toDouble();
+    TiltAngleNumber     = TiltAngleNumberOfPointsEdit->text().toDouble();
+
+
+    emit AngleParametersChanged(RotationAngleStart, RotationAngleStop, RotationAngleNumber, TiltAngleStart, TiltAngleStop, TiltAngleNumber);
+}
+
+
+
+
 
 
 
@@ -207,13 +223,13 @@ void MeasurementsParametersWidget::InitializeFrequencyGroupBox()
 
     FrequencyRangeLayout = new QGridLayout();
     FrequencyStartCenterLabel = new QLabel("Начало",FrequencyGroupBox);
-    FrequencyStartCenterEdit = new QLineEdit(QString::number(StartFrequency),FrequencyGroupBox);
+    FrequencyStartCenterEdit = new QLineEdit(QString::number(FrequencyStart),FrequencyGroupBox);
     FrequencyStartCenterEdit->setValidator(DoubleValidator);
 
     FrequencyStartCenterUnitsLabel = new QLabel("ГГц", FrequencyGroupBox);
 
     FrequencyStopSpanLabel = new QLabel("Конец",FrequencyGroupBox);
-    FrequencyStopSpanEdit = new QLineEdit(QString::number(StopFrequency),FrequencyGroupBox);
+    FrequencyStopSpanEdit = new QLineEdit(QString::number(FrequencyStop),FrequencyGroupBox);
     FrequencyStopSpanEdit->setValidator(DoubleValidator);
 
     connect(FrequencyStartCenterEdit, &QLineEdit::textEdited,this, &MeasurementsParametersWidget::RenewStartStopFrequencies);
@@ -264,18 +280,18 @@ void MeasurementsParametersWidget::FrequencyRangeButtonClicked(int ChosenRangeId
     {
         if (StartStopButton->isChecked())
         {
-            StartFrequency = FrequencyRanges[ChosenRangeId].first;
-            StopFrequency = FrequencyRanges[ChosenRangeId].second;
-            FrequencyStartCenterEdit->setText(QString::number(StartFrequency));
-            FrequencyStopSpanEdit->setText(QString::number(StopFrequency));
+            FrequencyStart = FrequencyRanges[ChosenRangeId].first;
+            FrequencyStop = FrequencyRanges[ChosenRangeId].second;
+            FrequencyStartCenterEdit->setText(QString::number(FrequencyStart));
+            FrequencyStopSpanEdit->setText(QString::number(FrequencyStop));
 
         }
         else
         {
-            StartFrequency = FrequencyRanges[ChosenRangeId].first;
-            StopFrequency = FrequencyRanges[ChosenRangeId].second;
-            double FreqCenter = (StartFrequency + StopFrequency)/2;
-            double FreqSpan   = StopFrequency - StartFrequency;
+            FrequencyStart = FrequencyRanges[ChosenRangeId].first;
+            FrequencyStop = FrequencyRanges[ChosenRangeId].second;
+            double FreqCenter = (FrequencyStart + FrequencyStop)/2;
+            double FreqSpan   = FrequencyStop - FrequencyStart;
             FrequencyStartCenterEdit->setText(QString::number(FreqCenter));
             FrequencyStopSpanEdit->setText(QString::number(FreqSpan));
         }
@@ -311,15 +327,15 @@ void MeasurementsParametersWidget::RenewStartStopFrequencies()
 {
     if (StartStopButton->isChecked())
     {
-        StartFrequency = FrequencyStartCenterEdit->text().toDouble();
-        StopFrequency  = FrequencyStopSpanEdit   ->text().toDouble();
+        FrequencyStart = FrequencyStartCenterEdit->text().toDouble();
+        FrequencyStop  = FrequencyStopSpanEdit   ->text().toDouble();
     }
     else
     {
         double Center = FrequencyStartCenterEdit->text().toDouble();
         double Span   = FrequencyStopSpanEdit   ->text().toDouble();
-        StartFrequency = Center-Span/2;
-        StopFrequency = Center+Span/2;
+        FrequencyStart = Center-Span/2;
+        FrequencyStop = Center+Span/2;
     }
 }
 
@@ -329,30 +345,50 @@ void MeasurementsParametersWidget::InitializeAngleGroupBox()
 {
     AngleGroupBox = new QGroupBox("Диапазон углов", this);
     AngleGroupBoxLayout = new QVBoxLayout(AngleGroupBox);
-    AngleFromToGridLayout = new QGridLayout();
 
-    AngleFromLabel = new QLabel("От",this);
-    AngleFromEdit  = new QLineEdit("",this);
-    AngleToLabel   = new QLabel("До",this);
-    AngleToEdit    = new QLineEdit("",this);
+    AngleGridLayout = new QGridLayout();
 
-    AngleFromToGridLayout->addWidget(AngleFromLabel, 0,0);
-    AngleFromToGridLayout->addWidget(AngleFromEdit,  0,1);
-    AngleFromToGridLayout->addWidget(AngleToLabel,   1,0);
-    AngleFromToGridLayout->addWidget(AngleToEdit,    1,1);
+    RotationAngleStartLabel = new QLabel("Поворот:", AngleGroupBox);
+    RotationAngleStartEdit  = new QLineEdit("", AngleGroupBox);
+    RotationAngleStopLabel   = new QLabel("-", AngleGroupBox);
+    RotationAngleStopEdit    = new QLineEdit("", AngleGroupBox);
 
-    AngleNumberOfPointsLayout = new QHBoxLayout();
-
-    AngleNumberOfPointsLabel = new QLabel("Число точек",this);
-    AngleNumberOfPointsEdit = new QLineEdit("",this);
-
-    AngleNumberOfPointsLayout->addWidget(AngleNumberOfPointsLabel);
-    AngleNumberOfPointsLayout->addWidget(AngleNumberOfPointsEdit );
+    TiltAngleStartLabel = new QLabel("Наклон:", AngleGroupBox);
+    TiltAngleStartEdit  = new QLineEdit("", AngleGroupBox);
+    TiltAngleStopLabel   = new QLabel("-", AngleGroupBox);
+    TiltAngleStopEdit    = new QLineEdit("", AngleGroupBox);
 
 
+    RotationAngleNumberOfPointsLabel = new QLabel("Число точек поворота:", AngleGroupBox);
+    RotationAngleNumberOfPointsEdit = new QLineEdit("",this);
 
-    AngleGroupBoxLayout->addLayout(AngleFromToGridLayout);
-    AngleGroupBoxLayout->addLayout(AngleNumberOfPointsLayout);
+
+    TiltAngleNumberOfPointsLabel = new QLabel("Число точек наклона:", AngleGroupBox);
+    TiltAngleNumberOfPointsEdit = new QLineEdit("",this);
+
+    SetAngleParametersButton = new QPushButton("Установить", AngleGroupBox);
+    connect(SetAngleParametersButton,&QPushButton::clicked,this, &MeasurementsParametersWidget::OnSetAngleParametersButtonClicked);
+
+    AngleGridLayout->addWidget(RotationAngleStartLabel, 0,0); // Переименовать Labelы
+    AngleGridLayout->addWidget(RotationAngleStartEdit,  0,1);
+    AngleGridLayout->addWidget(RotationAngleStopLabel,   0,2);
+    AngleGridLayout->addWidget(RotationAngleStopEdit,    0,3);
+
+    AngleGridLayout->addWidget(RotationAngleNumberOfPointsLabel, 1,0,1,3);
+    AngleGridLayout->addWidget(RotationAngleNumberOfPointsEdit,  1,3,1,1);
+
+    AngleGridLayout->addWidget(TiltAngleStartLabel, 2,0);
+    AngleGridLayout->addWidget(TiltAngleStartEdit,  2,1);
+    AngleGridLayout->addWidget(TiltAngleStopLabel,   2,2);
+    AngleGridLayout->addWidget(TiltAngleStopEdit,    2,3);
+
+    AngleGridLayout->addWidget(TiltAngleNumberOfPointsLabel, 3,0,1,3);
+    AngleGridLayout->addWidget(TiltAngleNumberOfPointsEdit,  3,3,1,1);
+
+    AngleGridLayout->addWidget(SetAngleParametersButton,  4,0,1,4);
+
+
+    AngleGroupBoxLayout->addLayout(AngleGridLayout);
 
     AngleGroupBox->setLayout(AngleGroupBoxLayout);
 }

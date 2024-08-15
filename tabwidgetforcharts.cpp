@@ -81,7 +81,7 @@ void TabWidgetForCharts::CreateNewTabFromImportedData()
 
 
 
-void TabWidgetForCharts::SetMeasurementParameters(double StartFreq, double StopFreq, int NumberOfPoints)
+void TabWidgetForCharts::SetFrequencyParameters(double StartFreq, double StopFreq, int NumberOfPoints)
 {
     QVector <double> xTemp(NumberOfPoints);
     for (int i=0; i<1601; i++)
@@ -92,7 +92,7 @@ void TabWidgetForCharts::SetMeasurementParameters(double StartFreq, double StopF
 }
 
 
-void TabWidgetForCharts::SaveData()
+void TabWidgetForCharts::SaveData() // Добавить формат CSV.
 {
     QString DateString = QDate::currentDate().toString("yyyy-MM-dd");
     QString TimeString = QTime::currentTime().toString("HH-mm");
@@ -101,7 +101,7 @@ void TabWidgetForCharts::SaveData()
 
     //QString SaveDirectory = QFileDialog::getExistingDirectory(this, "Select Directory", QDir::homePath());
     QString Path = QDir::homePath() + "/" + NameOfSavedFile + ".dat";
-    qDebug()<< "Путь = " + Path + ", Индекс = " + QString::number(currentIndex());
+    //qDebug()<< "Путь = " + Path + ", Индекс = " + QString::number(currentIndex());
     QString FilePath = QFileDialog::getSaveFileName(this, "Save File", Path, "Data Files (*.dat);;All Files (*)");
 
     QFile File(FilePath);

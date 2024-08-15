@@ -12,6 +12,7 @@ ProcessImitation::ProcessImitation(QObject * parent) : QObject(parent)
 
 void ProcessImitation::Measure()
 {
+    /*
     f = QVector <std::complex<double>> (NumberOfPoints);
 
     f[0] = std::complex<double>(0,0);
@@ -22,6 +23,7 @@ void ProcessImitation::Measure()
     }
 
     emit MeasurementPerformed(f);
+    */
 }
 
 
@@ -40,9 +42,23 @@ void ProcessImitation::MeasureContinuously(bool ContinuousModeIsOn)
 }
 
 
-void ProcessImitation::ChangeParameters(double FreqStart, double FreqStop, double PointsNumber)
+void ProcessImitation::SetFrequencyRange(double FreqStart, double FreqStop, double FreqNum)
 {
-    NumberOfPoints = PointsNumber;
+    FrequencyStart = FreqStart;
+    FrequencyStop = FreqStop;
+    FrequencyNumber = FreqNum;
+}
+
+
+void ProcessImitation::SetAngleRanges(double RotStart, double RotStop, double RotNum, double TiltStart, double TiltStop, double TiltNum)
+{
+    RotationAngleStart = RotStart;
+    RotationAngleStop = RotStop;
+    RotationAngleNumber = RotNum;
+
+    TiltAngleStart = TiltStart;
+    TiltAngleStop = TiltStop;
+    TiltAngleNumber = TiltNum;
 }
 
 
@@ -50,6 +66,7 @@ void ProcessImitation::ChangeParameters(double FreqStart, double FreqStop, doubl
 
 void ProcessImitation::PerformNextMeasurement()
 {
+    /*
     for (int i=0; i< NumberOfPoints-1; ++i)
     {
         f[i] = f[i+1];
@@ -57,7 +74,10 @@ void ProcessImitation::PerformNextMeasurement()
     f[NumberOfPoints-1] = f[NumberOfPoints-2]+ std::complex<double> (distribution(generator),distribution(generator));
 
     emit MeasurementPerformed(f);
+    */
 }
+
+
 
 
 ProcessImitation::~ProcessImitation()
