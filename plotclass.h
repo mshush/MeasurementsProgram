@@ -32,28 +32,32 @@ public:
     int MarkerStyle = 1;
     std::list <QCPItemTracer*> AddedMarkersList;
     std::list <QCPItemText*> AddedMarkerLabelsList;
-    int NumberOfPoints = 1601;
-    QVector <double> x, y;
-    QVector <std::complex<double>> f;
+
+ //   double FreqStart = 1.0;
+ //   double FreqStop = 2.0;
+ //   int NumberOfPoints = 1601;
+
+    //QVector <double> x, y;
+    //QVector <std::complex<double>> f; // Убрать вообще
+
     bool ContinuousMeasurementMode = false;
 
     SelectionRectClass * SelectionRectangle;
 
 
 public slots:
-    void UpdateMeasuredData(QVector <std::complex<double>> MeasuredData);
+    //void UpdateMeasuredData  (QVector <std::complex<double>> MeasuredData);
+    //void UpdateBackgroundPlot(QVector <std::complex<double>> BackgroundData);
+
     void ResetPlot();
     void SavePlot();
     void DeleteAllMarkers();
     void CopyPlot();
-    //void Measure();
-    //void MeasureContinuously();
-    //void RefreshPlot();
     void SaveData();
     //void ImportData();
-    void FourierTransform();
-    QVector <std::complex<double>> FourierTransformVector(QVector <std::complex<double>> f);
-    void InverseFourierTransform();
+    //void FourierTransform(); //Перенести в MainWindow?
+    //QVector <std::complex<double>> FourierTransformVector(QVector <std::complex<double>> f);
+    //void InverseFourierTransform();
     void AddNewMarker(int Key, int Style, QColor Colour);
 
 protected:

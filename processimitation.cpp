@@ -12,6 +12,27 @@ ProcessImitation::ProcessImitation(QObject * parent) : QObject(parent)
 
 void ProcessImitation::Measure()
 {
+    QVector <std::complex<double>> FOffset(FrequencyNumber);
+    QVector <std::complex<double>> ROffset(RotationAngleNumber);
+    QVector <std::complex<double>> TOffset(TiltAngleNumber);
+
+    FOffset[0] = 0;
+    ROffset[0] = 0;
+    TOffset[0] = 0;
+
+    for (int f=1; f < FrequencyNumber; f++)
+    {
+        FOffset[f] = FOffset[f-1] + std::complex<double>(distribution(generator),distribution(generator));
+    }
+    for (int r = 1; r < RotationAngleNumber; r++)
+    {
+        ROffset[r] = ROffset[r-1] + std::complex<double>(distribution(generator),distribution(generator));
+    }
+    for (int t = 1; t < TiltAngleNumber; t++)
+    {
+        TOffset[t] = TOffset[t-1] + std::complex<double>(distribution(generator),distribution(generator));
+    }
+
     F.Resize(FrequencyNumber,RotationAngleNumber,TiltAngleNumber);
 
     for (int t = 0; t < TiltAngleNumber; t++)
@@ -20,17 +41,30 @@ void ProcessImitation::Measure()
         {
             for (int f=0; f < FrequencyNumber; f++)
             {
-                double Real = t*r*f;
-                double Imag = 0;
-                F.WriteTo(f,r,t,std::complex<double>(Real, Imag));
+                //double Real = t*r*f;
+                //double Imag = 0;
+                std::complex<double> ValueAtPoint = FOffset[f] + ROffset[r] + TOffset[t];
+                F.WriteTo(f,r,t,ValueAtPoint);
+
                 //qDebug() << "Cycle: double= " <<  Real << ", F= " <<  F.ReadFrom(f,r,t).real();
             }
         }
     }
 
-    qDebug() << "PI=" << F.ReadFrom(5,5,5).real();
+    F.FStart = FrequencyStart;
+    F.FStop = FrequencyStop;
+    F.FNum =  FrequencyNumber;
+
+    F.RStart = RotationAngleStart;
+    F.RStop = RotationAngleStop;
+    F.RNum =  RotationAngleNumber;
+
+    F.TStart = TiltAngleStart;
+    F.TStop = TiltAngleStop;
+    F.TNum =  TiltAngleNumber;
 
     emit MeasurementFinished(F);
+
 
 }
 

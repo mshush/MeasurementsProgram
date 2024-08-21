@@ -28,8 +28,7 @@ PlotClass::PlotClass(QWidget * parent) : QCustomPlot(parent)
     MouseMoveMarker->setSelectable(false);
     MouseMoveLabel->setSelectable(false);
 
-    double FreqStart = 0;
-    double FreqStop = 1600;
+    /*
     x = QVector <double> (NumberOfPoints);
     for (int i=0;i<NumberOfPoints;i++)
     {
@@ -37,7 +36,10 @@ PlotClass::PlotClass(QWidget * parent) : QCustomPlot(parent)
     }
     y = QVector <double> (NumberOfPoints);
     f = QVector <std::complex<double>> (NumberOfPoints);
+    */
 
+
+    addGraph();
     addGraph();
     //graph(0)->setData(x, y);
 
@@ -46,7 +48,7 @@ PlotClass::PlotClass(QWidget * parent) : QCustomPlot(parent)
     yAxis->setLabel("Амплитуда");
 
     //graph(0)->pen().setWidth(1);
-    xAxis->setRange(0,1600);
+    //xAxis->setRange(0,1600);
     //rescaleAxes();
     //replot();
 
@@ -148,7 +150,8 @@ void PlotClass::SaveData()
 
 
 
-
+// ПЕРЕНЕСТИ В MAINWINDOW
+/*
 void PlotClass::FourierTransform()
 {
 
@@ -171,12 +174,12 @@ void PlotClass::FourierTransform()
     rescaleAxes();
     replot();
 }
+*/
 
 
 
 
-
-
+/*
 void PlotClass::InverseFourierTransform()
 {
 
@@ -198,7 +201,7 @@ void PlotClass::InverseFourierTransform()
     rescaleAxes();
     replot();
 }
-
+*/
 
 
 
@@ -215,7 +218,7 @@ void PlotClass::AddNewMarker(int Key, int Style, QColor Colour)
     //NewMarker->setInterpolating(true); // Плавное передвижение вдоль линий
     NewMarker->setSize(15);
 
-    QCPItemText * NewMarkerLabel = new QCPItemText(this);
+    QCPItemText * NewMarkerLabel = new QCPItemText(this); // Сделать подпись в углу, фиксированной
     NewMarkerLabel->setPositionAlignment(Qt::AlignRight|Qt::AlignBottom);
     NewMarkerLabel->position->setCoords(NewMarker->position->key(),NewMarker->position->value());
     QString LabelText = "(" + QString::number(NewMarker->position->key()) + "," + QString::number(NewMarker->position->value()) + ")";
@@ -246,26 +249,7 @@ void PlotClass::AddNewMarker(int Key, int Style, QColor Colour)
 
 }
 
-
-void PlotClass::UpdateMeasuredData(QVector <std::complex<double>> MeasuredData)
-{
-    f = MeasuredData;
-    for (int i=0;i<NumberOfPoints;i++)
-    {
-        y[i] = abs(f[i]);
-    }
-    graph(0)->setData(x, y);
-    if (!ContinuousMeasurementMode)
-    {
-        rescaleAxes();
-    }
-    replot();
-}
-
-
-
-
-
+/*
 QVector <std::complex<double>> PlotClass::FourierTransformVector(QVector <std::complex<double>> Vector) // Перенести куда-нибудь (наверное в TabWidgetForCharts)
 {
     int VectorSize = Vector.size();
@@ -282,8 +266,47 @@ QVector <std::complex<double>> PlotClass::FourierTransformVector(QVector <std::c
     }
     return Transform;
 }
+*/
 
 
+
+/*
+void PlotClass::UpdateMeasuredData(QVector <std::complex<double>> MeasuredData)
+{
+    f = MeasuredData;
+    for (int i=0;i<NumberOfPoints;i++)
+    {
+        y[i] = abs(f[i]);
+    }
+    graph(0)->setData(x, y);
+    if (!ContinuousMeasurementMode)
+    {
+        rescaleAxes();
+    }
+    replot();
+}
+*/
+
+
+/*
+void PlotClass::UpdateBackgroundPlot (QVector <std::complex<double>> bf)
+{
+    QVector <double> by(bf.size());
+    for (int i=0;i<bf.size();i++)
+    {
+        by[i] = abs(bf[i]);
+    }
+    graph(1)->setData(x, by);
+
+    if (ContinuousMeasurementMode)
+    {
+        //Выдать какую-нибудь ошибку
+    }
+
+    rescaleAxes();// Вызывать отдельно, чтобы графики менялись не по-очереди!!!
+    replot();
+}
+*/
 
 
 
@@ -450,8 +473,8 @@ void PlotClass::RefreshPlot()
 // Сколько точек
 // ЭПР сферы
 
-// IntValidator
 // Добавить ProgressBar в QMainWindow
+// Убрать из plotclass все комплексные функции -- оставить только абсолютные значения
 
 
 

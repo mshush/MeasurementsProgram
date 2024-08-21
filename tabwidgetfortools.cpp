@@ -44,6 +44,7 @@ TabWidgetForTools::TabWidgetForTools()
     SaveDataButton->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
     Tab1Layout->addWidget(SaveDataButton);
 
+
     ImportDataButton = new QPushButton("⇧",this); //⇧
     ImportDataButton->setFont(QFont("Arial", 30, QFont::Bold));
     ImportDataButton->setStyleSheet("QPushButton { color: orange; padding-top: 0px; padding-bottom: 0px; padding-left: 5px; padding-right: 5px; }");
@@ -59,6 +60,9 @@ TabWidgetForTools::TabWidgetForTools()
     InverseFourierTransformButton->resize(30,30);
     Tab1Layout->addWidget(InverseFourierTransformButton);
 
+    SaveMeasuredFunctionButton = new QPushButton("Сохранить результат измерения",this);
+    Tab1Layout->addWidget(SaveMeasuredFunctionButton);
+
     Tab1Layout->setAlignment(Qt::AlignLeft);
 
     this->setLayout(Tab1Layout);
@@ -69,7 +73,6 @@ TabWidgetForTools::TabWidgetForTools()
 
     //addTab(Tab1, "Запуск");
     //addTab(Tab2, "Управление");
-
 
     //resize(800,200);
     //setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);

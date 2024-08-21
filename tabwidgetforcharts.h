@@ -9,6 +9,7 @@
 #include <widgetforcustomplot.h>
 //#include <QMdiArea> Можно попробовать наследовать отсюда
 
+
 class TabWidgetForCharts : public QTabWidget
 {
     Q_OBJECT
@@ -23,17 +24,21 @@ public:
     WidgetForCustomPlot * MeasurementPlotTab;
     WidgetForCustomPlot * TimeOfFlightPlotTab;
 
+
 public slots:
-    void CreateNewTabFromImportedData();
-    //void SendMeasureSignalToFirstTab();
+    //void CreateNewTabFromImportedData();
+    //void SendMeasureSignalToFirstTab(); // Теперь процесс имитируется в ProcessImitation
     //void SendMeasureContinuouslySignalToFirstTab();
-    void SetFrequencyParameters(double FreqStart, double FreqStop, int NumberOfPoints);
-    void UpdateMeasurementPlot(QVector <std::complex<double>> f);
-    void SaveData();
+    //void SetFrequencyParameters(double FreqStart, double FreqStop, int NumberOfPoints);
+    //void UpdateMeasurementPlot(QVector <std::complex<double>> f);
+    //void UpdateBackgroundPlot (QVector <std::complex<double>> bf);
+    //void SaveData();
     void InitiateCloseTabButton();
     void ContinuousMeasurementModeChanged();
-    void PerformFourierTransformOfCurrentPlot();
-    void PerformInverseFourierTransformOfCurrentPlot();
+    //void PerformFourierTransformOfCurrentPlot();
+    //void PerformInverseFourierTransformOfCurrentPlot();
+    //void ChangeDemonstratedAngles();
+
 };
 
 

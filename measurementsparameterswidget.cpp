@@ -23,9 +23,8 @@ MeasurementsParametersWidget::MeasurementsParametersWidget(QWidget *parent)
     InitializeAngleGroupBox();
     VerticalLayoutOfParameters->addWidget(AngleGroupBox);
 
-    InitializeCalibrationSampleGroupBox();
+    InitializeCalibrationSampleGroupBox(); // Перенести в обработку???
     VerticalLayoutOfParameters->addWidget(CalibrationSampleGroupBox);
-
 
     setLayout(VerticalLayoutOfParameters);
 }
@@ -349,22 +348,22 @@ void MeasurementsParametersWidget::InitializeAngleGroupBox()
     AngleGridLayout = new QGridLayout();
 
     RotationAngleStartLabel = new QLabel("Поворот:", AngleGroupBox);
-    RotationAngleStartEdit  = new QLineEdit("", AngleGroupBox);
+    RotationAngleStartEdit  = new QLineEdit(QString::number(RotationAngleStart), AngleGroupBox);
     RotationAngleStopLabel   = new QLabel("-", AngleGroupBox);
-    RotationAngleStopEdit    = new QLineEdit("", AngleGroupBox);
+    RotationAngleStopEdit    = new QLineEdit(QString::number(RotationAngleStop), AngleGroupBox);
 
     TiltAngleStartLabel = new QLabel("Наклон:", AngleGroupBox);
-    TiltAngleStartEdit  = new QLineEdit("", AngleGroupBox);
+    TiltAngleStartEdit  = new QLineEdit(QString::number(TiltAngleStart), AngleGroupBox);
     TiltAngleStopLabel   = new QLabel("-", AngleGroupBox);
-    TiltAngleStopEdit    = new QLineEdit("", AngleGroupBox);
+    TiltAngleStopEdit    = new QLineEdit(QString::number(TiltAngleStop), AngleGroupBox);
 
 
     RotationAngleNumberOfPointsLabel = new QLabel("Число точек поворота:", AngleGroupBox);
-    RotationAngleNumberOfPointsEdit = new QLineEdit("",this);
+    RotationAngleNumberOfPointsEdit = new QLineEdit(QString::number(RotationAngleNumber),this);
 
 
     TiltAngleNumberOfPointsLabel = new QLabel("Число точек наклона:", AngleGroupBox);
-    TiltAngleNumberOfPointsEdit = new QLineEdit("",this);
+    TiltAngleNumberOfPointsEdit = new QLineEdit(QString::number(TiltAngleNumber),this);
 
     SetAngleParametersButton = new QPushButton("Установить", AngleGroupBox);
     connect(SetAngleParametersButton,&QPushButton::clicked,this, &MeasurementsParametersWidget::OnSetAngleParametersButtonClicked);

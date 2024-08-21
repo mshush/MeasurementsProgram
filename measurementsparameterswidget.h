@@ -88,7 +88,7 @@ public:
     QPushButton * SetAngleParametersButton;
 
 
-    //Область параметров калибровочного образца
+    //Область параметров калибровочного образца // Перенести в обработку!!!
     void InitializeCalibrationSampleGroupBox();
     QGroupBox * CalibrationSampleGroupBox;
     QVBoxLayout * CalibrationSampleMainLayout;
@@ -103,12 +103,12 @@ public:
     int FrequencyNumber = 1601;
 
     double RotationAngleStart = 0;
-    double RotationAngleStop = 360;
+    double RotationAngleStop = 359;
     int RotationAngleNumber = 360;
 
     double TiltAngleStart = 0;
-    double TiltAngleStop = 10;
-    int TiltAngleNumber = 5;
+    double TiltAngleStop = 9;
+    int TiltAngleNumber = 10;
 
 
 

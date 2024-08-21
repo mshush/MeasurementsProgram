@@ -19,9 +19,10 @@ TabWidgetForCharts::TabWidgetForCharts()
 
     this->setTabToolTip(0, "Вкладка по умолчанию, на которую влияют кнопки запуска и непрерывного измерения");
 
+
 }
 
-
+/*
 void TabWidgetForCharts::CreateNewTabFromImportedData()
 {
 
@@ -73,14 +74,14 @@ void TabWidgetForCharts::CreateNewTabFromImportedData()
 
     InitiateCloseTabButton();
 }
+*/
 
 
 
 
 
 
-
-
+/*
 void TabWidgetForCharts::SetFrequencyParameters(double StartFreq, double StopFreq, int NumberOfPoints)
 {
     QVector <double> xTemp(NumberOfPoints);
@@ -90,8 +91,9 @@ void TabWidgetForCharts::SetFrequencyParameters(double StartFreq, double StopFre
     }
     this->PlotTabs[0]->customPlot->x = xTemp;
 }
+*/
 
-
+/*
 void TabWidgetForCharts::SaveData() // Добавить формат CSV.
 {
     QString DateString = QDate::currentDate().toString("yyyy-MM-dd");
@@ -106,7 +108,7 @@ void TabWidgetForCharts::SaveData() // Добавить формат CSV.
 
     QFile File(FilePath);
     if (!File.open(QIODevice::WriteOnly)) {
-        qWarning() << "Не получилось открыть файл для чтения:" << File.errorString();
+        qWarning() << "Не получилось открыть файл для записи:" << File.errorString();
         return;
     }
 
@@ -139,16 +141,16 @@ void TabWidgetForCharts::SaveData() // Добавить формат CSV.
     File.close();
 
 }
+*/
 
 
-
-
+/*
 void TabWidgetForCharts::UpdateMeasurementPlot(QVector <std::complex<double>> f)
 {
     PlotTabs[0]->customPlot->UpdateMeasuredData(f);
     PlotTabs[1]->customPlot->UpdateMeasuredData(PlotTabs[1]->customPlot->FourierTransformVector(f));
 
-    /*
+    //------------ Устаревшая часть
     QString DateString = QDate::currentDate().toString("yyyy-MM-dd");
     QString TimeString = QTime::currentTime().toString("HH-mm");
 
@@ -170,8 +172,10 @@ void TabWidgetForCharts::UpdateMeasurementPlot(QVector <std::complex<double>> f)
     this->setTabToolTip(count()-1, "Дальностный_портрет_" + DateString + "_" + TimeString);
 
     InitiateCloseTabButton();
-    */
+    //----------------
 }
+*/
+
 
 
 void TabWidgetForCharts::InitiateCloseTabButton()
@@ -220,7 +224,7 @@ TabWidgetForCharts::~TabWidgetForCharts()
     */
 }
 
-
+/*
 void TabWidgetForCharts::PerformFourierTransformOfCurrentPlot()
 {
     PlotClass * CurrentPlot = PlotTabs[currentIndex()]->customPlot;
@@ -248,8 +252,10 @@ void TabWidgetForCharts::PerformFourierTransformOfCurrentPlot()
     NewTab->customPlot->rescaleAxes();
     NewTab->customPlot->replot();
 }
+*/
 
 
+/*
 void TabWidgetForCharts::PerformInverseFourierTransformOfCurrentPlot()
 {
     PlotClass * CurrentPlot = PlotTabs[currentIndex()]->customPlot;
@@ -276,7 +282,16 @@ void TabWidgetForCharts::PerformInverseFourierTransformOfCurrentPlot()
     NewTab->customPlot->rescaleAxes();
     NewTab->customPlot->replot();
 }
+*/
 
+
+
+/*
+void TabWidgetForCharts::ChangeDemonstratedAngles() // В MainWindow
+{
+
+}
+*/
 
 
 

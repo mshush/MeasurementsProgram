@@ -29,6 +29,8 @@ public:
     QPushButton * FourierTransformButton;
     QPushButton * InverseFourierTransformButton;
 
+    QPushButton * SaveMeasuredFunctionButton;
+
 };
 
 #endif // TABWIDGETFORTOOLS_H

@@ -21,6 +21,7 @@
 #include <widgetforcustomplot.h>
 #include <plotclass.h>
 #include <processimitation.h>
+#include <QDataStream>
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -45,9 +46,25 @@ public:
     WidgetForCustomPlot * CustomPlotWidget;
     ProcessImitation * Process;
     //void addItems(const QDir &directory, QTreeWidgetItem *parent); // Перенести в отдельный класс для дерева
-    MeasuredFunction StoredFunction;
+    MeasuredFunction StoredFunction; // Хранить в WidgetForCustomPlot чтобы открывать старое?
+    MeasuredFunction CalibrationFunction;
+    MeasuredFunction BackgroundFunction;
 
-    void ProcessMeasuredFunction(MeasuredFunction F);
+    void SetMeasuredFunction(MeasuredFunction F);
+    void ChangeAngleOfDemonstration();
+    void SaveMeasuredFunction();
+    void SetBackground();
+    void SubstractBackground();
+    void SetCalibration ();
+
+    bool BackgroundAddedToMainPlot = false;
+
+    void ShowErrorMessage(QString Description, QString Advice);
+
+signals:
+    //void TellPlotTabsToChangeAngle(QVector <std::complex<double>> NeededRowFromMeasuredFunction); //
+
+
 
 private:
     Ui::MainWindow *ui;
