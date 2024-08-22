@@ -26,8 +26,9 @@ public:
     QPushButton * ContinuousMeasurementsButton;
     QPushButton * SaveDataButton;
     QPushButton * ImportDataButton;
-    QPushButton * FourierTransformButton;
-    QPushButton * InverseFourierTransformButton;
+
+    //QPushButton * FourierTransformButton;
+    //QPushButton * InverseFourierTransformButton;
 
     QPushButton * SaveMeasuredFunctionButton;
 

@@ -2,6 +2,8 @@
 
 TabWidgetForParameters::TabWidgetForParameters(QWidget *parent) : QTabWidget(parent)
 {
+    this->setMaximumWidth(300);
+    this->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Expanding);
     MeasurementTab = new MeasurementsParametersWidget();
     ResultTab = new ResultParametersWidget();
     FileTreeTab = new TreeWidgetForFiles();
@@ -10,8 +12,6 @@ TabWidgetForParameters::TabWidgetForParameters(QWidget *parent) : QTabWidget(par
     addTab(ResultTab, "Результат");
     addTab(FileTreeTab, "Открыть");
 
-    setFixedWidth(300);
-    setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
 }
 
 

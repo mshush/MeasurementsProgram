@@ -42,12 +42,18 @@ public:
     int FindTiltIndex(double TiltValue); // Индекс угла наклона по значению
 
 
-    QVector <double> XVector (); // Получает вектор X из MeasuredFunction
-    QVector <double> YVectorAtAngles (int r, int t); // Получает вектор Y из MeasuredFunction при углах с индексами r и t
+    QVector <double> FreqVector (); // Получает вектор частот из MeasuredFunction
+    QVector <double> AmplVectorAtAngles (int r, int t); // Получает вектор амплитуд из MeasuredFunction при углах с индексами r и t
+
+    QVector <double> DistVector (); // Получает вектор расстояний из MeasuredFunction
+    QVector <double> FourierAmplVectorAtAngles (int r, int t); // Получает вектор амплитуд фурье образов из MeasuredFunction при углах с индексами r и t
+
 
     bool CheckBackgroundForSuitability (MeasuredFunction BG); //Проверка размерностей перед вычитанием
     void SubstractBackground (MeasuredFunction BG); // Вычитание фона
+    void Calibrate (MeasuredFunction Calibration, int SampleType); // Калибровка
     void ClearFunction(); // Очистка функции
+
 
     // Для удобного сохранения через QDataStream
     friend QDataStream &operator<<(QDataStream &out, const MeasuredFunction &MyMF);

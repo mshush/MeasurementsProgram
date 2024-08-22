@@ -58,7 +58,7 @@ public slots:
     //void FourierTransform(); //Перенести в MainWindow?
     //QVector <std::complex<double>> FourierTransformVector(QVector <std::complex<double>> f);
     //void InverseFourierTransform();
-    void AddNewMarker(int Key, int Style, QColor Colour);
+    void AddNewMarker(double Key, int Style, QColor Colour);
 
 protected:
     void mouseMoveEvent(QMouseEvent *event) override;

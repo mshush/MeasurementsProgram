@@ -48,7 +48,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     ChartTab = new TabWidgetForCharts;
 
-    InnerVerticalLayout->addWidget(ChartTab); // ?????
+    InnerVerticalLayout->addWidget(ChartTab);
 
     TabOfParameters = new TabWidgetForParameters;
 
@@ -63,51 +63,15 @@ MainWindow::MainWindow(QWidget *parent)
 
     centralWidget()->setLayout(OutermostVerticalLayout);
 
-    connect(TabOfTools->StartMeasurementsButton, &QPushButton::clicked, Process, &ProcessImitation::Measure);
-    connect(Process, &ProcessImitation::MeasurementFinished, this, &MainWindow::SetMeasuredFunction);
-
-
-
-    //connect(TabOfTools->ContinuousMeasurementsButton, &QPushButton::clicked, Process, &ProcessImitation::MeasureContinuously);
-    //connect(TabOfTools->ContinuousMeasurementsButton, &QPushButton::clicked, ChartTab, &TabWidgetForCharts::ContinuousMeasurementModeChanged);
-
-
-
-    connect(TabOfTools->StopMeasurementsButton, &QPushButton::clicked, this,[this]()
-            {
-                qDebug()<<this->size();
-            }
-            );
-
-    //connect(TabOfTools->SaveDataButton  , &QPushButton::clicked, ChartTab, &TabWidgetForCharts::SaveData); // Получше придумать как соединять, чтобы по вкладкам (возможно лучше в QidgetForCustomPlot перенести)
-
-    connect(TabOfTools->SaveMeasuredFunctionButton  , &QPushButton::clicked, this, &MainWindow::SaveMeasuredFunction);
-    //connect(TabOfTools->ImportDataButton, &QPushButton::clicked, ChartTab, &TabWidgetForCharts::CreateNewTabFromImportedData);
-
-    //connect(TabOfParameters->MeasurementTab, &MeasurementsParametersWidget::FrequencyParametersChanged, ChartTab,&TabWidgetForCharts::SetFrequencyParameters);
-    //connect(TabOfParameters->MeasurementTab, &MeasurementsParametersWidget::AngleParametersChanged,     ChartTab,&TabWidgetForCharts::SetAngleParameters); // Нужно ли()
-
-    connect(TabOfParameters->MeasurementTab, &MeasurementsParametersWidget::FrequencyParametersChanged, Process, &ProcessImitation::SetFrequencyRange);
-    connect(TabOfParameters->MeasurementTab, &MeasurementsParametersWidget::AngleParametersChanged,     Process, &ProcessImitation::SetAngleRanges);
-
-    connect(TabOfParameters->MeasurementTab, &MeasurementsParametersWidget::FrequencyParametersChanged, Process, &ProcessImitation::SetFrequencyRange);
-
-    //connect(TabOfTools->FourierTransformButton,        &QPushButton::clicked, ChartTab, &TabWidgetForCharts::PerformFourierTransformOfCurrentPlot);
-    //connect(TabOfTools->InverseFourierTransformButton, &QPushButton::clicked, ChartTab, &TabWidgetForCharts::PerformInverseFourierTransformOfCurrentPlot);
-
-    //connect(TabOfParameters->ResultTab->SetCurrentAngleButton, &QPushButton::clicked, ChartTab, &TabWidgetForCharts::ChangeDemonstratedAngles);
-
-    connect(TabOfParameters->ResultTab->SetCurrentAngleButton, &QPushButton::clicked, this, &MainWindow::ChangeAngleOfDemonstration);
-
-
-    connect(TabOfParameters->ResultTab->BackgroundAddButton, &QPushButton::clicked, this, &MainWindow::SetBackground);
-    connect(TabOfParameters->ResultTab->BackgroundSubstractButton, &QPushButton::clicked, this, &MainWindow::SubstractBackground);
 
 
     //this->resize(2560,1440); Не работает
     //QScreen *screen = QGuiApplication::primaryScreen();
     //screen->setProperty("QT_SCREEN_SCALE_FACTOR", "0");
     //qreal devicePixelRatio = screen->devicePixelRatio();
+
+
+    ConnectObjects();
 
     this->setWindowState(Qt::WindowMaximized);
 }
@@ -126,10 +90,15 @@ void MainWindow::SetMeasuredFunction(MeasuredFunction F)
     //QVector <std::complex<double>> FreqVectorAtChosenAngle = F.GetFrequencyVectorAt(r,t);
     //this->ChartTab->UpdateMeasurementPlot(FreqVectorAtChosenAngle);
 
-    PlotClass * PltPtr = this->ChartTab->PlotTabs[0]->customPlot;
-    PltPtr->graph(0)->setData(F.XVector(), F.YVectorAtAngles(r,t));
-    PltPtr->rescaleAxes();
-    PltPtr->replot();
+    PlotClass * PltPtr0 = this->ChartTab->PlotTabs[0]->customPlot;
+    PltPtr0->graph(0)->setData(F.FreqVector(), F.AmplVectorAtAngles(r,t));
+    PltPtr0->rescaleAxes();
+    PltPtr0->replot();
+
+    PlotClass * PltPtr1 = this->ChartTab->PlotTabs[1]->customPlot;
+    PltPtr1->graph(0)->setData(F.DistVector(), F.FourierAmplVectorAtAngles(r,t));
+    PltPtr1->rescaleAxes();
+    PltPtr1->replot();
 }
 
 
@@ -143,7 +112,7 @@ void MainWindow::ChangeAngleOfDemonstration()
         int r = StoredFunction.FindRotationIndex(TabOfParameters->ResultTab->SetCurrentRotationAngleDoubleSpinBox->value());
         int t = StoredFunction.FindTiltIndex(TabOfParameters->ResultTab->SetCurrentTiltAngleDoubleSpinBox->value());
 
-        PltPtr->graph(0)->setData(StoredFunction.XVector(), StoredFunction.YVectorAtAngles(r,t));
+        PltPtr->graph(0)->setData(StoredFunction.FreqVector(), StoredFunction.AmplVectorAtAngles(r,t));
 
 
         //QVector <std::complex<double>> FreqVectorAtChosenAngle = StoredFunction.GetFrequencyVectorAt(r,t);
@@ -151,10 +120,20 @@ void MainWindow::ChangeAngleOfDemonstration()
 
         if (PltPtr->graph(1)->data()->size()>0)
         {
-            PltPtr->graph(1)->setData(StoredFunction.XVector(), StoredFunction.YVectorAtAngles(r,t));
+            PltPtr->graph(1)->setData(BackgroundFunction.FreqVector(), BackgroundFunction.AmplVectorAtAngles(r,t));
+
+            PlotClass * PltPtr1 = this->ChartTab->PlotTabs[1]->customPlot;
+            PltPtr1->graph(1)->setData(BackgroundFunction.DistVector(), BackgroundFunction.FourierAmplVectorAtAngles(r,t));
+
         }
         PltPtr->rescaleAxes();
         PltPtr->replot();
+
+        PlotClass * PltPtr1 = this->ChartTab->PlotTabs[1]->customPlot;
+        PltPtr1->graph(0)->setData(StoredFunction.DistVector(), StoredFunction.FourierAmplVectorAtAngles(r,t));
+        PltPtr1->rescaleAxes();
+        PltPtr1->replot();
+
     }
     else
     {
@@ -207,7 +186,7 @@ void MainWindow::SaveMeasuredFunction()
 
 
 
-    QVector <double> x = BackgroundFunction.XVector();
+    QVector <double> x = BackgroundFunction.FreqVector();
 
     int r = BackgroundFunction.FindRotationIndex(TabOfParameters->ResultTab->SetCurrentRotationAngleDoubleSpinBox->value());
     int t = BackgroundFunction.FindTiltIndex    (TabOfParameters->ResultTab->SetCurrentTiltAngleDoubleSpinBox    ->value());
@@ -259,7 +238,7 @@ void MainWindow::SubstractBackground()
             StoredFunction.SubstractBackground(BackgroundFunction);
             PltPtr->graph(1)->data()->clear();
             this->SetMeasuredFunction(StoredFunction);
-            this->BackgroundFunction.ClearFunction();
+            //this->BackgroundFunction.ClearFunction(); // Не очищать! Ещё потребуется при калибровке
         }
         else
         {
@@ -290,6 +269,44 @@ MainWindow::~MainWindow()
 
 void MainWindow::SetCalibration()
 {
+
+    if (BackgroundFunction.FNum==0)
+    {
+        ShowErrorMessage("Не найден фон", "Сперва выберите фон");
+        return;
+    }
+    if (CalibrationFunction.FNum==0)
+    {
+        QFile File(TabOfParameters->ResultTab->CalibrationLineEdit->text());
+        if (!File.open(QIODevice::ReadOnly))
+        {
+            ShowErrorMessage("Не удалось открыть файл для чтения!", File.errorString());
+            return;
+        }
+
+        QDataStream in(&File);
+        in >> CalibrationFunction;
+        File.close();
+    }
+
+    CalibrationFunction.SubstractBackground(BackgroundFunction);
+
+    int SampleTypeIndex = this->TabOfParameters->ResultTab->CalibrationSampleComboBox->currentIndex();
+
+    //qDebug()<< "Was Here! " << StoredFunction.FNum << CalibrationFunction.FNum;
+
+    StoredFunction.Calibrate(CalibrationFunction,SampleTypeIndex);
+
+
+    int r = StoredFunction.FindRotationIndex(TabOfParameters->ResultTab->SetCurrentRotationAngleDoubleSpinBox->value());
+    int t = StoredFunction.FindTiltIndex(TabOfParameters->ResultTab->SetCurrentTiltAngleDoubleSpinBox->value());
+
+    PlotClass * PltPtr = this->ChartTab->PlotTabs[0]->customPlot;
+    PltPtr->graph(0)->setData(StoredFunction.FreqVector(), StoredFunction.AmplVectorAtAngles(r,t));
+    PltPtr->rescaleAxes();
+    PltPtr->replot();
+
+
     /*
     QFile File(TabOfParameters->ResultTab->BackgroundLineEdit->text());
     if (!File.open(QIODevice::ReadOnly)) {
@@ -304,7 +321,7 @@ void MainWindow::SetCalibration()
 
 
 
-    QVector <double> x = BackgroundFunction.XVector();
+    QVector <double> x = BackgroundFunction.FreqVector();
 
     //qDebug()<< "xMax = " << x[1600];
 
@@ -347,3 +364,54 @@ void MainWindow::ShowErrorMessage(QString Description, QString Advice)
     msgBox.exec();
 }
 
+
+
+void MainWindow::ConnectObjects()
+{
+    connect(TabOfTools->StartMeasurementsButton, &QPushButton::clicked, Process, &ProcessImitation::Measure);
+    connect(Process, &ProcessImitation::MeasurementFinished, this, &MainWindow::SetMeasuredFunction);
+
+
+
+    //connect(TabOfTools->ContinuousMeasurementsButton, &QPushButton::clicked, Process, &ProcessImitation::MeasureContinuously);
+    //connect(TabOfTools->ContinuousMeasurementsButton, &QPushButton::clicked, ChartTab, &TabWidgetForCharts::ContinuousMeasurementModeChanged);
+
+
+
+    connect(TabOfTools->StopMeasurementsButton, &QPushButton::clicked, this,[this]()
+            {
+                qDebug()<<this->size();
+            }
+            );
+
+    //connect(TabOfTools->SaveDataButton  , &QPushButton::clicked, ChartTab, &TabWidgetForCharts::SaveData); // Получше придумать как соединять, чтобы по вкладкам (возможно лучше в QidgetForCustomPlot перенести)
+
+    connect(TabOfTools->SaveMeasuredFunctionButton  , &QPushButton::clicked, this, &MainWindow::SaveMeasuredFunction);
+    //connect(TabOfTools->ImportDataButton, &QPushButton::clicked, ChartTab, &TabWidgetForCharts::CreateNewTabFromImportedData);
+
+    //connect(TabOfParameters->MeasurementTab, &MeasurementsParametersWidget::FrequencyParametersChanged, ChartTab,&TabWidgetForCharts::SetFrequencyParameters);
+    //connect(TabOfParameters->MeasurementTab, &MeasurementsParametersWidget::AngleParametersChanged,     ChartTab,&TabWidgetForCharts::SetAngleParameters); // Нужно ли()
+
+    connect(TabOfParameters->MeasurementTab, &MeasurementsParametersWidget::FrequencyParametersChanged, Process, &ProcessImitation::SetFrequencyRange);
+    connect(TabOfParameters->MeasurementTab, &MeasurementsParametersWidget::AngleParametersChanged,     Process, &ProcessImitation::SetAngleRanges);
+
+    connect(TabOfParameters->MeasurementTab, &MeasurementsParametersWidget::FrequencyParametersChanged, Process, &ProcessImitation::SetFrequencyRange);
+
+    //connect(TabOfTools->FourierTransformButton,        &QPushButton::clicked, ChartTab, &TabWidgetForCharts::PerformFourierTransformOfCurrentPlot);
+    //connect(TabOfTools->InverseFourierTransformButton, &QPushButton::clicked, ChartTab, &TabWidgetForCharts::PerformInverseFourierTransformOfCurrentPlot);
+
+    //connect(TabOfParameters->ResultTab->SetCurrentAngleButton, &QPushButton::clicked, ChartTab, &TabWidgetForCharts::ChangeDemonstratedAngles);
+
+    connect(TabOfParameters->ResultTab->SetCurrentAngleButton, &QPushButton::clicked, this, &MainWindow::ChangeAngleOfDemonstration);
+
+
+    connect(TabOfParameters->ResultTab->BackgroundAddButton, &QPushButton::clicked, this, &MainWindow::SetBackground);
+    connect(TabOfParameters->ResultTab->BackgroundSubstractButton, &QPushButton::clicked, this, &MainWindow::SubstractBackground);
+
+
+    connect(TabOfParameters->ResultTab->CalibrationSetButton, &QPushButton::clicked, this, &MainWindow::SetCalibration);
+
+    //connect(TabOfParameters->ResultTab->CalculateDistancePortraitButton, &QPushButton::clicked, this, &MainWindow::CalculateDistancePortrait);
+
+
+}

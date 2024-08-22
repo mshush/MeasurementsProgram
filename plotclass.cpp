@@ -68,7 +68,7 @@ void PlotClass::mouseMoveEvent(QMouseEvent *event)
     {
 
         MouseMoveMarker->setGraphKey(this->xAxis->pixelToCoord(event->pos().x()));
-        MouseMoveMarker->setGraph(graph());
+        MouseMoveMarker->setGraph(graph(0));
 
         MouseMoveLabel->position->setCoords(MouseMoveMarker->position->key(),MouseMoveMarker->position->value());
         MouseMoveLabel->setText(QString("(")+QString::number(MouseMoveMarker->position->key())+QString(",")+QString::number(MouseMoveMarker->position->value())+QString(")"));
@@ -83,7 +83,7 @@ void PlotClass::mousePressEvent(QMouseEvent *event)
 
     if (markeraddbuttonactive)
     {
-        AddNewMarker(this->xAxis->pixelToCoord( event->pos().x()), MarkerStyle, MarkerColour);
+        AddNewMarker(this->xAxis->pixelToCoord(event->pos().x()), MarkerStyle, MarkerColour);
         replot();
     }
 
@@ -206,17 +206,19 @@ void PlotClass::InverseFourierTransform()
 
 
 
-void PlotClass::AddNewMarker(int Key, int Style, QColor Colour)
+void PlotClass::AddNewMarker(double Key, int Style, QColor Colour)
 {
 
-    QCPItemTracer * NewMarker = new QCPItemTracer(this); //Чтобы открепить от graph можно NewMarker->setGraph(nullptr);
+    QCPItemTracer * NewMarker = new QCPItemTracer(this);
+    //NewMarker->setGraph(nullptr);//Чтобы открепить от graph
     NewMarker->setPen(QPen(Colour));
     NewMarker->setBrush(QBrush(Colour));
     NewMarker->setStyle(QCPItemTracer::TracerStyle(Style));
+    NewMarker->setGraph(graph(0));
     NewMarker->setGraphKey( Key ); //Разобраться как работает pixelToCoord
-    NewMarker->setGraph(graph());
     //NewMarker->setInterpolating(true); // Плавное передвижение вдоль линий
     NewMarker->setSize(15);
+    //qDebug()<<Key;
 
     QCPItemText * NewMarkerLabel = new QCPItemText(this); // Сделать подпись в углу, фиксированной
     NewMarkerLabel->setPositionAlignment(Qt::AlignRight|Qt::AlignBottom);

@@ -28,7 +28,7 @@ public:
     int TiltAngleNumber = 10;
 
     enum ModeOfMeasurement {Object, Background, Calibration};
-    ModeOfMeasurement MeasurementMode = Object; // Background; // Calibration; //
+    ModeOfMeasurement MeasurementMode = Object; // Calibration; //  Background; //
 
 
     MeasuredFunction F;

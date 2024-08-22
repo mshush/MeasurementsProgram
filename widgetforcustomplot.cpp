@@ -4,7 +4,6 @@ WidgetForCustomPlot::WidgetForCustomPlot(QWidget *parent)
     : QWidget{parent}
 {
 
-    this->resize(600,200);
     this->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding);
 
     HorizontalPlotLayout = new QHBoxLayout(this);
@@ -451,7 +450,7 @@ void WidgetForCustomPlot::EnterSelectLocalMaxMode()
 {
     if (SelectLocalMaxButton->isChecked())
     {
-        if (!customPlot->graph()->data()->isEmpty())
+        if (!customPlot->graph(0)->data()->isEmpty())
         {
             this->RubberBandButton->setChecked(false);
             this->SelectLocalMinButton->setChecked(false);
@@ -481,12 +480,13 @@ void WidgetForCustomPlot::PutMarkerAtLocalMax()
     QCPDataRange DataRange = SelectedData.dataRange();
     if (DataRange.size() > 0) {
         double MaxValue = this->customPlot->graph(0)->data()->at(DataRange.begin())->value;
-        int MaxKey = 0;
-        for (int i = DataRange.begin(); i <= DataRange.end(); i++) {
+        double MaxKey   = this->customPlot->graph(0)->data()->at(DataRange.begin())->key;;
+        for (int i = DataRange.begin(); i < DataRange.end(); i++)
+        {
             double CurrentValue = this->customPlot->graph(0)->data()->at(i)->value;
             if (MaxValue < CurrentValue)
             {
-                MaxKey = i;
+                MaxKey = this->customPlot->graph(0)->data()->at(i)->key;
                 MaxValue = CurrentValue;
             }
         }
@@ -503,7 +503,7 @@ void WidgetForCustomPlot::EnterSelectLocalMinMode()
 {
     if (SelectLocalMinButton->isChecked())
     {
-        if (!customPlot->graph()->data()->isEmpty())
+        if (!customPlot->graph(0)->data()->isEmpty())
         {
             this->RubberBandButton->setChecked(false);
             this->SelectLocalMaxButton->setChecked(false);
@@ -533,12 +533,13 @@ void WidgetForCustomPlot::PutMarkerAtLocalMin()
     QCPDataRange DataRange = SelectedData.dataRange();
     if (DataRange.size() > 0) {
         double MinValue = this->customPlot->graph(0)->data()->at(DataRange.begin())->value;
-        int MinKey = 0;
-        for (int i = DataRange.begin(); i <= DataRange.end(); i++) {
+        double MinKey   = this->customPlot->graph(0)->data()->at(DataRange.begin())->key;
+        for (int i = DataRange.begin(); i < DataRange.end(); i++)
+        {
             double CurrentValue = this->customPlot->graph(0)->data()->at(i)->value;
             if (MinValue > CurrentValue)
             {
-                MinKey = i;
+                MinKey = this->customPlot->graph(0)->data()->at(i)->key;
                 MinValue = CurrentValue;
             }
         }

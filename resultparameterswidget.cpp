@@ -5,7 +5,7 @@ ResultParametersWidget::ResultParametersWidget(QWidget *parent)
 {
     //IntValidator = new QIntValidator(this);
 
-
+    this->setMaximumWidth(300);
     OutermostVerticalLayout = new QVBoxLayout(this);
 
 
@@ -80,43 +80,13 @@ ResultParametersWidget::ResultParametersWidget(QWidget *parent)
     OutermostVerticalLayout->addWidget(BackgroundGroupBox);
 
     // Задаём CalibrationGroupBox
-    CalibrationGroupBox = new QGroupBox("Калибровка", this);
-
-    QVBoxLayout * CalibrationGroupBoxLayout = new QVBoxLayout(CalibrationGroupBox);
-    QHBoxLayout * CalibrationButtonsLayout = new QHBoxLayout;
-
-    //QLabel * CalibrationLabel = new QLabel("Калибровка", BackgroundAndCalibrationGroupBox);
-
-    CalibrationLineEdit = new QLineEdit(CalibrationGroupBox);
-    CalibrationFindButton = new QPushButton("Найти", CalibrationGroupBox);
-    connect(CalibrationFindButton, &QPushButton::clicked, this, &ResultParametersWidget::FindCalibration);
-    CalibrationSetButton  = new QPushButton("Установить", CalibrationGroupBox);
-    //connect(CalibrationSetButton, &QPushButton::clicked, this, &ResultParametersWidget::SetCalibration);
-
-    CalibrationGroupBox->setLayout(CalibrationGroupBoxLayout);
-
-    CalibrationGroupBoxLayout->addWidget(CalibrationLineEdit);
-
-    CalibrationButtonsLayout -> addWidget(CalibrationFindButton);
-    CalibrationButtonsLayout -> addWidget(CalibrationSetButton);
-
-    CalibrationGroupBoxLayout->addLayout(CalibrationButtonsLayout);
-
+    InitializeCalibrationGroupBox();
     OutermostVerticalLayout->addWidget(CalibrationGroupBox);
 
-    /*
-    BackgroundAndCalibrationGroupBoxLayout->addWidget(BackgroundLabel       ,0,0);
-    BackgroundAndCalibrationGroupBoxLayout->addWidget(BackgroundLineEdit    ,1,0);
-    BackgroundAndCalibrationGroupBoxLayout->addWidget(BackgroundFindButton  ,0,1);
-    BackgroundAndCalibrationGroupBoxLayout->addWidget(BackgroundSetButton   ,1,1);
 
-    BackgroundAndCalibrationGroupBoxLayout->addWidget(CalibrationLabel      ,2,0);
-    BackgroundAndCalibrationGroupBoxLayout->addWidget(CalibrationLineEdit   ,3,0);
-    BackgroundAndCalibrationGroupBoxLayout->addWidget(CalibrationFindButton ,2,1);
-    BackgroundAndCalibrationGroupBoxLayout->addWidget(CalibrationSetButton  ,3,1);
+    //CalculateDistancePortraitButton = new QPushButton( "Дальностный портрет" , this );
+    //OutermostVerticalLayout->addWidget(CalculateDistancePortraitButton);
 
-    BackgroundAndCalibrationGroupBox->setLayout(BackgroundAndCalibrationGroupBoxLayout);
-    */
 
 }
 
@@ -170,6 +140,51 @@ void ResultParametersWidget::HandleTiltSpinBoxChange()
 
 
 
+void ResultParametersWidget::InitializeCalibrationGroupBox()
+{
+    CalibrationGroupBox = new QGroupBox("Калибровка", this);
+
+    QVBoxLayout * CalibrationGroupBoxLayout = new QVBoxLayout(CalibrationGroupBox);
+    QHBoxLayout * CalibrationButtonsLayout = new QHBoxLayout;
+
+    //QLabel * CalibrationLabel = new QLabel("Калибровка", BackgroundAndCalibrationGroupBox);
+
+    CalibrationLineEdit = new QLineEdit(CalibrationGroupBox);
+    CalibrationFindButton = new QPushButton("Найти", CalibrationGroupBox);
+    connect(CalibrationFindButton, &QPushButton::clicked, this, &ResultParametersWidget::FindCalibration);
+    CalibrationSetButton  = new QPushButton("Откалибровать", CalibrationGroupBox);
+    //connect(CalibrationSetButton, &QPushButton::clicked, this, &ResultParametersWidget::SetCalibration);
+
+    CalibrationGroupBox->setLayout(CalibrationGroupBoxLayout);
+
+    CalibrationGroupBoxLayout->addWidget(CalibrationLineEdit);
+
+    CalibrationButtonsLayout -> addWidget(CalibrationFindButton);
+    CalibrationButtonsLayout -> addWidget(CalibrationSetButton);
+
+    CalibrationGroupBoxLayout->addLayout(CalibrationButtonsLayout);
+
+
+    CalibrationSampleTypeLayout = new QHBoxLayout();
+    CalibrationSampleTypeLayout->addWidget(new QLabel("Вид образца"));
+    CalibrationSampleComboBox = new QComboBox(this);
+    CalibrationSampleComboBox->addItem("Цилиндр");
+    CalibrationSampleComboBox->addItem("Сфера");
+
+    CalibrationSampleTypeLayout->addWidget(CalibrationSampleComboBox);
+    CalibrationGroupBoxLayout->addLayout(CalibrationSampleTypeLayout);
+
+    CalibrationSampleParametersLayout = new QHBoxLayout();
+    CalibrationSampleParametersLayout->addWidget(new QLabel("Параметры",this));
+    CalibrationSampleParametersLayout->addWidget(new QLineEdit("Введите параметр",this));
+
+    CalibrationGroupBoxLayout->addLayout(CalibrationSampleParametersLayout);
+
+
+
+
+
+}
 
 
 

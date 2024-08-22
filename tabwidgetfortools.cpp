@@ -17,7 +17,7 @@ TabWidgetForTools::TabWidgetForTools()
     StartMeasurementsButton->setStyleSheet("QPushButton { color: green; padding-top: 0px; padding-bottom: 0px; }");
     StartMeasurementsButton->resize(30,30);
     StartMeasurementsButton->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
-
+    StartMeasurementsButton->setToolTip("Запустить измерение");
     Tab1Layout->addWidget(StartMeasurementsButton);
 
     StopMeasurementsButton = new QPushButton("🟥",this); //■🟥
@@ -26,6 +26,7 @@ TabWidgetForTools::TabWidgetForTools()
     StopMeasurementsButton->setStyleSheet("QPushButton { color: red; padding-top: 0px; padding-bottom: 5px; padding-left: 5px; padding-right: 5px; }");
     StopMeasurementsButton->resize(30,30);
     StopMeasurementsButton->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+    StopMeasurementsButton->setToolTip("Приостановить измерение");
     Tab1Layout->addWidget(StopMeasurementsButton);
 
 
@@ -52,6 +53,7 @@ TabWidgetForTools::TabWidgetForTools()
     ImportDataButton->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
     Tab1Layout->addWidget(ImportDataButton);
 
+    /*
     FourierTransformButton = new QPushButton("F",this);
     FourierTransformButton->resize(30,30);
     Tab1Layout->addWidget(FourierTransformButton);
@@ -59,6 +61,7 @@ TabWidgetForTools::TabWidgetForTools()
     InverseFourierTransformButton = new QPushButton ("InvF",this);
     InverseFourierTransformButton->resize(30,30);
     Tab1Layout->addWidget(InverseFourierTransformButton);
+    */
 
     SaveMeasuredFunctionButton = new QPushButton("Сохранить результат измерения",this);
     Tab1Layout->addWidget(SaveMeasuredFunctionButton);

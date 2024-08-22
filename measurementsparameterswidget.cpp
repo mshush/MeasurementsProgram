@@ -5,8 +5,11 @@ MeasurementsParametersWidget::MeasurementsParametersWidget(QWidget *parent)
     : QWidget{parent}
 {
 
+    this->setFixedWidth(300);
+    this->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
+
     //resize(300,900);
-    setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
+
     //qDebug()<<size();
 
 
@@ -23,10 +26,12 @@ MeasurementsParametersWidget::MeasurementsParametersWidget(QWidget *parent)
     InitializeAngleGroupBox();
     VerticalLayoutOfParameters->addWidget(AngleGroupBox);
 
-    InitializeCalibrationSampleGroupBox(); // Перенести в обработку???
-    VerticalLayoutOfParameters->addWidget(CalibrationSampleGroupBox);
+    //InitializeCalibrationGroupBox(); // Перенесено в обработку???
+    //VerticalLayoutOfParameters->addWidget(CalibrationSampleGroupBox);
 
     setLayout(VerticalLayoutOfParameters);
+
+
 }
 
 
@@ -108,7 +113,7 @@ void MeasurementsParametersWidget::InitializeFrequencyGroupBox()
     FrequencyGroupBoxLayout = new QVBoxLayout(FrequencyGroupBox);
 
     ButtonGroupLayout = new QHBoxLayout();
-    FrequencyRangesButtonGroup = new QButtonGroup(FrequencyGroupBox);
+    FrequencyRangesButtonGroup = new QButtonGroup();
 
     FrequencyRangesButtonGroup->setExclusive(true);
 
@@ -265,6 +270,7 @@ void MeasurementsParametersWidget::InitializeFrequencyGroupBox()
     FrequencyGroupBoxLayout->addWidget(SetFrequencyParametersButton);
     FrequencyGroupBox->setLayout(FrequencyGroupBoxLayout);
 
+    qDebug()<<"FGB size = " << FrequencyGroupBox->size();
 }
 
 
@@ -343,7 +349,10 @@ void MeasurementsParametersWidget::RenewStartStopFrequencies()
 void MeasurementsParametersWidget::InitializeAngleGroupBox()
 {
     AngleGroupBox = new QGroupBox("Диапазон углов", this);
-    AngleGroupBoxLayout = new QVBoxLayout(AngleGroupBox);
+    AngleGroupBox->setFixedWidth(280);
+    AngleGroupBox->setSizePolicy(QSizePolicy::Fixed,QSizePolicy::Fixed);
+
+    AngleGroupBoxLayout = new QVBoxLayout();
 
     AngleGridLayout = new QGridLayout();
 
@@ -364,6 +373,14 @@ void MeasurementsParametersWidget::InitializeAngleGroupBox()
 
     TiltAngleNumberOfPointsLabel = new QLabel("Число точек наклона:", AngleGroupBox);
     TiltAngleNumberOfPointsEdit = new QLineEdit(QString::number(TiltAngleNumber),this);
+
+
+    RotationAngleStartEdit->setMaximumWidth(50);
+    RotationAngleStopEdit->setMaximumWidth(50);
+    RotationAngleNumberOfPointsEdit->setMaximumWidth(50);
+    TiltAngleStartEdit->setMaximumWidth(50);
+    TiltAngleStopEdit->setMaximumWidth(50);
+    TiltAngleNumberOfPointsEdit->setMaximumWidth(50);
 
     SetAngleParametersButton = new QPushButton("Установить", AngleGroupBox);
     connect(SetAngleParametersButton,&QPushButton::clicked,this, &MeasurementsParametersWidget::OnSetAngleParametersButtonClicked);
@@ -394,28 +411,6 @@ void MeasurementsParametersWidget::InitializeAngleGroupBox()
 
 
 
-void MeasurementsParametersWidget::InitializeCalibrationSampleGroupBox()
-{
-    CalibrationSampleGroupBox = new QGroupBox("Калибровочный образец");
-
-    CalibrationSampleMainLayout = new QVBoxLayout();
-
-    CalibrationSampleTypeLayout = new QHBoxLayout();
-    CalibrationSampleTypeLayout->addWidget(new QLabel("Вид образца"));
-    CalibrationSampleComboBox = new QComboBox(this);
-    CalibrationSampleComboBox->addItem("Цилиндр");
-    CalibrationSampleTypeLayout->addWidget(CalibrationSampleComboBox);
-    CalibrationSampleMainLayout->addLayout(CalibrationSampleTypeLayout);
-
-    CalibrationSampleParametersLayout = new QHBoxLayout();
-    CalibrationSampleParametersLayout->addWidget(new QLabel("Параметры",this));
-    CalibrationSampleParametersLayout->addWidget(new QLineEdit("Введите параметр",this));
-
-    CalibrationSampleMainLayout->addLayout(CalibrationSampleParametersLayout);
-
-    CalibrationSampleGroupBox->setLayout(CalibrationSampleMainLayout);
-
-}
 
 
 MeasurementsParametersWidget::~MeasurementsParametersWidget()

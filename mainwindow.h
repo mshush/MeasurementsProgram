@@ -48,6 +48,7 @@ public:
     WidgetForCustomPlot * CustomPlotWidget;
     ProcessImitation * Process;
     //void addItems(const QDir &directory, QTreeWidgetItem *parent); // Перенести в отдельный класс для дерева
+
     MeasuredFunction StoredFunction; // Хранить в WidgetForCustomPlot чтобы открывать старое?
     MeasuredFunction CalibrationFunction;
     MeasuredFunction BackgroundFunction;
@@ -62,6 +63,10 @@ public:
     bool BackgroundAddedToMainPlot = false;
 
     void ShowErrorMessage(QString Description, QString Advice);
+
+    void ConnectObjects();
+
+    //void CalculateDistancePortrait();
 
 signals:
     //void TellPlotTabsToChangeAngle(QVector <std::complex<double>> NeededRowFromMeasuredFunction); //

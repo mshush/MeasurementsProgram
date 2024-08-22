@@ -61,7 +61,12 @@ void ProcessImitation::Measure()
 
                 if (MeasurementMode == Object)
                 {
-                    MeasuredValue += std::complex <double> (0, pow(cos(2 * f * M_PI / F.FNum),10)); ;
+                    MeasuredValue += std::complex <double> (0, pow(cos(2 * f * M_PI / F.FNum),10));
+                }
+
+                if (MeasurementMode == Calibration)
+                {
+                    MeasuredValue += std::complex <double> (1, 1); ;
                 }
 
                 F.WriteTo(f,r,t, MeasuredValue);

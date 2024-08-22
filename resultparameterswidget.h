@@ -48,12 +48,21 @@ public:
     QPushButton * BackgroundAddButton;
     QPushButton * BackgroundSubstractButton;
 
-    // Задание фона
+
+    //Область параметров калибровочного образца // Перенесено из MeasurementsParametersWidget
+    void InitializeCalibrationGroupBox();
+
+    //QVBoxLayout * CalibrationSampleMainLayout;
+    QHBoxLayout * CalibrationSampleTypeLayout;
+    QComboBox * CalibrationSampleComboBox;
+    QHBoxLayout * CalibrationSampleParametersLayout;
+
     QGroupBox * CalibrationGroupBox;
     QLineEdit * CalibrationLineEdit;
     QPushButton * CalibrationFindButton;
     QPushButton * CalibrationSetButton;
 
+    //QPushButton * CalculateDistancePortraitButton;
 
 
     //QIntValidator * IntValidator;

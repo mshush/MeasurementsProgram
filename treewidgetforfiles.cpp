@@ -1,7 +1,9 @@
 #include "treewidgetforfiles.h"
 
-TreeWidgetForFiles::TreeWidgetForFiles()
+TreeWidgetForFiles::TreeWidgetForFiles() //Нужно добавить меню, которое предлагает открыть как калибровку, бэкграунд или измерение объекта
 {
+    this->setMaximumWidth(300);
+
     this->setColumnCount(1);
     this->setHeaderLabels(QStringList() << "Файловый менеджер");
 
@@ -10,8 +12,6 @@ TreeWidgetForFiles::TreeWidgetForFiles()
 
     SetRootDirectory(RootDirectory);
 
-    this->resize(800,100);
-    this->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Fixed);
 }
 
 

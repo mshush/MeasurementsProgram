@@ -2,9 +2,11 @@
 
 MeasuredFunction::MeasuredFunction()
 {
+    FNum = 0;
+    RNum = 0;
+    TNum = 0;
 
 }
-
 
 void MeasuredFunction::Resize(int FNumber, int RNumber, int TNumber)
 {
@@ -56,7 +58,6 @@ int MeasuredFunction::FindRotationIndex(double RotationValue)
 int MeasuredFunction::FindTiltIndex(double TiltValue)
 {
     int Result = int( (TiltValue - TStart)/(TStop - TStart) * double(TNum-1) ) ;
-    //qDebug() <<Result << " " << TiltValue << " " << TStop;
     return Result;
 }
 
@@ -142,22 +143,22 @@ void MeasuredFunction::SubstractBackground(MeasuredFunction BG)
 
 
 
-QVector <double> MeasuredFunction::XVector()
+QVector <double> MeasuredFunction::FreqVector()
 {
-    QVector <double> XVector(FNum);
+    QVector <double> FreqVector(FNum);
 
     for (int f=0; f<FNum; f++)
     {
-        XVector[f] = FStart + f * (FStop-FStart)/(FNum-1);
+        FreqVector[f] = FStart + f * (FStop-FStart)/(FNum-1);
     }
 
-    return XVector;
+    return FreqVector;
 }
 
 
 
 
-QVector <double> MeasuredFunction::YVectorAtAngles (int r, int t)
+QVector <double> MeasuredFunction::AmplVectorAtAngles (int r, int t)
 {
     QVector <double> YVector(FNum);
 
@@ -201,5 +202,69 @@ void MeasuredFunction::ClearFunction()
     RStop = 0;
     TStop = 0;
 }
+
+
+
+void MeasuredFunction::Calibrate(MeasuredFunction C, int SampleType)
+{
+    //Добавить проверку размерности
+    for (int t = 0; t < TNum; t++)
+    {
+        for (int r = 0; r < RNum; r++)
+        {
+            for (int f=0; f < FNum; f++)
+            {
+                std::complex<double> Multiplier = C.ReadFrom(f,r,t) * pow(std::complex<double>(f,0), SampleType+1);
+                std::complex<double> ValueAtPoint = ReadFrom(f,r,t)  * Multiplier;
+                this->WriteTo(f,r,t,ValueAtPoint);
+            }
+        }
+    }
+}
+
+
+
+
+
+QVector <double> MeasuredFunction::DistVector ()
+{
+    QVector <double> Result(FNum);
+    for (int d=0; d<FNum; d++)
+    {
+        Result[d] = d;
+    }
+    return Result;
+}
+
+
+QVector <double> MeasuredFunction::FourierAmplVectorAtAngles (int r, int t)
+{
+
+    QVector <std::complex<double>> F = GetFrequencyVectorAt(r,t);
+    QVector <std::complex<double>> Transform(FNum);
+
+
+    for (int d=0; d<FNum; d++)
+    {
+        Transform[d] = 0;
+        for (int f=0; f<FNum; f++)
+        {
+            Transform[d] += F[f] * exp( - std::complex<double>(0, 2 * M_PI * f * d / FNum));
+        }
+        Transform[d]/=FNum;
+    }
+
+    QVector <double> y(FNum);
+
+    for (int d=0; d<FNum; d++)
+    {
+        y[d] = abs(Transform[d]);
+    }
+
+    return y;
+}
+
+
+
 
 

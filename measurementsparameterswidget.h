@@ -88,14 +88,6 @@ public:
     QPushButton * SetAngleParametersButton;
 
 
-    //Область параметров калибровочного образца // Перенести в обработку!!!
-    void InitializeCalibrationSampleGroupBox();
-    QGroupBox * CalibrationSampleGroupBox;
-    QVBoxLayout * CalibrationSampleMainLayout;
-    QHBoxLayout * CalibrationSampleTypeLayout;
-    QComboBox * CalibrationSampleComboBox;
-    QHBoxLayout * CalibrationSampleParametersLayout;
-
 
 
     double FrequencyStart = 1;
