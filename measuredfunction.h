@@ -29,10 +29,8 @@ public:
     double TStop; //Конечный угол наклона
 
 
-    enum ModeOfMeasurement {Object, Background, Calibration};
 
-
-    QVector <std::complex<double>> Function;
+    QVector <std::complex<double>> Function; // Сам массив
 
 
     void Resize(int FNum, int RNum, int TNum); // Смена размера
@@ -47,13 +45,15 @@ public:
     QVector <double> XVector (); // Получает вектор X из MeasuredFunction
     QVector <double> YVectorAtAngles (int r, int t); // Получает вектор Y из MeasuredFunction при углах с индексами r и t
 
-    void SubstractBackground(MeasuredFunction BG);
+    bool CheckBackgroundForSuitability (MeasuredFunction BG); //Проверка размерностей перед вычитанием
+    void SubstractBackground (MeasuredFunction BG); // Вычитание фона
+    void ClearFunction(); // Очистка функции
 
-    // Для сохранения через QDataStream
+    // Для удобного сохранения через QDataStream
     friend QDataStream &operator<<(QDataStream &out, const MeasuredFunction &MyMF);
 
 
-    // Для чтения через QDataStream
+    // Для удобного чтения через QDataStream
     friend QDataStream &operator>>(QDataStream &in, MeasuredFunction &MyMeasuredFunction);
 
 

@@ -22,6 +22,8 @@
 #include <plotclass.h>
 #include <processimitation.h>
 #include <QDataStream>
+//#include <QLocale>
+
 
 QT_BEGIN_NAMESPACE
 namespace Ui {

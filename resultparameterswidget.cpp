@@ -23,7 +23,7 @@ ResultParametersWidget::ResultParametersWidget(QWidget *parent)
     SetCurrentRotationAngleDoubleSpinBox->setSingleStep((RotationStop - RotationStart)/(RotationNumber-1));
     SetCurrentRotationAngleDoubleSpinBox->setDecimals(3);
 
-    connect(SetCurrentRotationAngleDoubleSpinBox, &QDoubleSpinBox::valueChanged, this, &ResultParametersWidget::HandleRotationSpinBoxChange);
+    connect(SetCurrentRotationAngleDoubleSpinBox, &QDoubleSpinBox::editingFinished, this, &ResultParametersWidget::HandleRotationSpinBoxChange);
 
 
     SetCurrentTiltAngleLabel = new QLabel("Наклон:", this);
@@ -32,7 +32,8 @@ ResultParametersWidget::ResultParametersWidget(QWidget *parent)
     SetCurrentTiltAngleDoubleSpinBox->setSingleStep((TiltStop - TiltStart)/(TiltNumber-1));
     SetCurrentTiltAngleDoubleSpinBox->setDecimals(3);
 
-    connect(SetCurrentTiltAngleDoubleSpinBox, &QDoubleSpinBox::valueChanged, this, &ResultParametersWidget::HandleTiltSpinBoxChange);
+
+    connect(SetCurrentTiltAngleDoubleSpinBox, &QDoubleSpinBox::editingFinished, this, &ResultParametersWidget::HandleTiltSpinBoxChange);
 
 
     SetCurrentAngleButton= new QPushButton("Применить", this);
@@ -146,8 +147,9 @@ void ResultParametersWidget::FindCalibration()
 
 
 
-void ResultParametersWidget::HandleRotationSpinBoxChange(double RotationValue) // Переделать получше. Новый класс? Округление значений при окончании ввода? Или при нажатии кнопки enter?
+void ResultParametersWidget::HandleRotationSpinBoxChange() // Переделать получше. Новый класс? Округление значений при окончании ввода? Или при нажатии кнопки enter?
 {
+    double RotationValue = this->SetCurrentRotationAngleDoubleSpinBox->value();
     int ClosestIndex = std::round((RotationValue - RotationStart)/(RotationStop-RotationStart)*(RotationNumber-1));
     double RoundedValue = RotationStart + double(ClosestIndex) * ((RotationStop-RotationStart))/ (RotationNumber-1);
     this->SetCurrentRotationAngleDoubleSpinBox->setValue(RoundedValue);
@@ -155,8 +157,9 @@ void ResultParametersWidget::HandleRotationSpinBoxChange(double RotationValue) /
 }
 
 
-void ResultParametersWidget::HandleTiltSpinBoxChange(double TiltValue)
+void ResultParametersWidget::HandleTiltSpinBoxChange()
 {
+    double TiltValue = this->SetCurrentTiltAngleDoubleSpinBox->value();
     int ClosestIndex = std::round((TiltValue - TiltStart)/(TiltStop-TiltStart)*(TiltNumber-1));
     double RoundedValue = TiltStart + double(ClosestIndex) * ((TiltStop-TiltStart))/ (TiltNumber-1);
     this->SetCurrentTiltAngleDoubleSpinBox->setValue(RoundedValue);

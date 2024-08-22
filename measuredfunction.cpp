@@ -2,9 +2,7 @@
 
 MeasuredFunction::MeasuredFunction()
 {
-    FNum = 0;
-    RNum = 0;
-    TNum = 0;
+
 }
 
 
@@ -124,18 +122,6 @@ QDataStream &operator>>(QDataStream &in, MeasuredFunction &MyMeasuredFunction)
 
 
 
-QVector <double> MeasuredFunction::XVector()
-{
-    QVector <double> x(FNum);
-
-    for (int i=0;i<FNum;i++)
-    {
-        x[i] = FStart + i* (FStop-FStart)/(FNum-1);
-    }
-    return x;
-}
-
-
 
 void MeasuredFunction::SubstractBackground(MeasuredFunction BG)
 {
@@ -155,6 +141,22 @@ void MeasuredFunction::SubstractBackground(MeasuredFunction BG)
 
 
 
+
+QVector <double> MeasuredFunction::XVector()
+{
+    QVector <double> XVector(FNum);
+
+    for (int f=0; f<FNum; f++)
+    {
+        XVector[f] = FStart + f * (FStop-FStart)/(FNum-1);
+    }
+
+    return XVector;
+}
+
+
+
+
 QVector <double> MeasuredFunction::YVectorAtAngles (int r, int t)
 {
     QVector <double> YVector(FNum);
@@ -165,6 +167,39 @@ QVector <double> MeasuredFunction::YVectorAtAngles (int r, int t)
     }
 
     return YVector;
+}
+
+
+
+bool MeasuredFunction::CheckBackgroundForSuitability(MeasuredFunction BG)
+{
+    bool FreqRangeSuitable = (FStart == BG.FStart &&  FStop == BG.FStop &&  FStart == BG.FStart);
+    bool RotRangeSuitable = (RStart == BG.RStart &&  RStop == BG.RStop &&  RStart == BG.RStart);
+    bool TiltRangeSuitable = (TStart == BG.TStart &&  TStop == BG.TStop &&  TStart == BG.TStart);
+
+    bool Result = FreqRangeSuitable && RotRangeSuitable && TiltRangeSuitable;
+
+    return Result;
+}
+
+
+
+
+void MeasuredFunction::ClearFunction()
+{
+    Resize(0,0,0);
+
+    FNum = 0;
+    RNum = 0;
+    TNum = 0;
+
+    FStart = 0;
+    RStart = 0;
+    TStart = 0;
+
+    FStop = 0;
+    RStop = 0;
+    TStop = 0;
 }
 
 

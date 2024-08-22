@@ -12,6 +12,7 @@ ProcessImitation::ProcessImitation(QObject * parent) : QObject(parent)
 
 void ProcessImitation::Measure()
 {
+    /*
     QVector <std::complex<double>> FOffset(FrequencyNumber);
     QVector <std::complex<double>> ROffset(RotationAngleNumber);
     QVector <std::complex<double>> TOffset(TiltAngleNumber);
@@ -22,34 +23,19 @@ void ProcessImitation::Measure()
 
     for (int f=1; f < FrequencyNumber; f++)
     {
-        FOffset[f] = FOffset[f-1] + std::complex<double>(distribution(generator),distribution(generator));
+        FOffset[f] = FOffset[f-1] + 0.1  * std::complex<double>(distribution(generator),distribution(generator));
     }
     for (int r = 1; r < RotationAngleNumber; r++)
     {
-        ROffset[r] = ROffset[r-1] + std::complex<double>(distribution(generator),distribution(generator));
+        ROffset[r] = ROffset[r-1] + 0.1  * std::complex<double>(distribution(generator),distribution(generator));
     }
     for (int t = 1; t < TiltAngleNumber; t++)
     {
-        TOffset[t] = TOffset[t-1] + std::complex<double>(distribution(generator),distribution(generator));
+        TOffset[t] = TOffset[t-1] + 0.1 * std::complex<double>(distribution(generator),distribution(generator));
     }
+    */
 
     F.Resize(FrequencyNumber,RotationAngleNumber,TiltAngleNumber);
-
-    for (int t = 0; t < TiltAngleNumber; t++)
-    {
-        for (int r = 0; r < RotationAngleNumber; r++)
-        {
-            for (int f=0; f < FrequencyNumber; f++)
-            {
-                //double Real = t*r*f;
-                //double Imag = 0;
-                std::complex<double> ValueAtPoint = FOffset[f] + ROffset[r] + TOffset[t];
-                F.WriteTo(f,r,t,ValueAtPoint);
-
-                //qDebug() << "Cycle: double= " <<  Real << ", F= " <<  F.ReadFrom(f,r,t).real();
-            }
-        }
-    }
 
     F.FStart = FrequencyStart;
     F.FStop = FrequencyStop;
@@ -62,6 +48,27 @@ void ProcessImitation::Measure()
     F.TStart = TiltAngleStart;
     F.TStop = TiltAngleStop;
     F.TNum =  TiltAngleNumber;
+
+    for (int t = 0; t < TiltAngleNumber; t++)
+    {
+        for (int r = 0; r < RotationAngleNumber; r++)
+        {
+            for (int f=0; f < FrequencyNumber; f++)
+            {
+                std::complex<double>  PerfectValue = std::complex <double> (std::round(pow(sin(2 * f * M_PI / F.FNum),5)) + r + t, 0);
+                std::complex<double>  Noise = 0.01 * std::complex<double>(distribution(generator),distribution(generator));
+                std::complex<double> MeasuredValue =  PerfectValue + Noise; //  + FOffset[f] + ROffset[r] + TOffset[t];
+
+                if (MeasurementMode == Object)
+                {
+                    MeasuredValue += std::complex <double> (0, pow(cos(2 * f * M_PI / F.FNum),10)); ;
+                }
+
+                F.WriteTo(f,r,t, MeasuredValue);
+            }
+        }
+    }
+
 
     emit MeasurementFinished(F);
 

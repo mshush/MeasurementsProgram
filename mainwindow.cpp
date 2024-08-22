@@ -8,6 +8,11 @@ MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
 {
+
+    //QLocale::setDefault(QLocale(QLocale::Russian, QLocale::Russia));
+
+
+
     //qputenv("QT_SCALE_FACTOR", "1.5");
     //QGuiApplication::setAttribute(Qt::AA_Use96Dpi);
 
@@ -114,6 +119,7 @@ void MainWindow::SetMeasuredFunction(MeasuredFunction F)
 {
 
     StoredFunction = F;
+    // Сделать double сдесь, а округление потом?
     int r = StoredFunction.FindRotationIndex(TabOfParameters->ResultTab->SetCurrentRotationAngleDoubleSpinBox->value());
     int t = StoredFunction.FindTiltIndex    (TabOfParameters->ResultTab->SetCurrentTiltAngleDoubleSpinBox    ->value());
 
@@ -152,7 +158,7 @@ void MainWindow::ChangeAngleOfDemonstration()
     }
     else
     {
-        ShowErrorMessage("Измерений ещё не проводилось!", "Проведите измерение и попробуйте ещё раз");
+        ShowErrorMessage("Измеренных данных не обнаружено!", "Убедитесь, что измерение прошло успешно");
     }
 }
 
@@ -191,7 +197,7 @@ void MainWindow::SaveMeasuredFunction()
     QFile File(TabOfParameters->ResultTab->BackgroundLineEdit->text());
     if (!File.open(QIODevice::ReadOnly))
     {
-        ShowErrorMessage("Не удалось открыть файл для записи!",File.errorString());
+        ShowErrorMessage("Не удалось открыть файл для чтения!",File.errorString());
         return;
     }
 
@@ -228,20 +234,37 @@ void MainWindow::SaveMeasuredFunction()
 
 void MainWindow::SubstractBackground()
 {
+
+    if (BackgroundFunction.Function.size()==0)
+    {
+        QFile File(TabOfParameters->ResultTab->BackgroundLineEdit->text());
+        if (!File.open(QIODevice::ReadOnly))
+        {
+            ShowErrorMessage("Не удалось открыть файл для чтения!",File.errorString());
+            return;
+        }
+
+        QDataStream in(&File);
+        in >> BackgroundFunction;
+        File.close();
+    }
+
     PlotClass * PltPtr = this->ChartTab->PlotTabs[0]->customPlot;
+
 
     if (PltPtr->graph(0)->data()->size()>0)
     {
-        if (PltPtr->graph(0)->data()->size() == PltPtr->graph(1)->data()->size())
+        if (StoredFunction.CheckBackgroundForSuitability(BackgroundFunction) )
         {
             StoredFunction.SubstractBackground(BackgroundFunction);
             PltPtr->graph(1)->data()->clear();
             this->SetMeasuredFunction(StoredFunction);
-            this->BackgroundFunction.Resize(0,0,0);
+            this->BackgroundFunction.ClearFunction();
         }
         else
         {
-
+            ShowErrorMessage("Данные фона не подходят по формату!", "Убедитесь, что вы выбрали нужный файл");
+            return;
         }
     }
     else
@@ -313,7 +336,7 @@ void MainWindow::SetCalibration()
 
 
 
-void ShowErrorMessage(QString Description, QString Advice)
+void MainWindow::ShowErrorMessage(QString Description, QString Advice)
 {
     QMessageBox msgBox;
     msgBox.setIcon(QMessageBox::Critical);

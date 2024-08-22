@@ -70,8 +70,8 @@ public slots:
     void FindCalibration();
     //void SetCalibration (); // В MainWindow
 
-    void HandleRotationSpinBoxChange(double RotationValue);
-    void HandleTiltSpinBoxChange(double TiltValue);
+    void HandleRotationSpinBoxChange();
+    void HandleTiltSpinBoxChange();
 
 };
 

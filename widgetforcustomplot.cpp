@@ -188,7 +188,7 @@ void WidgetForCustomPlot::InitiateMovementGroupBox()
     connect(LockYAxisButton, &QPushButton::clicked,this,&WidgetForCustomPlot::LockYAxis);
     LockYAxisButton->setCheckable(true);
 
-    ResetButton = new QPushButton("Вернуть");
+    ResetButton = new QPushButton("Масштабировать");
     connect(ResetButton, &QPushButton::clicked, customPlot, &PlotClass::ResetPlot);
 
     InitiateSetRangeGroupBox();
