@@ -11,7 +11,14 @@ WidgetForCustomPlot::WidgetForCustomPlot(QWidget *parent)
     VerticalControlsLayout = new QVBoxLayout;
     //VerticalControlsLayout->setAlignment(Qt::AlignLeft);
 
-    customPlot = new PlotClass(this);
+    PlotThread = new QThread(this);
+    customPlot = new PlotClass();
+    customPlot->moveToThread(PlotThread);
+    PlotThread->start();
+
+
+
+
     customPlot->resize(600,400);
     customPlot->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding);
 
@@ -176,6 +183,7 @@ void WidgetForCustomPlot::InitiateMovementGroupBox()
     RubberBandButton = new QPushButton("Выделить");
     RubberBandButton->setCheckable(true);
     connect(RubberBandButton, &QPushButton::clicked,this,&WidgetForCustomPlot::ActivateRubberBand);
+    RubberBandButton->setToolTip("Масштабирование выделением области");
 
     LockXAxisButton = new QPushButton("Блок X");
     LockXAxisButton->setToolTip("Зафиксировать масштаб по оси X");
@@ -189,6 +197,7 @@ void WidgetForCustomPlot::InitiateMovementGroupBox()
 
     ResetButton = new QPushButton("Масштабировать");
     connect(ResetButton, &QPushButton::clicked, customPlot, &PlotClass::ResetPlot);
+    ResetButton->setToolTip("Подгоняет масштаб под график");
 
     InitiateSetRangeGroupBox();
 
@@ -228,6 +237,7 @@ void WidgetForCustomPlot::InitiateMarkerGroupBox()
     MarkerStyleComboBox->addItem("Квадрат");
     MarkerStyleComboBox->setCurrentIndex(0);
     connect(MarkerStyleComboBox, &QComboBox::currentIndexChanged,this,&WidgetForCustomPlot::ChangeMarkerStyle);
+    MarkerStyleComboBox->setToolTip("Форма маркера");
 
     InitiateMarkerPreviewPlot();
 
@@ -552,7 +562,14 @@ void WidgetForCustomPlot::PutMarkerAtLocalMin()
 
 
 
+WidgetForCustomPlot::~WidgetForCustomPlot()
+{
+    PlotThread->quit();
+    PlotThread->wait();
+    PlotThread->deleteLater();
+    customPlot->deleteLater();
 
+}
 
 
 

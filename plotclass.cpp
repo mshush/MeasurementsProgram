@@ -94,7 +94,6 @@ void PlotClass::ResetPlot()
 {
     rescaleAxes();
     replot();
-    //qDebug()<<this->axisRect()->rect().size();
 }
 
 

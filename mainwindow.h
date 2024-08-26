@@ -23,6 +23,8 @@
 #include <processimitation.h>
 #include <QDataStream>
 //#include <QLocale>
+#include <QThread>
+#include <QProgressBar>
 
 
 QT_BEGIN_NAMESPACE
@@ -53,6 +55,13 @@ public:
     MeasuredFunction CalibrationFunction;
     MeasuredFunction BackgroundFunction;
 
+    QThread * Thread;
+
+
+    // Индикатор выполнения
+    //QProgressBar * ProgressBar;
+
+
     void SetMeasuredFunction(MeasuredFunction F);
     void ChangeAngleOfDemonstration();
     void SaveMeasuredFunction();
@@ -66,11 +75,24 @@ public:
 
     void ConnectObjects();
 
-    //void CalculateDistancePortrait();
+    // Индикатор выполнения
+    QProgressBar * ProgressBar;
 
-signals:
+
+    int r=0;
+    int t=0;
+
+
+/*
+protected:
+    void showEvent(QShowEvent *event) override;
+    //void CalculateDistancePortrait();
+*/
+
+public slots:
     //void TellPlotTabsToChangeAngle(QVector <std::complex<double>> NeededRowFromMeasuredFunction); //
 
+    void HandleReceivedMeasuredFreqVector(int r, int t, QVector <std::complex<double>> FreqVector);
 
 
 private:

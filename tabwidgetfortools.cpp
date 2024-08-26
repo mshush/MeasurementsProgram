@@ -30,14 +30,17 @@ TabWidgetForTools::TabWidgetForTools()
     Tab1Layout->addWidget(StopMeasurementsButton);
 
 
-    ContinuousMeasurementsButton = new QPushButton("∞",this);
-    ContinuousMeasurementsButton->setFont(QFont("Arial", 30, QFont::Bold));
-    ContinuousMeasurementsButton->setStyleSheet("QPushButton { color: blue; padding-top: 0px; padding-bottom: 0px; padding-left: 5px; padding-right: 5px; }");
-    ContinuousMeasurementsButton->resize(30,30);
+    ContinuousMeasurementsButton = new QPushButton("Непрерывный режим",this);
+    //ContinuousMeasurementsButton->setFont(QFont("Arial", 30, QFont::Bold));
+    //ContinuousMeasurementsButton->setStyleSheet("QPushButton { color: blue; padding-top: 0px; padding-bottom: 0px; padding-left: 5px; padding-right: 5px; }");
+    //ContinuousMeasurementsButton->resize(30,30);
     ContinuousMeasurementsButton->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
     ContinuousMeasurementsButton->setCheckable(true);
     Tab1Layout->addWidget(ContinuousMeasurementsButton);
 
+    connect(ContinuousMeasurementsButton,&QPushButton::clicked,this,&TabWidgetForTools::SendContinuousMeasurementsButtonClickedSignal);
+
+    /*
     SaveDataButton = new QPushButton("⇩",this); //⤓⇩
     SaveDataButton->setFont(QFont("Arial", 30, QFont::Bold));
     SaveDataButton->setStyleSheet("QPushButton { color: orange; padding-top: 0px; padding-bottom: 0px; padding-left: 5px; padding-right: 5px; }");
@@ -52,6 +55,7 @@ TabWidgetForTools::TabWidgetForTools()
     ImportDataButton->resize(30,30);
     ImportDataButton->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
     Tab1Layout->addWidget(ImportDataButton);
+    */
 
     /*
     FourierTransformButton = new QPushButton("F",this);
@@ -65,6 +69,9 @@ TabWidgetForTools::TabWidgetForTools()
 
     SaveMeasuredFunctionButton = new QPushButton("Сохранить результат измерения",this);
     Tab1Layout->addWidget(SaveMeasuredFunctionButton);
+
+
+
 
     Tab1Layout->setAlignment(Qt::AlignLeft);
 
@@ -80,6 +87,13 @@ TabWidgetForTools::TabWidgetForTools()
     //resize(800,200);
     //setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
 }
+
+
+void TabWidgetForTools::SendContinuousMeasurementsButtonClickedSignal()
+{
+    emit ContinuousMeasurementsButtonClickedSignal(ContinuousMeasurementsButton->isChecked());
+}
+
 
 
 TabWidgetForTools::~TabWidgetForTools()

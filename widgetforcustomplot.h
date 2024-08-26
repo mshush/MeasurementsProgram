@@ -17,6 +17,7 @@ class WidgetForCustomPlot : public QWidget
     Q_OBJECT
 public:
     explicit WidgetForCustomPlot(QWidget *parent = nullptr);
+    ~WidgetForCustomPlot();
 
     PlotClass * customPlot;
     QWidget * ControlsWidget;
@@ -81,6 +82,10 @@ public:
     QHBoxLayout * SelectLocalMarkerLayout;
     QPushButton * SelectLocalMaxButton;
     QPushButton * SelectLocalMinButton;
+
+    QThread * PlotThread;
+
+
 
     void EnterSelectLocalMinMode();
     void PutMarkerAtLocalMin();

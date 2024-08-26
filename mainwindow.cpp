@@ -27,11 +27,16 @@ MainWindow::MainWindow(QWidget *parent)
 
     this->menuBar()->addMenu("Файл");
     this->menuBar()->addMenu("Свойства");
-    this->menuBar()->addMenu("Постобработка");
+    //this->menuBar()->addMenu("Постобработка");
     this->menuBar()->addMenu("Вид");
 
 
-    Process = new ProcessImitation(this);
+    Process = new ProcessImitation();
+
+    Thread = new QThread(this);
+
+    Process->moveToThread(Thread);
+    Thread->start();
 
 
     QVBoxLayout *OutermostVerticalLayout = new QVBoxLayout;
@@ -61,6 +66,9 @@ MainWindow::MainWindow(QWidget *parent)
     OutermostVerticalLayout->addLayout(MiddleHorizontalLayout);
     //OutermostVerticalLayout->addLayout(BottomHorizontalLayout);
 
+    ProgressBar = new QProgressBar(this);
+    OutermostVerticalLayout->addWidget(ProgressBar);
+
     centralWidget()->setLayout(OutermostVerticalLayout);
 
 
@@ -84,8 +92,8 @@ void MainWindow::SetMeasuredFunction(MeasuredFunction F)
 
     StoredFunction = F;
     // Сделать double сдесь, а округление потом?
-    int r = StoredFunction.FindRotationIndex(TabOfParameters->ResultTab->SetCurrentRotationAngleDoubleSpinBox->value());
-    int t = StoredFunction.FindTiltIndex    (TabOfParameters->ResultTab->SetCurrentTiltAngleDoubleSpinBox    ->value());
+    r = StoredFunction.FindRotationIndex(TabOfParameters->ResultTab->SetCurrentRotationAngleDoubleSpinBox->value());
+    t = StoredFunction.FindTiltIndex    (TabOfParameters->ResultTab->SetCurrentTiltAngleDoubleSpinBox    ->value());
 
     //QVector <std::complex<double>> FreqVectorAtChosenAngle = F.GetFrequencyVectorAt(r,t);
     //this->ChartTab->UpdateMeasurementPlot(FreqVectorAtChosenAngle);
@@ -109,8 +117,8 @@ void MainWindow::ChangeAngleOfDemonstration()
 
     if (PltPtr->graph(0)->data()->size()>0)
     {
-        int r = StoredFunction.FindRotationIndex(TabOfParameters->ResultTab->SetCurrentRotationAngleDoubleSpinBox->value());
-        int t = StoredFunction.FindTiltIndex(TabOfParameters->ResultTab->SetCurrentTiltAngleDoubleSpinBox->value());
+        r = StoredFunction.FindRotationIndex(TabOfParameters->ResultTab->SetCurrentRotationAngleDoubleSpinBox->value());
+        t = StoredFunction.FindTiltIndex(TabOfParameters->ResultTab->SetCurrentTiltAngleDoubleSpinBox->value());
 
         PltPtr->graph(0)->setData(StoredFunction.FreqVector(), StoredFunction.AmplVectorAtAngles(r,t));
 
@@ -188,8 +196,8 @@ void MainWindow::SaveMeasuredFunction()
 
     QVector <double> x = BackgroundFunction.FreqVector();
 
-    int r = BackgroundFunction.FindRotationIndex(TabOfParameters->ResultTab->SetCurrentRotationAngleDoubleSpinBox->value());
-    int t = BackgroundFunction.FindTiltIndex    (TabOfParameters->ResultTab->SetCurrentTiltAngleDoubleSpinBox    ->value());
+    r = BackgroundFunction.FindRotationIndex(TabOfParameters->ResultTab->SetCurrentRotationAngleDoubleSpinBox->value());
+    t = BackgroundFunction.FindTiltIndex    (TabOfParameters->ResultTab->SetCurrentTiltAngleDoubleSpinBox    ->value());
 
     QVector <std::complex<double>> f = BackgroundFunction.GetFrequencyVectorAt(r,t);
 
@@ -256,13 +264,12 @@ void MainWindow::SubstractBackground()
 
 MainWindow::~MainWindow()
 {
+    Thread->quit();
+    Thread->wait();
+    Thread->deleteLater();
+    Process->deleteLater();
+
     delete ui;
-    /*
-    delete TabOfParameters;
-    delete TabOfTools;
-    delete ChartTab;
-    delete CustomPlotWidget;
-    */
 }
 
 
@@ -298,8 +305,8 @@ void MainWindow::SetCalibration()
     StoredFunction.Calibrate(CalibrationFunction,SampleTypeIndex);
 
 
-    int r = StoredFunction.FindRotationIndex(TabOfParameters->ResultTab->SetCurrentRotationAngleDoubleSpinBox->value());
-    int t = StoredFunction.FindTiltIndex(TabOfParameters->ResultTab->SetCurrentTiltAngleDoubleSpinBox->value());
+    r = StoredFunction.FindRotationIndex(TabOfParameters->ResultTab->SetCurrentRotationAngleDoubleSpinBox->value());
+    t = StoredFunction.FindTiltIndex(TabOfParameters->ResultTab->SetCurrentTiltAngleDoubleSpinBox->value());
 
     PlotClass * PltPtr = this->ChartTab->PlotTabs[0]->customPlot;
     PltPtr->graph(0)->setData(StoredFunction.FreqVector(), StoredFunction.AmplVectorAtAngles(r,t));
@@ -325,8 +332,8 @@ void MainWindow::SetCalibration()
 
     //qDebug()<< "xMax = " << x[1600];
 
-    int r = BackgroundFunction.FindRotationIndex(TabOfParameters->ResultTab->SetCurrentRotationAngleDoubleSpinBox->value());
-    int t = BackgroundFunction.FindTiltIndex    (TabOfParameters->ResultTab->SetCurrentTiltAngleDoubleSpinBox    ->value());
+    r = BackgroundFunction.FindRotationIndex(TabOfParameters->ResultTab->SetCurrentRotationAngleDoubleSpinBox->value());
+    t = BackgroundFunction.FindTiltIndex    (TabOfParameters->ResultTab->SetCurrentTiltAngleDoubleSpinBox    ->value());
 
     //qDebug()<<r << " = r, t = " << t;
 
@@ -373,7 +380,8 @@ void MainWindow::ConnectObjects()
 
 
 
-    //connect(TabOfTools->ContinuousMeasurementsButton, &QPushButton::clicked, Process, &ProcessImitation::MeasureContinuously);
+    connect(TabOfTools, &TabWidgetForTools::ContinuousMeasurementsButtonClickedSignal, Process, &ProcessImitation::MeasureContinuously);
+
     //connect(TabOfTools->ContinuousMeasurementsButton, &QPushButton::clicked, ChartTab, &TabWidgetForCharts::ContinuousMeasurementModeChanged);
 
 
@@ -413,5 +421,82 @@ void MainWindow::ConnectObjects()
 
     //connect(TabOfParameters->ResultTab->CalculateDistancePortraitButton, &QPushButton::clicked, this, &MainWindow::CalculateDistancePortrait);
 
+    connect(Thread, &QThread::finished, Thread, &QThread::deleteLater);
+
+    connect(Process, &ProcessImitation::ProgressSignal, this->ProgressBar, &QProgressBar::setValue);
+
+    connect(Process, &ProcessImitation::IterationOfMeasurementFinished,this, &MainWindow::HandleReceivedMeasuredFreqVector);
 
 }
+
+
+void MainWindow::HandleReceivedMeasuredFreqVector(int r, int t, QVector <std::complex<double>> FreqVector)
+{
+
+
+    if (StoredFunction.FNum==0)
+    {
+        double FStart = TabOfParameters->MeasurementTab->FrequencyStart;
+        double FStop = TabOfParameters->MeasurementTab->FrequencyStop;
+        double FNum = TabOfParameters->MeasurementTab->FrequencyNumber;
+
+        double RStart = TabOfParameters->MeasurementTab->RotationAngleStart;
+        double RStop = TabOfParameters->MeasurementTab->RotationAngleStop;
+        double RNum = TabOfParameters->MeasurementTab->RotationAngleNumber;
+
+        double TStart = TabOfParameters->MeasurementTab->TiltAngleStart;
+        double TStop = TabOfParameters->MeasurementTab->TiltAngleStop;
+        double TNum = TabOfParameters->MeasurementTab->TiltAngleNumber;
+
+
+        StoredFunction.SetRanges(FStart,FStop,FNum,   RStart,RStop,RNum,   TStart,TStop,TNum);
+
+        r=0;
+        t=0;
+    }
+
+
+    TabOfParameters->ResultTab->SetCurrentRotationAngleDoubleSpinBox->setValue(StoredFunction.FindRotationValue(r));
+    TabOfParameters->ResultTab->SetCurrentTiltAngleDoubleSpinBox    ->setValue(StoredFunction.FindTiltValue(t));
+
+    StoredFunction.WriteToRow(r,t,FreqVector);
+
+    QVector<double> XVect = StoredFunction.FreqVector();
+    QVector<double> YVect = StoredFunction.AmplVectorAtAngles(r,t);
+
+    //qDebug()<<YVect[0];
+
+    PlotClass * PltPtr = ChartTab->PlotTabs[0]->customPlot;
+    PltPtr->graph(0)->setData(XVect,YVect);
+    PltPtr->rescaleAxes();
+    PltPtr->replot();
+
+
+    if (r==StoredFunction.RNum-1 and t==StoredFunction.TNum-1)
+    {
+        //Сохранить, и занулить, чтобы начать следующую
+        SaveMeasuredFunction();
+        StoredFunction.ClearFunction();
+    }
+    else
+    {
+
+    }
+
+}
+
+
+
+
+
+
+
+
+
+/*
+void MainWindow::showEvent(QShowEvent *event)
+{
+    QMainWindow::showEvent(event);
+    this->setWindowState(Qt::WindowMaximized);
+}
+*/

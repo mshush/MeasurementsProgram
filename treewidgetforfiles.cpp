@@ -4,14 +4,29 @@ TreeWidgetForFiles::TreeWidgetForFiles() //Нужно добавить меню,
 {
     this->setMaximumWidth(300);
 
-    this->setColumnCount(1);
-    this->setHeaderLabels(QStringList() << "Файловый менеджер");
 
-    RootDirectory = QDir("C:/Users/HP/Documents/MeasurementsProgram");
-    RootItem = new QTreeWidgetItem(this);
+    OutermostVerticalLayout = new QVBoxLayout(this);
+    DirectoryLabel = new QLabel("Директория:",this);
+    DirectoryEdit = new QLineEdit("C:/Users/HP/Documents/",this);
+    connect(DirectoryEdit, &QLineEdit::returnPressed, this, &TreeWidgetForFiles::ChangeRootDirectory);
+
+
+    FileTree = new QTreeWidget(this);
+
+    FileTree->setColumnCount(1);
+    FileTree->setHeaderLabels(QStringList() << "Навигация по файлам");
+
+    RootDirectory = QDir("C:/Users/HP/Documents/");
+    RootItem = new QTreeWidgetItem(FileTree);
 
     SetRootDirectory(RootDirectory);
 
+
+    OutermostVerticalLayout->addWidget(DirectoryLabel);
+    OutermostVerticalLayout->addWidget(DirectoryEdit);
+    OutermostVerticalLayout->addWidget(FileTree);
+
+    this->setLayout(OutermostVerticalLayout);
 }
 
 
@@ -26,21 +41,37 @@ void TreeWidgetForFiles::AddItems(const QDir &directory, QTreeWidgetItem *parent
     {
         QTreeWidgetItem *item = new QTreeWidgetItem(parent);
         item->setText(0, fileInfo.fileName());
-        if (fileInfo.isDir() and CurrentDepth<6)
+        if (fileInfo.isDir() and CurrentDepth<2)
         {
             QDir subDir(fileInfo.filePath());
             AddItems(subDir, item, CurrentDepth);
         }
     }
+
 }
 
 
 void TreeWidgetForFiles::SetRootDirectory(const QDir &RootDirectory)
 {
     RootItem->setText(0, RootDirectory.dirName());
-    this->addTopLevelItem(RootItem);
+    FileTree->addTopLevelItem(RootItem);
     AddItems(RootDirectory, RootItem, 0);
 }
+
+
+void TreeWidgetForFiles::ChangeRootDirectory()
+{
+    RootDirectory.setPath(this->DirectoryEdit->text());
+    if (!RootDirectory.exists()) {
+        QMessageBox::warning(this, "Ошибка", "Директория не существует");
+        return;
+    }
+
+    FileTree->clear();
+    SetRootDirectory(RootDirectory);
+
+}
+
 
 
 TreeWidgetForFiles::~TreeWidgetForFiles()

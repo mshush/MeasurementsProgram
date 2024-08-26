@@ -266,5 +266,49 @@ QVector <double> MeasuredFunction::FourierAmplVectorAtAngles (int r, int t)
 
 
 
+void MeasuredFunction::WriteToRow(int r, int t, QVector <std::complex<double>> FreqVect)
+{
+    //Добавить проверку размерности
 
+    for(int f=0; f<FNum; f++)
+    {
+        WriteTo(f,r,t,FreqVect[f]);
+    }
+}
+
+
+void MeasuredFunction::SetRanges(double FreqStart, double FreqStop, double FreqNumber, double RotStart, double RotStop, double RotNumber, double TiltStart, double TiltStop, double TiltNumber)
+{
+
+    Resize(FreqNumber,RotNumber,TiltNumber);
+
+    FStart = FreqStart;
+    FStop = FreqStop;
+    FNum =  FreqNumber;
+
+    RStart = RotStart;
+    RStop = RotStop;
+    RNum =  RotNumber;
+
+    TStart = TiltStart;
+    TStop = TiltStop;
+    TNum =  TiltNumber;
+
+}
+
+
+double MeasuredFunction::FindRotationValue(int r)
+{
+    double Result = RStart + double(r) * (RStop - RStart) / double(RNum-1)  ;
+    return Result;
+}
+
+
+
+
+double MeasuredFunction::FindTiltValue (int t)
+{
+    double Result = TStart + double(t) * (TStop - TStart) / double(TNum-1)  ;
+    return Result;
+}
 

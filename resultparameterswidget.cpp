@@ -98,7 +98,10 @@ void ResultParametersWidget::FindBackground ()
     if (!fileName.isEmpty())
     {
         BackgroundLineEdit->setText(fileName);
+        QFileInfo FileInfo(fileName);
+        BackgroundLineEdit->setToolTip(FileInfo.baseName());
     }
+
 }
 
 
@@ -110,7 +113,10 @@ void ResultParametersWidget::FindCalibration()
     if (!fileName.isEmpty())
     {
         CalibrationLineEdit->setText(fileName);
+        QFileInfo FileInfo(fileName);
+        CalibrationLineEdit->setToolTip(FileInfo.baseName());
     }
+
 }
 
 

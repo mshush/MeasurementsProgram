@@ -11,9 +11,7 @@ TabWidgetForParameters::TabWidgetForParameters(QWidget *parent) : QTabWidget(par
     addTab(MeasurementTab, "Измерение");
     addTab(ResultTab, "Результат");
     addTab(FileTreeTab, "Открыть");
-
 }
-
 
 
 

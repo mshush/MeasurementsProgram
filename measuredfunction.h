@@ -41,6 +41,12 @@ public:
     int FindRotationIndex(double RotationValue); // Индекс угла поворота по значению
     int FindTiltIndex(double TiltValue); // Индекс угла наклона по значению
 
+    double FindRotationValue(int r);
+    double FindTiltValue    (int t);
+
+    void WriteToRow(int r, int t, QVector <std::complex<double>> FreqVect); // Запись строки функции от частот по индексам углов
+
+    void SetRanges(double FreqStart, double FreqStop, double FreqNumber, double RotStart, double RotStop, double RotNumber, double TiltStart, double TiltStop, double TiltNumber);
 
     QVector <double> FreqVector (); // Получает вектор частот из MeasuredFunction
     QVector <double> AmplVectorAtAngles (int r, int t); // Получает вектор амплитуд из MeasuredFunction при углах с индексами r и t
@@ -53,6 +59,8 @@ public:
     void SubstractBackground (MeasuredFunction BG); // Вычитание фона
     void Calibrate (MeasuredFunction Calibration, int SampleType); // Калибровка
     void ClearFunction(); // Очистка функции
+
+
 
 
     // Для удобного сохранения через QDataStream

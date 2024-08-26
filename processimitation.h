@@ -7,6 +7,7 @@
 #include <QTimer>
 #include <measuredfunction.h>
 #include <QDebug>
+#include <QThread>
 
 class ProcessImitation : public QObject {
     Q_OBJECT
@@ -41,16 +42,16 @@ public:
 
 signals:
     void MeasurementFinished(MeasuredFunction F_ForSending);
+    void ProgressSignal(int CurrentProgressPercent);
+    void IterationOfMeasurementFinished(int r, int t, QVector <std::complex<double>> FreqVector);
 
 public slots:
     void Measure();
-    void MeasureContinuously(bool ContinuousModeIsOn);
+    void MeasureContinuously(bool CheckedStatus);
 
-    void SetFrequencyRange (double FreqStart, double FreqStop, double PointsNumber);
+    void SetFrequencyRange (double FreqStart, double FreqStop, double FreqNumber);
     void SetAngleRanges (double RotStart, double RotStop, double RotNumber, double TiltStart, double TiltStop, double TiltNumber);
 
-    //void ChangeRotationAngleRange (double RotStart, double RotStop, double RotNumber);
-    //void ChangeTiltAngleRange (double TiltStart, double TiltStop, double TiltNumber);
 
     void PerformNextMeasurement();
 };
