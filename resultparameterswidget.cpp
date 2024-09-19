@@ -7,80 +7,28 @@ ResultParametersWidget::ResultParametersWidget(QWidget *parent)
 
     this->setMaximumWidth(300);
     OutermostVerticalLayout = new QVBoxLayout(this);
-
-
-    // AnglesGroupBox -- область введения отображаемых углов измеренных данных
-
-    AnglesGroupBox = new QGroupBox("Углы наклона и поворота", this);
-
-    AnglesGroupBoxLayout = new QGridLayout(AnglesGroupBox);
-
-    SetCurrentRotationAngleLabel = new QLabel("Поворот:", this);
-
-    SetCurrentRotationAngleDoubleSpinBox = new QDoubleSpinBox(this);
-
-    SetCurrentRotationAngleDoubleSpinBox->setRange(RotationStart, RotationStop);
-    SetCurrentRotationAngleDoubleSpinBox->setSingleStep((RotationStop - RotationStart)/(RotationNumber-1));
-    SetCurrentRotationAngleDoubleSpinBox->setDecimals(3);
-
-    connect(SetCurrentRotationAngleDoubleSpinBox, &QDoubleSpinBox::editingFinished, this, &ResultParametersWidget::HandleRotationSpinBoxChange);
-
-
-    SetCurrentTiltAngleLabel = new QLabel("Наклон:", this);
-    SetCurrentTiltAngleDoubleSpinBox  = new QDoubleSpinBox(this);
-    SetCurrentTiltAngleDoubleSpinBox->setRange(TiltStart, TiltStop);
-    SetCurrentTiltAngleDoubleSpinBox->setSingleStep((TiltStop - TiltStart)/(TiltNumber-1));
-    SetCurrentTiltAngleDoubleSpinBox->setDecimals(3);
-
-
-    connect(SetCurrentTiltAngleDoubleSpinBox, &QDoubleSpinBox::editingFinished, this, &ResultParametersWidget::HandleTiltSpinBoxChange);
-
-
-    SetCurrentAngleButton= new QPushButton("Применить", this);
-
     this->setLayout(OutermostVerticalLayout);
+
+
+    // Задаём AnglesGroupBox -- область введения отображаемых углов измеренных данных
+    InitiateAnglesGroupBox();
     OutermostVerticalLayout->addWidget(AnglesGroupBox);
-    AnglesGroupBox->setLayout(AnglesGroupBoxLayout);
-
-    AnglesGroupBoxLayout ->addWidget(SetCurrentRotationAngleLabel,  0,0);
-    AnglesGroupBoxLayout ->addWidget(SetCurrentRotationAngleDoubleSpinBox,   0,1);
-
-    AnglesGroupBoxLayout ->addWidget(SetCurrentTiltAngleLabel,  1,0);
-    AnglesGroupBoxLayout ->addWidget(SetCurrentTiltAngleDoubleSpinBox,   1,1);
-
-    AnglesGroupBoxLayout ->addWidget(SetCurrentAngleButton,  2,0,1,2);
 
 
-    // Задаём BackgroundGroupBox
-    BackgroundGroupBox = new QGroupBox("Фон (Бэкграунд)", this);
-
-    QVBoxLayout * BackgroundGroupBoxLayout = new QVBoxLayout(BackgroundGroupBox);
-    QHBoxLayout * BackgroundButtonsLayout = new QHBoxLayout;
-
-    //QLabel * BackgroundLabel = new QLabel("Фон", BackgroundGroupBox);
-
-    BackgroundLineEdit = new QLineEdit(BackgroundGroupBox);
-    BackgroundFindButton = new QPushButton("Найти", BackgroundGroupBox);
-    connect(BackgroundFindButton, &QPushButton::clicked, this, &ResultParametersWidget::FindBackground);
-    BackgroundAddButton  = new QPushButton("Добавить", BackgroundGroupBox);
-    //connect(BackgroundAddButton, &QPushButton::clicked, this, &ResultParametersWidget::AddBackground);
-    BackgroundSubstractButton  = new QPushButton("Вычесть", BackgroundGroupBox);
-    //connect(BackgroundSubstractButton, &QPushButton::clicked, this, &ResultParametersWidget::SubstractBackground);
+    /* Нужно ли?
+    // Задаём ResponseGroupBox -- область задания файла отклика. По умолчанию -- тот, в который было сохранено измерение
+    InitiateResponseGroupBox();
+    OutermostVerticalLayout->addWidget(ResponseGroupBox);
+    */
 
 
-    BackgroundGroupBox->setLayout(BackgroundGroupBoxLayout);
 
-    BackgroundGroupBoxLayout->addWidget(BackgroundLineEdit);
-
-    BackgroundButtonsLayout -> addWidget(BackgroundFindButton);
-    BackgroundButtonsLayout -> addWidget(BackgroundAddButton);
-    BackgroundButtonsLayout -> addWidget(BackgroundSubstractButton);
-
-    BackgroundGroupBoxLayout->addLayout(BackgroundButtonsLayout);
+    // Задаём BackgroundGroupBox -- область задания файла фона
+    InitiateBackgroundGroupBox();
     OutermostVerticalLayout->addWidget(BackgroundGroupBox);
 
-    // Задаём CalibrationGroupBox
-    InitializeCalibrationGroupBox();
+    // Задаём CalibrationGroupBox -- область задания файла калибровки
+    InitiateCalibrationGroupBox();
     OutermostVerticalLayout->addWidget(CalibrationGroupBox);
 
 
@@ -146,7 +94,7 @@ void ResultParametersWidget::HandleTiltSpinBoxChange()
 
 
 
-void ResultParametersWidget::InitializeCalibrationGroupBox()
+void ResultParametersWidget::InitiateCalibrationGroupBox()
 {
     CalibrationGroupBox = new QGroupBox("Калибровка", this);
 
@@ -195,8 +143,124 @@ void ResultParametersWidget::InitializeCalibrationGroupBox()
 
 
 
+void ResultParametersWidget::InitiateAnglesGroupBox()
+{
+    AnglesGroupBox = new QGroupBox("Углы наклона и поворота", this);
+
+    AnglesGroupBoxLayout = new QGridLayout(AnglesGroupBox);
+
+    SetCurrentRotationAngleLabel = new QLabel("Поворот:", this);
+
+    SetCurrentRotationAngleDoubleSpinBox = new QDoubleSpinBox(this);
+
+    SetCurrentRotationAngleDoubleSpinBox->setRange(RotationStart, RotationStop);
+    SetCurrentRotationAngleDoubleSpinBox->setSingleStep((RotationStop - RotationStart)/(RotationNumber-1));
+    SetCurrentRotationAngleDoubleSpinBox->setDecimals(3);
+
+    connect(SetCurrentRotationAngleDoubleSpinBox, &QDoubleSpinBox::editingFinished, this, &ResultParametersWidget::HandleRotationSpinBoxChange);
+
+
+    SetCurrentTiltAngleLabel = new QLabel("Наклон:", this);
+    SetCurrentTiltAngleDoubleSpinBox  = new QDoubleSpinBox(this);
+    SetCurrentTiltAngleDoubleSpinBox->setRange(TiltStart, TiltStop);
+    SetCurrentTiltAngleDoubleSpinBox->setSingleStep((TiltStop - TiltStart)/(TiltNumber-1));
+    SetCurrentTiltAngleDoubleSpinBox->setDecimals(3);
+
+
+    connect(SetCurrentTiltAngleDoubleSpinBox, &QDoubleSpinBox::editingFinished, this, &ResultParametersWidget::HandleTiltSpinBoxChange);
+
+
+    SetCurrentAngleButton= new QPushButton("Применить", this);
+
+    AnglesGroupBox->setLayout(AnglesGroupBoxLayout);
+
+    AnglesGroupBoxLayout ->addWidget(SetCurrentRotationAngleLabel,  0,0);
+    AnglesGroupBoxLayout ->addWidget(SetCurrentRotationAngleDoubleSpinBox,   0,1);
+
+    AnglesGroupBoxLayout ->addWidget(SetCurrentTiltAngleLabel,  1,0);
+    AnglesGroupBoxLayout ->addWidget(SetCurrentTiltAngleDoubleSpinBox,   1,1);
+
+    AnglesGroupBoxLayout ->addWidget(SetCurrentAngleButton,  2,0,1,2);
+}
 
 
 
+void ResultParametersWidget::InitiateBackgroundGroupBox()
+{
+    BackgroundGroupBox = new QGroupBox("Фон (Бэкграунд)", this);
+
+    QVBoxLayout * BackgroundGroupBoxLayout = new QVBoxLayout(BackgroundGroupBox);
+    QHBoxLayout * BackgroundButtonsLayout = new QHBoxLayout;
+
+    BackgroundLineEdit = new QLineEdit(BackgroundGroupBox);
+    BackgroundFindButton = new QPushButton("Найти", BackgroundGroupBox);
+    connect(BackgroundFindButton, &QPushButton::clicked, this, &ResultParametersWidget::FindBackground);
+    BackgroundAddButton  = new QPushButton("Добавить", BackgroundGroupBox);
+    //connect(BackgroundAddButton, &QPushButton::clicked, this, &ResultParametersWidget::AddBackground); //Теперь в MainWindow
+    BackgroundSubstractButton  = new QPushButton("Вычесть", BackgroundGroupBox);
+    //connect(BackgroundSubstractButton, &QPushButton::clicked, this, &ResultParametersWidget::SubstractBackground); //Теперь в MainWindow
+
+
+    BackgroundGroupBox->setLayout(BackgroundGroupBoxLayout);
+
+    BackgroundGroupBoxLayout->addWidget(BackgroundLineEdit);
+
+    BackgroundButtonsLayout -> addWidget(BackgroundFindButton);
+    BackgroundButtonsLayout -> addWidget(BackgroundAddButton);
+    BackgroundButtonsLayout -> addWidget(BackgroundSubstractButton);
+
+    BackgroundGroupBoxLayout->addLayout(BackgroundButtonsLayout);
+}
+
+
+
+
+
+void ResultParametersWidget::FileChosenInTreeWidget(int Mode, QString FileName)
+{
+    switch (Mode)
+    {
+    case 0: //Response
+        qDebug()<<"Response was chosen";
+        break;
+
+    case 1: //Background
+        BackgroundLineEdit->setText(FileName);
+        break;
+
+    case 2: //Calibration
+        CalibrationLineEdit->setText(FileName);
+        break;
+
+    default:
+        qDebug() << "Invalid mode";
+        break;
+    }
+}
+
+
+
+
+
+
+
+
+
+/* Нужно ли?
+void ResultParametersWidget::InitiateResponseGroupBox()
+{
+
+    ResponseGroupBox = new QGroupBox(this);
+    QVBoxLayout * ResponseLayout = new QVBoxLayout(ResponseGroupBox);
+    ResponseLineEdit = new QLineEdit(ResponseGroupBox);
+    ResponseFindButton = new QPushButton("Установить", ResponseGroupBox);
+
+    ResponseGroupBox->setLayout(ResponseLayout);
+
+    ResponseLayout->addWidget(ResponseLineEdit  );
+    ResponseLayout->addWidget(ResponseFindButton);
+
+}
+*/
 
 

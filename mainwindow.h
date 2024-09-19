@@ -57,6 +57,8 @@ public:
 
     QThread * Thread;
 
+    //enum ModeOfMeasurement {Response, Background, Calibration};
+
 
     // Индикатор выполнения
     //QProgressBar * ProgressBar;
@@ -75,13 +77,17 @@ public:
 
     void ConnectObjects();
 
+    void UploadFile();
+
     // Индикатор выполнения
-    QProgressBar * ProgressBar;
+    //QProgressBar * ProgressBar;
 
 
     int r=0;
     int t=0;
 
+
+    int CurrentPlotIndex=0;
 
 /*
 protected:
@@ -92,8 +98,9 @@ protected:
 public slots:
     //void TellPlotTabsToChangeAngle(QVector <std::complex<double>> NeededRowFromMeasuredFunction); //
 
-    void HandleReceivedMeasuredFreqVector(int r, int t, QVector <std::complex<double>> FreqVector);
+    void HandleReceivedMeasuredFreqVector( QVector <double> ReceivedVector);
 
+    void GetPlotFromDat();
 
 private:
     Ui::MainWindow *ui;

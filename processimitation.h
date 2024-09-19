@@ -28,8 +28,8 @@ public:
     double TiltAngleStop = 9;
     int TiltAngleNumber = 10;
 
-    enum ModeOfMeasurement {Object, Background, Calibration};
-    ModeOfMeasurement MeasurementMode = Object; // Calibration; //  Background; //
+    enum ModeOfMeasurement {Response, Background, Calibration};
+    ModeOfMeasurement MeasurementMode = Response; // Calibration; //  Background; //
 
 
     MeasuredFunction F;
@@ -39,11 +39,14 @@ public:
 
     QTimer * RefreshTimer;
 
+    int BufferSize = 100;
+
+    bool Stopped = false;
 
 signals:
     void MeasurementFinished(MeasuredFunction F_ForSending);
     void ProgressSignal(int CurrentProgressPercent);
-    void IterationOfMeasurementFinished(int r, int t, QVector <std::complex<double>> FreqVector);
+    void IterationOfMeasurementFinished(QVector <double> FreqVector);
 
 public slots:
     void Measure();
@@ -52,6 +55,7 @@ public slots:
     void SetFrequencyRange (double FreqStart, double FreqStop, double FreqNumber);
     void SetAngleRanges (double RotStart, double RotStop, double RotNumber, double TiltStart, double TiltStop, double TiltNumber);
 
+    void StopEverything();
 
     void PerformNextMeasurement();
 };

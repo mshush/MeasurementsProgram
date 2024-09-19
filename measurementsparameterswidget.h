@@ -42,15 +42,30 @@ public:
     QLabel * FrequencyNumberOfPointsLabel;
     QLineEdit * FrequencyNumberOfPointsEdit;
     QDoubleValidator * DoubleValidator;
-
+/*
     const std::pair<double, double> FrequencyRanges[7] = {
                                                           {1.0, 2.0},     //L
                                                           {2.0, 4.0},     //S
                                                           {4.0, 8.0},     //C
                                                           {8.0, 12.0},    //X
-                                                          {12.0, 18.0},   //Ku
-                                                          {18.0, 26.5},   //K
-                                                          {26.5, 40.0}};  //Ka
+                                                          {12.0, 18.0},   //Ku Ka1 26-36 12-26 - не мер. больш погл
+                                                          {18.0, 26.5},   //K  УБРАТЬ!!!!!!! Посмотреть диапазоны в проге
+                                                          {26.5, 40.0}};  //Ka Ka2 36-40
+*/
+
+    const std::pair<double, double> FrequencyRanges[7] = {
+                                                          {1.0,  2.0},     //L
+                                                          {2.0,  4.0},     //S
+                                                          {4.0,  8.0},     //C
+                                                          {8.0,  12.0},    //X
+                                                          {26.0, 36.0},   //Ka1  12-26 - не мер. больш погл
+                                                          {18.0, 26.5},   //K  УБРАТЬ!!!!!!! Посмотреть диапазоны в проге
+                                                          {36.0, 40.0}};  //Ka2
+
+
+
+
+
     QHBoxLayout * ButtonGroupLayout;
     QButtonGroup * FrequencyRangesButtonGroup;
     QPushButton * NoRangeButton;

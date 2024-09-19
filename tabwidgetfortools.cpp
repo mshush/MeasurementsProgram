@@ -4,10 +4,23 @@ TabWidgetForTools::TabWidgetForTools()
 
 {
 
-    //Tab1 = new QWidget;
-    //QLabel * ExplanationLabel = new QLabel("Место для Инструментов: запуск и приостановка измерений будут здесь, а не выше в меню, так как нужно часто(я полагаю)\nТакже здесь можно в Обработке разместить переключение на дальностный портрет и работу с ним");
-    QHBoxLayout * Tab1Layout = new QHBoxLayout(this);
-    //ExplanationLabel->setWordWrap(true);
+    PatternTab = new QWidget(this);
+    MessagesTab = new QWidget(this);
+    LegendTab = new QWidget(this);
+    File_ManagerTab = new TreeWidgetForFiles(this);
+    Debug_MessagesTab = new QWidget(this);
+
+
+    addTab(PatternTab,       "Pattern");
+    addTab(MessagesTab,      "Messages");
+    addTab(LegendTab,        "Legend");
+    addTab(File_ManagerTab,  "File_Manager");
+    addTab(Debug_MessagesTab,"Debug_Messages");
+
+
+
+    /*
+    QHBoxLayout * Tab1Layout = new QHBoxLayout(PatternTab); // Переименовать
 
 
 
@@ -39,6 +52,12 @@ TabWidgetForTools::TabWidgetForTools()
     Tab1Layout->addWidget(ContinuousMeasurementsButton);
 
     connect(ContinuousMeasurementsButton,&QPushButton::clicked,this,&TabWidgetForTools::SendContinuousMeasurementsButtonClickedSignal);
+    */
+
+
+
+
+/////////////////////////////////////////
 
     /*
     SaveDataButton = new QPushButton("⇩",this); //⤓⇩
@@ -66,16 +85,19 @@ TabWidgetForTools::TabWidgetForTools()
     InverseFourierTransformButton->resize(30,30);
     Tab1Layout->addWidget(InverseFourierTransformButton);
     */
-
+////////////////////////////////////////
+    /*
     SaveMeasuredFunctionButton = new QPushButton("Сохранить результат измерения",this);
     Tab1Layout->addWidget(SaveMeasuredFunctionButton);
 
 
+    GetPlotDataButton = new QPushButton("Загрузить график", this);
+    Tab1Layout->addWidget(GetPlotDataButton);
 
 
     Tab1Layout->setAlignment(Qt::AlignLeft);
 
-    this->setLayout(Tab1Layout);
+    PatternTab->setLayout(Tab1Layout);
     //Tab1Layout->addWidget(ExplanationLabel);
     //Tab1->setLayout(Tab1Layout);
     //Tab2 = new QWidget;
@@ -86,6 +108,7 @@ TabWidgetForTools::TabWidgetForTools()
 
     //resize(800,200);
     //setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+    */
 }
 
 

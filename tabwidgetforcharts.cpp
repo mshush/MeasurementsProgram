@@ -94,7 +94,7 @@ void TabWidgetForCharts::SetFrequencyParameters(double StartFreq, double StopFre
 */
 
 /*
-void TabWidgetForCharts::SaveData() // Добавить формат CSV.
+void TabWidgetForCharts::SaveData() // Добавить формат CSV. // Перенесено в PlotClass
 {
     QString DateString = QDate::currentDate().toString("yyyy-MM-dd");
     QString TimeString = QTime::currentTime().toString("HH-mm");

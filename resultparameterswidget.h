@@ -6,7 +6,7 @@
 #include <QtWidgets>
 //#include <QIntValidator>
 #include <QDoubleSpinBox>
-#include <cmath>
+//#include <cmath>
 
 
 class ResultParametersWidget : public QWidget
@@ -16,18 +16,21 @@ public:
     explicit ResultParametersWidget(QWidget *parent = nullptr);
 
 
+    //enum ModeOfMeasurement {Response, Background, Calibration};
+
+
+
     QVBoxLayout * OutermostVerticalLayout;
 
     // Задание углов
+    void InitiateAnglesGroupBox();
     QGroupBox * AnglesGroupBox;
     QGridLayout * AnglesGroupBoxLayout;
     QLabel * SetCurrentRotationAngleLabel;
     QDoubleSpinBox * SetCurrentRotationAngleDoubleSpinBox;
-
     QLabel * SetCurrentTiltAngleLabel;
     QDoubleSpinBox * SetCurrentTiltAngleDoubleSpinBox;
-
-    QPushButton * SetCurrentAngleButton; // Нужно ли?
+    QPushButton * SetCurrentAngleButton; // Нужно ли? Вбивать и нажатием enter, и кнопки -- избыточно?
 
 
     double RotationStart = 0;
@@ -39,18 +42,27 @@ public:
     int TiltNumber = 10;
 
 
+    /*
+    // Задание отклика
+    void InitiateResponseGroupBox();
+    QGroupBox * ResponseGroupBox;
+    QLineEdit * ResponseLineEdit;
+    QPushButton * ResponseFindButton;
+    */
+
 
     // Задание бэкграунда
+    void InitiateBackgroundGroupBox();
     QGroupBox * BackgroundGroupBox;
-
     QLineEdit * BackgroundLineEdit;
     QPushButton * BackgroundFindButton;
     QPushButton * BackgroundAddButton;
     QPushButton * BackgroundSubstractButton;
 
 
+
     //Область параметров калибровочного образца // Перенесено из MeasurementsParametersWidget
-    void InitializeCalibrationGroupBox();
+    void InitiateCalibrationGroupBox();
 
     //QVBoxLayout * CalibrationSampleMainLayout;
     QHBoxLayout * CalibrationSampleTypeLayout;
@@ -67,6 +79,8 @@ public:
 
     //QIntValidator * IntValidator;
 
+
+
 signals:
 
 
@@ -81,6 +95,8 @@ public slots:
 
     void HandleRotationSpinBoxChange();
     void HandleTiltSpinBoxChange();
+
+    void FileChosenInTreeWidget(int Mode, QString FileName);
 
 };
 

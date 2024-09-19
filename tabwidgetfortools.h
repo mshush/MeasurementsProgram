@@ -11,16 +11,21 @@
 #include <QStyle>
 #include <QIcon>
 #include <QProgressBar>
+#include <treewidgetforfiles.h>
 
-class TabWidgetForTools :public QWidget//: public QTabWidget
+class TabWidgetForTools : public QTabWidget
 {
     Q_OBJECT
 public:
     TabWidgetForTools();
     ~TabWidgetForTools();
 
-    //QWidget * Tab1;
-    //QWidget * Tab2;
+    QWidget * PatternTab;
+    QWidget * MessagesTab;
+    QWidget * LegendTab;
+    TreeWidgetForFiles * File_ManagerTab;
+    QWidget * Debug_MessagesTab;
+
 
     QPushButton * StartMeasurementsButton;
     QPushButton * StopMeasurementsButton;
@@ -33,6 +38,7 @@ public:
     //QPushButton * InverseFourierTransformButton;
 
     QPushButton * SaveMeasuredFunctionButton;
+    QPushButton * GetPlotDataButton;
 
 signals:
     void ContinuousMeasurementsButtonClickedSignal(bool CheckedStatus);

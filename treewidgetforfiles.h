@@ -2,20 +2,30 @@
 #define TREEWIDGETFORFILES_H
 
 #include <QObject>
-#include <QTreeWidget>
+//#include <QTreeWidget>
 #include <QWidget>
 #include <QDir>
 #include <QtWidgets>
+#include <QTreeView>
+#include <QFileSystemModel>
+#include <QStandardItemModel>
 
 
 class TreeWidgetForFiles : public QWidget
 {
     Q_OBJECT
 public:
-    TreeWidgetForFiles();
-    ~TreeWidgetForFiles();
+    TreeWidgetForFiles(QWidget *parent = nullptr);
+    //~TreeWidgetForFiles();
 
-    QTreeWidget * FileTree;
+
+    QTreeView * FileTree;
+
+
+
+
+    /*
+    QTreeView * FileTree;
 
     void AddItems(const QDir &CurrentDirectory, QTreeWidgetItem *parent, int CurrentDepth);
     QDir RootDirectory;
@@ -26,10 +36,32 @@ public:
     QLineEdit * DirectoryEdit;
 
 
+    //enum ModeOfMeasurement {Response, Background, Calibration};
+
+
+    QIcon CreateColorIcon(const QColor &color);
+
+    QTreeWidgetItem * ResponseItem = nullptr;
+    QTreeWidgetItem * BackgroundItem = nullptr;
+    QTreeWidgetItem * CalibrationItem = nullptr;
+
+
 public slots:
 
     void SetRootDirectory(const QDir &RootDirectory);
     void ChangeRootDirectory();
+    void ShowContextMenu(QTreeWidgetItem *item, int column);
+
+    QString GetFilePathFromItem(QTreeWidgetItem *item);
+
+    void SetResponce    (QTreeWidgetItem *item);
+    void SetBackground  (QTreeWidgetItem *item);
+    void SetCalibration (QTreeWidgetItem *item);
+
+public:
+signals:
+    void FileWasChosenSignal(int Mode, QString FilePath);
+*/
 };
 
 #endif // TREEWIDGETFORFILES_H

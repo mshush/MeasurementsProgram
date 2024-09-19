@@ -41,7 +41,7 @@ void ProcessImitation::Measure()
                 std::complex<double>  Noise = 0.01 * std::complex<double>(distribution(generator),distribution(generator));
                 std::complex<double> MeasuredValue =  PerfectValue + Noise; //  + FOffset[f] + ROffset[r] + TOffset[t];
 
-                if (MeasurementMode == Object)
+                if (MeasurementMode == Response)
                 {
                     MeasuredValue += std::complex <double> (0, pow(cos(2 * f * M_PI / F.FNum),10));
                 }
@@ -76,12 +76,13 @@ void ProcessImitation::MeasureContinuously(bool ContinuousModeIsOn)
 
     if (ContinuousModeIsOn)
     {
-
         int TotalNumberOfIterations = TiltAngleNumber * RotationAngleNumber * FrequencyNumber;
 
-        QVector <std::complex<double>> FreqVect(FrequencyNumber);
+        QVector <double> VectorForSending(BufferSize, 0.0);
 
         emit ProgressSignal(0);
+
+        int VectorIndex = 0;
 
         for (int t = 0; t < TiltAngleNumber; t++)
         {
@@ -89,15 +90,21 @@ void ProcessImitation::MeasureContinuously(bool ContinuousModeIsOn)
             {
                 for (int f=0; f < FrequencyNumber; f++)
                 {
-                    std::complex<double>  PerfectValue = std::complex <double> (std::round(pow(sin(2 * f * M_PI / F.FNum),5)) + r + t, 0);
+
+                    //if (Stopped==true) {return;}
+
+                    if (f%20==0){QThread::msleep(1);}
+
+                    std::complex<double>  PerfectValue = std::complex <double> (std::round(pow(sin(2 * f * M_PI / FrequencyNumber),5)), 0);
                     std::complex<double>  Noise = 0.01 * std::complex<double>(distribution(generator),distribution(generator));
                     std::complex<double> MeasuredValue =  PerfectValue + Noise; //  + FOffset[f] + ROffset[r] + TOffset[t];
 
-                    //qDebug()<<PerfectValue.real();
+                    //this->thread()->wait(50);
 
-                    if (MeasurementMode == Object)
+
+                    if (MeasurementMode == Response)
                     {
-                        MeasuredValue += std::complex <double> (0, pow(cos(2 * f * M_PI / F.FNum),10));
+                        MeasuredValue += std::complex <double> (0, pow(cos(2 * f * M_PI / FrequencyNumber),10));
                     }
 
                     if (MeasurementMode == Calibration)
@@ -105,32 +112,63 @@ void ProcessImitation::MeasureContinuously(bool ContinuousModeIsOn)
                         MeasuredValue += std::complex <double> (1, 1); ;
                     }
 
-                    FreqVect[f] = MeasuredValue;
 
-                    //qDebug()<<"complexValues = " << FreqVect[f].real() << "," << FreqVect[f].imag() ;
-
-                    int iter = t * (F.RNum * F.FNum)  + r * F.FNum + f;
-                    if (iter % (TotalNumberOfIterations/100) == 0)
+                    VectorForSending[VectorIndex] = MeasuredValue.real();
+                    VectorIndex++;
+                    if (VectorIndex == BufferSize)
                     {
-                        int percentage = (iter  * 100) / TotalNumberOfIterations;
-                        emit ProgressSignal(percentage);
+                        VectorIndex = 0;
+                        emit IterationOfMeasurementFinished(VectorForSending);
+                        VectorForSending = QVector <double> (BufferSize, 0.0);
+                    }
+
+
+
+
+                    VectorForSending[VectorIndex] = MeasuredValue.imag();
+                    VectorIndex++;
+                    if (VectorIndex == BufferSize)
+                    {
+                        VectorIndex = 0;
+                        emit IterationOfMeasurementFinished(VectorForSending);
+                        VectorForSending = QVector <double> (BufferSize, 0.0);
 
                     }
 
-                    emit IterationOfMeasurementFinished(r, t, FreqVect);
 
-                }
+                    if (f%15==0)
+                    {
+                        int iter = t * (RotationAngleNumber * FrequencyNumber)  + r * FrequencyNumber + f;
+                        int percentage = (iter * 100) / TotalNumberOfIterations;
+                        //float perflo = double((iter)) / TotalNumberOfIterations;
+                        //qDebug()<< iter << perflo;
+                        emit ProgressSignal(percentage);
+                    }
+
+                    /*
+                    if (iter % (int(TotalNumberOfIterations/100)) == 0)
+                    {
+                        qDebug()<<iter<< "--->" <<iter % (int(TotalNumberOfIterations/100));
+                        int percentage = (iter  * 100) / TotalNumberOfIterations;
+                        emit ProgressSignal(percentage);
+                    }
+                    */
+                }    
             }
         }
 
+        if (VectorIndex!=0)
+        {
+            emit IterationOfMeasurementFinished(VectorForSending.mid(0,VectorIndex-1));
+        }
         emit ProgressSignal(100);
-        //emit MeasurementFinished(F);
 
     }
     else
     {
-        //disconnect(RefreshTimer, &QTimer::timeout, this, &ProcessImitation::PerformNextMeasurement);
+
     }
+
 
 }
 
@@ -159,7 +197,7 @@ void ProcessImitation::SetAngleRanges(double RotStart, double RotStop, double Ro
 
 void ProcessImitation::PerformNextMeasurement()
 {
-    qDebug()<<"!!!";
+    //qDebug()<<"!!!";
 
     //emit ProgressSignal();
     //Measure();
@@ -176,10 +214,20 @@ void ProcessImitation::PerformNextMeasurement()
 
 
 
+void ProcessImitation::StopEverything()
+{
+    Stopped = true;
+}
+
+
+
+
 ProcessImitation::~ProcessImitation()
 {
 
 }
+
+
 
 
 

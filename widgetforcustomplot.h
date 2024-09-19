@@ -84,7 +84,8 @@ public:
     QPushButton * SelectLocalMinButton;
 
     QThread * PlotThread;
-
+    QVBoxLayout  * VerticalMarkerStyleConfigurationLayout;
+    QComboBox * GraphChoiceComboBox;
 
 
     void EnterSelectLocalMinMode();
@@ -110,6 +111,7 @@ public slots:
     void LockYAxis();
     void XAxisRangeChanged(const QCPRange &range);
     void YAxisRangeChanged(const QCPRange &range);
+    //void SavePlotAsDat(); // Перенесено в PlotClass
 };
 
 #endif // WIDGETFORCUSTOMPLOT_H

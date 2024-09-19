@@ -5,8 +5,8 @@ MeasurementsParametersWidget::MeasurementsParametersWidget(QWidget *parent)
     : QWidget{parent}
 {
 
-    this->setFixedWidth(300);
-    this->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
+    //this->setFixedWidth(300);
+    //this->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
 
     //resize(300,900);
 

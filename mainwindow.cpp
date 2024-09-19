@@ -25,10 +25,11 @@ MainWindow::MainWindow(QWidget *parent)
     ui->setupUi(this);
 
 
-    this->menuBar()->addMenu("Файл");
-    this->menuBar()->addMenu("Свойства");
-    //this->menuBar()->addMenu("Постобработка");
-    this->menuBar()->addMenu("Вид");
+    this->menuBar()->addMenu("File");
+    this->menuBar()->addMenu("Measure");
+    this->menuBar()->addMenu("Process");
+    this->menuBar()->addMenu("Post-Process");
+    this->menuBar()->addMenu("Create Pylon Compensation");
 
 
     Process = new ProcessImitation();
@@ -39,37 +40,71 @@ MainWindow::MainWindow(QWidget *parent)
     Thread->start();
 
 
-    QVBoxLayout *OutermostVerticalLayout = new QVBoxLayout;
+    //QVBoxLayout *OutermostVerticalLayout = new QVBoxLayout;
 
     TabOfTools = new TabWidgetForTools;
     TabOfTools->resize(800,200);
     TabOfTools->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Fixed);
-    OutermostVerticalLayout->addWidget(TabOfTools);
+    //OutermostVerticalLayout->addWidget(TabOfTools);
 
-    QHBoxLayout * MiddleHorizontalLayout = new QHBoxLayout;
+    //QHBoxLayout * MiddleHorizontalLayout = new QHBoxLayout;
 
 
-    QVBoxLayout * InnerVerticalLayout = new QVBoxLayout;
+    //QVBoxLayout * InnerVerticalLayout = new QVBoxLayout;
 
     ChartTab = new TabWidgetForCharts;
-
-    InnerVerticalLayout->addWidget(ChartTab);
+    //InnerVerticalLayout->addWidget(ChartTab);
 
     TabOfParameters = new TabWidgetForParameters;
 
     //QHBoxLayout * BottomHorizontalLayout = new QHBoxLayout;
 
 
-    MiddleHorizontalLayout->addWidget(TabOfParameters);
-    MiddleHorizontalLayout->addLayout(InnerVerticalLayout);
+    //MiddleHorizontalLayout->addWidget(TabOfParameters);
+    //MiddleHorizontalLayout->addLayout(InnerVerticalLayout);
 
-    OutermostVerticalLayout->addLayout(MiddleHorizontalLayout);
+    //OutermostVerticalLayout->addLayout(MiddleHorizontalLayout);
     //OutermostVerticalLayout->addLayout(BottomHorizontalLayout);
 
-    ProgressBar = new QProgressBar(this);
-    OutermostVerticalLayout->addWidget(ProgressBar);
+    //ProgressBar = new QProgressBar(this);
+    //OutermostVerticalLayout->addWidget(ProgressBar);
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/*
+    QHBoxLayout * OutermostHorizontalLayout = new QHBoxLayout(this);
+    QVBoxLayout * LeftVerticalLayout = new QVBoxLayout(this);
+    OutermostHorizontalLayout->addLayout(LeftVerticalLayout);
 
-    centralWidget()->setLayout(OutermostVerticalLayout);
+    LeftVerticalLayout->addWidget(ChartTab);
+    LeftVerticalLayout->addWidget(TabOfTools);
+
+    OutermostHorizontalLayout->addWidget(TabOfParameters);
+
+    centralWidget()->setLayout(OutermostHorizontalLayout);
+*/
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    QLayout * MainLayout = new QVBoxLayout(); // Задавать абстрактным лучше или хуже?
+    QSplitter * OutermostHorizontalSplitter = new QSplitter(Qt::Horizontal, this);
+    MainLayout->addWidget(OutermostHorizontalSplitter);
+
+    QSplitter * LeftVerticalSplitter = new QSplitter(Qt::Vertical,this);
+    OutermostHorizontalSplitter->addWidget(LeftVerticalSplitter);
+
+    LeftVerticalSplitter->addWidget(ChartTab);
+    LeftVerticalSplitter->addWidget(TabOfTools);
+
+    OutermostHorizontalSplitter->addWidget(TabOfParameters);
+
+    centralWidget()->setLayout(MainLayout);
+
 
 
 
@@ -99,7 +134,7 @@ void MainWindow::SetMeasuredFunction(MeasuredFunction F)
     //this->ChartTab->UpdateMeasurementPlot(FreqVectorAtChosenAngle);
 
     PlotClass * PltPtr0 = this->ChartTab->PlotTabs[0]->customPlot;
-    PltPtr0->graph(0)->setData(F.FreqVector(), F.AmplVectorAtAngles(r,t));
+    PltPtr0->graph(0)->setData(F.FreqVector(), F.AmplitudeVectorAtAngles(r,t));
     PltPtr0->rescaleAxes();
     PltPtr0->replot();
 
@@ -120,7 +155,7 @@ void MainWindow::ChangeAngleOfDemonstration()
         r = StoredFunction.FindRotationIndex(TabOfParameters->ResultTab->SetCurrentRotationAngleDoubleSpinBox->value());
         t = StoredFunction.FindTiltIndex(TabOfParameters->ResultTab->SetCurrentTiltAngleDoubleSpinBox->value());
 
-        PltPtr->graph(0)->setData(StoredFunction.FreqVector(), StoredFunction.AmplVectorAtAngles(r,t));
+        PltPtr->graph(0)->setData(StoredFunction.FreqVector(), StoredFunction.AmplitudeVectorAtAngles(r,t));
 
 
         //QVector <std::complex<double>> FreqVectorAtChosenAngle = StoredFunction.GetFrequencyVectorAt(r,t);
@@ -128,7 +163,7 @@ void MainWindow::ChangeAngleOfDemonstration()
 
         if (PltPtr->graph(1)->data()->size()>0)
         {
-            PltPtr->graph(1)->setData(BackgroundFunction.FreqVector(), BackgroundFunction.AmplVectorAtAngles(r,t));
+            PltPtr->graph(1)->setData(BackgroundFunction.FreqVector(), BackgroundFunction.AmplitudeVectorAtAngles(r,t));
 
             PlotClass * PltPtr1 = this->ChartTab->PlotTabs[1]->customPlot;
             PltPtr1->graph(1)->setData(BackgroundFunction.DistVector(), BackgroundFunction.FourierAmplVectorAtAngles(r,t));
@@ -264,6 +299,7 @@ void MainWindow::SubstractBackground()
 
 MainWindow::~MainWindow()
 {
+
     Thread->quit();
     Thread->wait();
     Thread->deleteLater();
@@ -300,8 +336,6 @@ void MainWindow::SetCalibration()
 
     int SampleTypeIndex = this->TabOfParameters->ResultTab->CalibrationSampleComboBox->currentIndex();
 
-    //qDebug()<< "Was Here! " << StoredFunction.FNum << CalibrationFunction.FNum;
-
     StoredFunction.Calibrate(CalibrationFunction,SampleTypeIndex);
 
 
@@ -309,7 +343,7 @@ void MainWindow::SetCalibration()
     t = StoredFunction.FindTiltIndex(TabOfParameters->ResultTab->SetCurrentTiltAngleDoubleSpinBox->value());
 
     PlotClass * PltPtr = this->ChartTab->PlotTabs[0]->customPlot;
-    PltPtr->graph(0)->setData(StoredFunction.FreqVector(), StoredFunction.AmplVectorAtAngles(r,t));
+    PltPtr->graph(0)->setData(StoredFunction.FreqVector(), StoredFunction.AmplitudeVectorAtAngles(r,t));
     PltPtr->rescaleAxes();
     PltPtr->replot();
 
@@ -330,12 +364,8 @@ void MainWindow::SetCalibration()
 
     QVector <double> x = BackgroundFunction.FreqVector();
 
-    //qDebug()<< "xMax = " << x[1600];
-
     r = BackgroundFunction.FindRotationIndex(TabOfParameters->ResultTab->SetCurrentRotationAngleDoubleSpinBox->value());
     t = BackgroundFunction.FindTiltIndex    (TabOfParameters->ResultTab->SetCurrentTiltAngleDoubleSpinBox    ->value());
-
-    //qDebug()<<r << " = r, t = " << t;
 
     QVector <std::complex<double>> f = BackgroundFunction.GetFrequencyVectorAt(r,t);
 
@@ -376,21 +406,22 @@ void MainWindow::ShowErrorMessage(QString Description, QString Advice)
 void MainWindow::ConnectObjects()
 {
     connect(TabOfTools->StartMeasurementsButton, &QPushButton::clicked, Process, &ProcessImitation::Measure);
+
     connect(Process, &ProcessImitation::MeasurementFinished, this, &MainWindow::SetMeasuredFunction);
 
 
 
     connect(TabOfTools, &TabWidgetForTools::ContinuousMeasurementsButtonClickedSignal, Process, &ProcessImitation::MeasureContinuously);
 
+    connect(TabOfTools, &TabWidgetForTools::ContinuousMeasurementsButtonClickedSignal, ChartTab->PlotTabs[0]->customPlot, &PlotClass::ContinuousMeasurementsModeChanged);
+
+
+
     //connect(TabOfTools->ContinuousMeasurementsButton, &QPushButton::clicked, ChartTab, &TabWidgetForCharts::ContinuousMeasurementModeChanged);
 
 
 
-    connect(TabOfTools->StopMeasurementsButton, &QPushButton::clicked, this,[this]()
-            {
-                qDebug()<<this->size();
-            }
-            );
+    connect(TabOfTools->StopMeasurementsButton, &QPushButton::clicked, Process, &ProcessImitation::StopEverything);
 
     //connect(TabOfTools->SaveDataButton  , &QPushButton::clicked, ChartTab, &TabWidgetForCharts::SaveData); // Получше придумать как соединять, чтобы по вкладкам (возможно лучше в QidgetForCustomPlot перенести)
 
@@ -423,18 +454,24 @@ void MainWindow::ConnectObjects()
 
     connect(Thread, &QThread::finished, Thread, &QThread::deleteLater);
 
-    connect(Process, &ProcessImitation::ProgressSignal, this->ProgressBar, &QProgressBar::setValue);
+    //connect(Process, &ProcessImitation::ProgressSignal, this->ProgressBar, &QProgressBar::setValue);
 
     connect(Process, &ProcessImitation::IterationOfMeasurementFinished,this, &MainWindow::HandleReceivedMeasuredFreqVector);
+
+    //connect(TabOfParameters->FileTreeTab, &TreeWidgetForFiles::FileWasChosenSignal, TabOfParameters->ResultTab, &ResultParametersWidget::FileChosenInTreeWidget);
+
+    connect(TabOfTools->GetPlotDataButton, &QPushButton::clicked, this, &MainWindow::GetPlotFromDat);
 
 }
 
 
-void MainWindow::HandleReceivedMeasuredFreqVector(int r, int t, QVector <std::complex<double>> FreqVector)
+
+void MainWindow::HandleReceivedMeasuredFreqVector(QVector <double> ReceivedVector)
 {
 
+    PlotClass * PltPtr = ChartTab->PlotTabs[0]->customPlot;
 
-    if (StoredFunction.FNum==0)
+    if (StoredFunction.CurrentIndex==0)
     {
         double FStart = TabOfParameters->MeasurementTab->FrequencyStart;
         double FStop = TabOfParameters->MeasurementTab->FrequencyStop;
@@ -451,43 +488,54 @@ void MainWindow::HandleReceivedMeasuredFreqVector(int r, int t, QVector <std::co
 
         StoredFunction.SetRanges(FStart,FStop,FNum,   RStart,RStop,RNum,   TStart,TStop,TNum);
 
-        r=0;
-        t=0;
+
+
+        PltPtr->XVector = StoredFunction.FreqVector();
+        CurrentPlotIndex=0;
     }
 
 
-    TabOfParameters->ResultTab->SetCurrentRotationAngleDoubleSpinBox->setValue(StoredFunction.FindRotationValue(r));
-    TabOfParameters->ResultTab->SetCurrentTiltAngleDoubleSpinBox    ->setValue(StoredFunction.FindTiltValue(t));
-
-    StoredFunction.WriteToRow(r,t,FreqVector);
-
-    QVector<double> XVect = StoredFunction.FreqVector();
-    QVector<double> YVect = StoredFunction.AmplVectorAtAngles(r,t);
-
-    //qDebug()<<YVect[0];
-
-    PlotClass * PltPtr = ChartTab->PlotTabs[0]->customPlot;
-    PltPtr->graph(0)->setData(XVect,YVect);
-    PltPtr->rescaleAxes();
-    PltPtr->replot();
 
 
-    if (r==StoredFunction.RNum-1 and t==StoredFunction.TNum-1)
+
+
+    StoredFunction.AddMeasuredValues(ReceivedVector);
+
+
+    int I = StoredFunction.CurrentIndex/2;
+    int R = StoredFunction.RNum;
+    int F = StoredFunction.FNum;
+    int t = I / (R*F);
+    int r = (I % (R*F)) / F;
+
+
+    QVector<double> YVector = StoredFunction.AmplitudeVectorAtAngles(r,t);
+
+
+
+    PltPtr->graph(0)->setData(PltPtr->XVector, YVector);
+
+    /*
+    if (r==StoredFunction.RNum-1 and t==StoredFunction.TNum-1) // Через CurrentIndex
     {
         //Сохранить, и занулить, чтобы начать следующую
         SaveMeasuredFunction();
         StoredFunction.ClearFunction();
     }
-    else
-    {
+    */
 
-    }
 
 }
 
 
 
 
+void MainWindow::GetPlotFromDat()
+{
+    WidgetForCustomPlot * NewPlotWidget = new WidgetForCustomPlot;
+    this->ChartTab->addTab(NewPlotWidget,"Загружено");
+    //NewPlotWidget->customPlot=;
+}
 
 
 

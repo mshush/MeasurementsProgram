@@ -29,6 +29,8 @@ public:
     double TStop; //Конечный угол наклона
 
 
+    int CurrentIndex = 0;
+
 
     QVector <std::complex<double>> Function; // Сам массив
 
@@ -49,7 +51,7 @@ public:
     void SetRanges(double FreqStart, double FreqStop, double FreqNumber, double RotStart, double RotStop, double RotNumber, double TiltStart, double TiltStop, double TiltNumber);
 
     QVector <double> FreqVector (); // Получает вектор частот из MeasuredFunction
-    QVector <double> AmplVectorAtAngles (int r, int t); // Получает вектор амплитуд из MeasuredFunction при углах с индексами r и t
+    QVector <double> AmplitudeVectorAtAngles (int r, int t); // Получает вектор амплитуд из MeasuredFunction при углах с индексами r и t
 
     QVector <double> DistVector (); // Получает вектор расстояний из MeasuredFunction
     QVector <double> FourierAmplVectorAtAngles (int r, int t); // Получает вектор амплитуд фурье образов из MeasuredFunction при углах с индексами r и t
@@ -61,6 +63,7 @@ public:
     void ClearFunction(); // Очистка функции
 
 
+    void AddMeasuredValues(QVector <double> vector);
 
 
     // Для удобного сохранения через QDataStream

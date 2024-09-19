@@ -9,11 +9,11 @@
 #include <QClipboard>
 #include <QImage>
 #include <QTimer>
-#include <random>
+//#include <random>
 #include <QFile>
 #include <QDataStream>
-#include <cmath>
-#include <complex>
+//#include <cmath>
+//#include <complex>
 #include <selectionrectclass.h>
 
 class PlotClass : public QCustomPlot
@@ -28,21 +28,27 @@ public:
     bool markeraddbuttonactive = false;
     bool markerdeletebuttonactive = false;
     int iter = 0;
-    QColor MarkerColour = Qt::black;
+    QColor MarkerColour = Qt::red;
     int MarkerStyle = 1;
     std::list <QCPItemTracer*> AddedMarkersList;
     std::list <QCPItemText*> AddedMarkerLabelsList;
+
+    int SelectedGraph = 0;
 
  //   double FreqStart = 1.0;
  //   double FreqStop = 2.0;
  //   int NumberOfPoints = 1601;
 
-    //QVector <double> x, y;
+    QVector <double> XVector, YVector;
     //QVector <std::complex<double>> f; // Убрать вообще
 
     bool ContinuousMeasurementMode = false;
 
     SelectionRectClass * SelectionRectangle;
+
+    QTimer * Timer;
+
+    QCPItemText * PlotLabel;
 
 
 public slots:
@@ -59,6 +65,13 @@ public slots:
     //QVector <std::complex<double>> FourierTransformVector(QVector <std::complex<double>> f);
     //void InverseFourierTransform();
     void AddNewMarker(double Key, int Style, QColor Colour);
+
+    void ContinuousMeasurementsModeChanged(bool ModeStatus);
+
+    void ChangeSelectedGraph(int GraphId);
+
+    void saveDat(QString filePath);
+    void saveCsv(QString filePath);
 
 protected:
     void mouseMoveEvent(QMouseEvent *event) override;

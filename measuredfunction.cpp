@@ -158,7 +158,7 @@ QVector <double> MeasuredFunction::FreqVector()
 
 
 
-QVector <double> MeasuredFunction::AmplVectorAtAngles (int r, int t)
+QVector <double> MeasuredFunction::AmplitudeVectorAtAngles (int r, int t)
 {
     QVector <double> YVector(FNum);
 
@@ -167,6 +167,7 @@ QVector <double> MeasuredFunction::AmplVectorAtAngles (int r, int t)
         YVector[f] = abs(ReadFrom(f,r,t));
     }
 
+    //qDebug()<<YVector;
     return YVector;
 }
 
@@ -277,10 +278,11 @@ void MeasuredFunction::WriteToRow(int r, int t, QVector <std::complex<double>> F
 }
 
 
-void MeasuredFunction::SetRanges(double FreqStart, double FreqStop, double FreqNumber, double RotStart, double RotStop, double RotNumber, double TiltStart, double TiltStop, double TiltNumber)
+void MeasuredFunction::SetRanges(double FreqStart,  double FreqStop,    double FreqNumber,
+                                 double RotStart,   double RotStop,     double RotNumber,
+                                 double TiltStart,  double TiltStop,    double TiltNumber)
 {
-
-    Resize(FreqNumber,RotNumber,TiltNumber);
+    Function = QVector<std::complex<double>>(FreqNumber * RotNumber * TiltNumber, std::complex<double>(0.0,0.0));
 
     FStart = FreqStart;
     FStop = FreqStop;
@@ -311,4 +313,42 @@ double MeasuredFunction::FindTiltValue (int t)
     double Result = TStart + double(t) * (TStop - TStart) / double(TNum-1)  ;
     return Result;
 }
+
+
+
+
+
+
+
+void MeasuredFunction::AddMeasuredValues(QVector <double> VectorToBeAdded)
+{
+    //qDebug()<< "VECT = " << VectorToBeAdded.mid(0,2);
+
+
+
+    for (int i=0;i<VectorToBeAdded.size(); i++)
+    {
+        if (CurrentIndex % 2 == 0)
+        {
+            Function[int(CurrentIndex/2)] = std::complex(VectorToBeAdded[i],Function[CurrentIndex/2].real());
+            //if (i==0) qDebug()<<"REAL = " << Function[int(CurrentIndex/2)] .real();
+            CurrentIndex++;
+        }
+        else
+        {
+            Function[int(CurrentIndex/2)] = std::complex(VectorToBeAdded[i],Function[CurrentIndex/2].imag());
+            //if (i==1) qDebug()<<"IMAG = " << Function[int(CurrentIndex/2)] .imag();
+            CurrentIndex++;
+        }
+    }
+
+    if (CurrentIndex == Function.size()*2)
+    {
+        CurrentIndex = 0;
+    }
+
+}
+
+
+
 

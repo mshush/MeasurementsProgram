@@ -290,9 +290,22 @@ void WidgetForCustomPlot::InitiateMarkerGroupBox()
     connect(DeleteAllMarkersButton, &QPushButton::clicked, customPlot, &PlotClass::DeleteAllMarkers);
 
 
+
+    VerticalMarkerStyleConfigurationLayout = new QVBoxLayout();
+
+    GraphChoiceComboBox = new QComboBox(MarkerGroupBox);
+
+    GraphChoiceComboBox->addItem("График 1");
+    GraphChoiceComboBox->addItem("График 2");
+
+    connect(GraphChoiceComboBox, &QComboBox::currentIndexChanged,customPlot,&PlotClass::ChangeSelectedGraph);
+
     MarkerStyleLayout->addWidget(MarkerPreviewPlot);
-    MarkerStyleLayout->addWidget(MarkerColourButton);
-    MarkerStyleLayout->addWidget(MarkerStyleComboBox);
+    MarkerStyleLayout->addLayout(VerticalMarkerStyleConfigurationLayout);
+    VerticalMarkerStyleConfigurationLayout->addWidget(MarkerColourButton);
+    VerticalMarkerStyleConfigurationLayout->addWidget(MarkerStyleComboBox);
+    MarkerStyleLayout->addWidget(GraphChoiceComboBox);
+
     MarkerGroupBoxLayout->addLayout(MarkerStyleLayout);
 
     MarkerAddDeleteLayout->addWidget(MarkerAddButton);
@@ -316,14 +329,19 @@ void WidgetForCustomPlot::InitiateSaveLayout()
 {
     HorizontalSaveLayout = new QHBoxLayout;
 
-    SaveButton = new QPushButton("Сохранить");
+    SaveButton = new QPushButton("Сохранить",this);
     connect(SaveButton, &QPushButton::clicked, customPlot, &PlotClass::SavePlot);
+
+    //QPushButton * SaveAsDatButton = new QPushButton(".dat", this);
+    //connect(SaveAsDatButton, &QPushButton::clicked, this, &WidgetForCustomPlot::SavePlotAsDat);
+
 
     CopyButton = new QPushButton("Копировать");
     connect(CopyButton, &QPushButton::clicked, customPlot, &PlotClass::CopyPlot);
 
     HorizontalSaveLayout->addWidget(SaveButton);
     HorizontalSaveLayout->addWidget(CopyButton);
+    //HorizontalSaveLayout->addWidget(SaveAsDatButton);
 }
 
 
@@ -331,7 +349,7 @@ void WidgetForCustomPlot::InitiateSaveLayout()
 void WidgetForCustomPlot::InitiateMarkerPreviewPlot()
 {
     MarkerPreviewPlot = new QCustomPlot;
-
+    MarkerPreviewPlot->setBackground(QBrush(Qt::black));
     MarkerPreviewPlot->setFixedSize(50,50);
     MarkerPreviewPlot->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding);
     //MarkerPreviewPlot->setMaximumSize(30,30);
@@ -394,7 +412,7 @@ void WidgetForCustomPlot::InitiateSetRangeGroupBox()
     YRangeLabel2 = new QLabel("-",this);
     YRangeEditTo = new QLineEdit(YUpper,this);
     YRangeEditTo->setAlignment(Qt::AlignLeft);
-    YRangeUnitsLabel = new QLabel("Вт",this);
+    YRangeUnitsLabel = new QLabel("Дб",this);
 
     XRangeEditFrom->setValidator(DoubleValidator);
     XRangeEditTo->setValidator(DoubleValidator);
@@ -558,6 +576,34 @@ void WidgetForCustomPlot::PutMarkerAtLocalMin()
     customPlot->graph(0)->setSelection(QCPDataSelection());
 }
 
+
+
+
+//Перенесено в PlotClass
+/*
+void WidgetForCustomPlot::SavePlotAsDat()
+{
+    QString Path = QDir::homePath() + "/" + "PlotData" + ".dat";
+    QString FilePath = QFileDialog::getSaveFileName(this, "Save File", Path, "Data Files (*.dat);;All Files (*)");
+
+    QFile File(FilePath);
+    if (!File.open(QIODevice::WriteOnly))
+    {
+        //ShowErrorMessage("Не удалось открыть файл для записи!",File.errorString());
+        qDebug()<< "Не получилось записать";
+        return;
+    }
+
+
+    QDataStream out(&File);
+    //QCustomPlot Plot;
+    //out << Plot;
+    File.close();
+
+    customPlot->saveGeometry();
+    //customPlot->saveRastered(FilePath,);
+}
+*/
 
 
 

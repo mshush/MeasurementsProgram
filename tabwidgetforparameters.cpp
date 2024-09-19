@@ -6,11 +6,11 @@ TabWidgetForParameters::TabWidgetForParameters(QWidget *parent) : QTabWidget(par
     this->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Expanding);
     MeasurementTab = new MeasurementsParametersWidget();
     ResultTab = new ResultParametersWidget();
-    FileTreeTab = new TreeWidgetForFiles();
+    //FileTreeTab = new TreeWidgetForFiles();
 
     addTab(MeasurementTab, "Измерение");
     addTab(ResultTab, "Результат");
-    addTab(FileTreeTab, "Открыть");
+    //addTab(FileTreeTab, "Навигация");
 }
 
 
