@@ -64,6 +64,13 @@ public:
     //QProgressBar * ProgressBar;
 
 
+    QAction * SaveFileAction;
+    QAction * OpenFileAction;
+    QAction * StartMeasureAction;
+    QAction * StopMeasureAction;
+
+
+
     void SetMeasuredFunction(MeasuredFunction F);
     void ChangeAngleOfDemonstration();
     void SaveMeasuredFunction();

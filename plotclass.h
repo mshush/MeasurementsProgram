@@ -56,15 +56,16 @@ public slots:
     //void UpdateBackgroundPlot(QVector <std::complex<double>> BackgroundData);
 
     void ResetPlot();
-    void SavePlot();
+
     void DeleteAllMarkers();
     void CopyPlot();
-    void SaveData();
+    void SaveData(); // Устар
+    void SubstractMarkers(QCPItemTracer * Marker1, QCPItemTracer * Marker2);
     //void ImportData();
     //void FourierTransform(); //Перенести в MainWindow?
     //QVector <std::complex<double>> FourierTransformVector(QVector <std::complex<double>> f);
     //void InverseFourierTransform();
-    void AddNewMarker(double Key, int Style, QColor Colour);
+    void AddNewMarker(double Key, int Style, QColor Colour, int GraphNumber = 0); // Возможно стоит добавить value, если маркер откреплён
 
     void ContinuousMeasurementsModeChanged(bool ModeStatus);
 
@@ -72,6 +73,11 @@ public slots:
 
     void saveDat(QString filePath);
     void saveCsv(QString filePath);
+    void loadDat(QString filePath);
+    void loadCsv(QString filePath);
+
+    void SaveAs();
+    void OpenFile();
 
 protected:
     void mouseMoveEvent(QMouseEvent *event) override;

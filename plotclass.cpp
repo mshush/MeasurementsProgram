@@ -38,7 +38,7 @@ PlotClass::PlotClass(QWidget * parent) : QCustomPlot(parent)
     AddedMarkerLabelsList.clear();
 
 
-    MouseMoveMarker = new QCPItemTracer(this); // Перенести маркер в отдельный QCPLayer. Затем Layer->setMode(QCPLayer::lmBuffered); (Чтобы работало быстрее можно попробовать так)
+    MouseMoveMarker = new QCPItemTracer(this); // Перенести маркер в отдельный QCPLayer? Затем Layer->setMode(QCPLayer::lmBuffered); (Чтобы работало быстрее можно попробовать так)
     MouseMoveLabel = new QCPItemText(this);
 
     MouseMoveMarker->setBrush(QBrush(Qt::white));
@@ -83,7 +83,7 @@ PlotClass::PlotClass(QWidget * parent) : QCustomPlot(parent)
     PlotLabel->setPositionAlignment(Qt::AlignTop|Qt::AlignRight);
     PlotLabel->position->setType(QCPItemPosition::ptAxisRectRatio);
     PlotLabel->position->setCoords(1, 0);
-    PlotLabel->setText("x=0.000\ny=0.000");
+    PlotLabel->setText("x=0.00\ny=0.00");
     //PlotLabel->setFont(QFont());//(QFont(font().family(), 16));
     PlotLabel->setColor(Qt::white);
     PlotLabel->setPen(QPen(Qt::white));
@@ -109,8 +109,8 @@ void PlotClass::mouseMoveEvent(QMouseEvent *event)
 {
     QCustomPlot::mouseMoveEvent(event);
 
-    QString xpos = QString::number(xAxis->pixelToCoord(event->pos().x()), 'f', 3);
-    QString ypos = QString::number(yAxis->pixelToCoord(event->pos().y()), 'f', 3);
+    QString xpos = QString::number(xAxis->pixelToCoord(event->pos().x()), 'f', 2); // f = fixed point notation, e = scientific notation
+    QString ypos = QString::number(yAxis->pixelToCoord(event->pos().y()), 'f', 2);
     PlotLabel->setText("x="+xpos+"\n"+"y="+ypos);
     replot();
 
@@ -133,7 +133,7 @@ void PlotClass::mousePressEvent(QMouseEvent *event)
 
     if (markeraddbuttonactive)
     {
-        AddNewMarker(this->xAxis->pixelToCoord(event->pos().x()), MarkerStyle, MarkerColour);
+        AddNewMarker(this->xAxis->pixelToCoord(event->pos().x()), MarkerStyle, MarkerColour, SelectedGraph);
         replot();
     }
 
@@ -147,23 +147,51 @@ void PlotClass::ResetPlot()
 }
 
 
-void PlotClass::SavePlot()
+void PlotClass::SaveAs()
 {
     QString filePath = QFileDialog::getSaveFileName(this, "Сохранить как", "", "PNG File (*.png);;JPEG File (*.jpg);;PDF File (*.pdf);;DAT File (*.dat);;CSV File (*.csv)");
 
     if (!filePath.isEmpty()) {
         QString fileFormat = QFileInfo(filePath).suffix();
 
-        if (fileFormat == "png") {
+        if (fileFormat == "png")
+        {
             savePng(filePath);
-        } else if (fileFormat == "jpg") {
+        }
+        else if (fileFormat == "jpg")
+        {
             saveJpg(filePath);
-        } else if (fileFormat == "pdf") {
+        }
+        else if (fileFormat == "pdf")
+        {
             savePdf(filePath);
-        } else if (fileFormat == "dat") {
+        }
+        else if (fileFormat == "dat")
+        {
             saveDat(filePath);
-        } else if (fileFormat == "csv") {
+        }
+        else if (fileFormat == "csv")
+        {
             saveCsv(filePath);
+        }
+    }
+}
+
+
+void PlotClass::OpenFile()
+{
+    QString filePath = QFileDialog::getOpenFileName(this, "Открыть", "", "DAT File (*.dat);;CSV File (*.csv)");
+
+    if (!filePath.isEmpty()) {
+        QString fileFormat = QFileInfo(filePath).suffix();
+
+        if (fileFormat == "dat")
+        {
+            loadDat(filePath);
+        }
+        else if (fileFormat == "csv")
+        {
+            loadCsv(filePath);
         }
     }
 }
@@ -259,7 +287,7 @@ void PlotClass::InverseFourierTransform()
 
 
 
-void PlotClass::AddNewMarker(double Key, int Style, QColor Colour)
+void PlotClass::AddNewMarker(double Key, int Style, QColor Colour, int GraphNumber)
 {
 
     QCPItemTracer * NewMarker = new QCPItemTracer(this);
@@ -267,7 +295,7 @@ void PlotClass::AddNewMarker(double Key, int Style, QColor Colour)
     NewMarker->setPen(QPen(Colour));
     NewMarker->setBrush(QBrush(Colour));
     NewMarker->setStyle(QCPItemTracer::TracerStyle(Style));
-    NewMarker->setGraph(graph(SelectedGraph));
+    NewMarker->setGraph(graph(GraphNumber)); // Как обозначать null?
     NewMarker->setGraphKey( Key ); //Разобраться как работает pixelToCoord
     //NewMarker->setInterpolating(true); // Плавное передвижение вдоль линий
     NewMarker->setSize(15);
@@ -408,34 +436,155 @@ void PlotClass::UpdateBackgroundPlot (QVector <std::complex<double>> bf)
 
 
 
-void PlotClass::saveDat(QString filePath)
+void PlotClass::saveDat(QString FilePath)  //Доделать сохранение внешнего вида (Или по умолчанию везде одинаковые цвета?)
 {
-    //QString Path = QDir::homePath() + "/" + "PlotData" + ".dat";
-    //QString FilePath = QFileDialog::getSaveFileName(this, "Save File", Path, "Data Files (*.dat);;All Files (*)");
 
-    QFile File(filePath);
-    if (!File.open(QIODevice::WriteOnly))
+    QFile File(FilePath);
+    if (!File.open(QIODevice::WriteOnly | QIODevice::Text))
     {
-        //ShowErrorMessage("Не удалось открыть файл для записи!",File.errorString());
         qDebug()<< "Не получилось записать";
         return;
     }
 
+    QDataStream QOut(&File);
 
-    QDataStream out(&File);
-    //QCustomPlot Plot;
-    //out << Plot;
+    QOut << graphCount();
+
+    for (int i = 0; i < graphCount(); i++)  //Сохраняем все данные графиков
+    {
+        QCPGraph *graph = this->graph(i);
+        //QOut << i;
+
+        QOut<< graph->data()->size();       //Число точек графика
+        for (int j = 0; j < graph->data()->size(); j++)
+        {
+            double x = graph->data()->at(j)->key;
+            double y = graph->data()->at(j)->value;
+            QOut << x << y;
+        }
+
+        QOut << AddedMarkersList.size();
+
+        QOut << this->AddedMarkersList.size();
+        for (const auto& marker : this->AddedMarkersList)
+        {
+            QOut << marker->position->key() << marker->position->value();
+            QOut << marker->style();
+            QOut << marker->brush().color();
+        }
+
+    }
+
     File.close();
 
-    //saveGeometry();
-    //customPlot->saveRastered(FilePath,);
 }
 
 
-void PlotClass::saveCsv(QString filePath)
+
+void PlotClass::loadDat(QString FilePath) //Перенести туда, где будет использоваться
+{
+
+    QFile File(FilePath);
+    if (!File.open(QIODevice::ReadOnly | QIODevice::Text))
+    {
+        qDebug()<< "Не получилось прочитать";  // Ошибки в отдельную вкладку
+        return;
+    }
+
+    QDataStream QIn(&File);
+
+    PlotClass * LoadedPlot = this;
+
+    int NumberOfGraphs = 0 ;
+    QIn >> NumberOfGraphs;
+
+    for (int i = 0; i < NumberOfGraphs; i++)    //Выгружаем все данные графиков
+    {
+        LoadedPlot->addGraph();
+
+
+        int NumberOfPointsInGraph;
+
+        QIn >>NumberOfPointsInGraph;            //Число точек графика
+
+        QVector <double> LoadedXVector, LoadedYVector;
+
+
+        for (int j = 0; j < NumberOfPointsInGraph; j++)
+        {
+            double x;
+            double y;
+            QIn >> x >> y;
+            qDebug()<<"x,y="<<x<<y;
+            LoadedXVector[j] = x;
+            LoadedYVector[j] = y;
+        }
+
+        LoadedPlot->XVector = LoadedXVector;
+        LoadedPlot->YVector = LoadedYVector;
+
+
+        int NumberOfMarkersInGraph;
+
+        QIn >> NumberOfMarkersInGraph;
+
+        qDebug()<<NumberOfMarkersInGraph;
+        this->AddedMarkersList.clear();
+
+        for (const auto& marker : this->AddedMarkersList)
+        {
+            double MKey, MValue;
+            int MStyle;
+            QColor MColour;
+
+            QIn >> MKey;
+            QIn >> MValue;
+            QIn >> MStyle;
+            QIn >> MColour;
+            qDebug()<<MColour;
+
+            LoadedPlot->AddNewMarker( MKey, MStyle, MColour, i); //
+        }
+    }
+
+    File.close();
+
+}
+
+
+void PlotClass::saveCsv(QString FilePath)
 {
 
 }
+
+
+void PlotClass::loadCsv(QString FilePath)
+{
+
+}
+
+
+
+void PlotClass::SubstractMarkers(QCPItemTracer * Marker1, QCPItemTracer * Marker2)
+{
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 PlotClass::~PlotClass()
@@ -588,7 +737,6 @@ void PlotClass::RefreshPlot()
 // +1. задание параметров, 2. Измер backgr response единичн , многократное, отобр графиков результатов: дальн портрет, диаграмму. +
 // +Помимо сохранения, копирование в clipboard (чтобы cntrl+V) +
 // Кто сохраняет данные в (в .dat) массив из x и y. Чтобы открывать в др программах
-// Кто обрабатывает, существует ли прорежевание, сохраняет (не в .dat, лучше непонятное расширение)(в .dat).
 // +Загрузить background и response. RubberBand
 // +Добавить Rubberband: квадратный, гориз (увел с запретом на увел по одной из осей), верт
 // /valgrind perf perfmon profiler. Попробовать qt профайлер
@@ -606,3 +754,6 @@ void PlotClass::RefreshPlot()
 // Добавить в QFileTree
 // meas param
 // Доделать команду "Сделать корневой"
+// Разность между двумя графиками на одной картинке
+// Все ошибки в отдельную вкладку снизу
+// При добавлении маркера можно менять его положение -- двигать, устанавливать в точку итд. Посчитать разность между маркерами на разных графиках.

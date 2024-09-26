@@ -88,12 +88,7 @@ public:
     QComboBox * GraphChoiceComboBox;
 
 
-    void EnterSelectLocalMinMode();
-    void PutMarkerAtLocalMin();
-    void EnterSelectLocalMaxMode();
-    void PutMarkerAtLocalMax();
-
-    //Окно с настройкой внешнего вида маркера
+    //Отдельное окно с настройкой внешнего вида маркера
     //QDialog * MarkerSettingsDialogue;
     //QDialogButtonBox * MarkerSettingsDialogueButtonBox;
 
@@ -103,6 +98,15 @@ public:
 
 
 public slots:
+    void EnterSelectLocalMinMode();
+    void PutMarkerAtLocalMin();
+    void EnterSelectLocalMaxMode();
+    void PutMarkerAtLocalMax();
+
+
+
+    void PutMarkerAtNextMax(); // Переместить маркер на следующий максимум справа от текущего положения
+    void PutMarkerAtPreviousMax();
     void OpenMarkerColourDialogue();
     void ChangeMarkerStyle( int ComboIndex);
     //void DialogueResultAccepted();
@@ -113,5 +117,7 @@ public slots:
     void YAxisRangeChanged(const QCPRange &range);
     //void SavePlotAsDat(); // Перенесено в PlotClass
 };
+
+
 
 #endif // WIDGETFORCUSTOMPLOT_H

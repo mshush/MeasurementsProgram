@@ -25,9 +25,26 @@ MainWindow::MainWindow(QWidget *parent)
     ui->setupUi(this);
 
 
-    this->menuBar()->addMenu("File");
-    this->menuBar()->addMenu("Measure");
-    this->menuBar()->addMenu("Process");
+    QMenu * FileMenu = this->menuBar()->addMenu("File");
+    QMenu * MeasureMenu = this->menuBar()->addMenu("Measure");
+    QMenu * ProcessMenu = this->menuBar()->addMenu("Process");
+
+
+    SaveFileAction = new QAction("Save as...", this);
+    OpenFileAction = new QAction("Load", this);
+
+
+    FileMenu->addAction(SaveFileAction);
+    FileMenu->addAction(OpenFileAction);
+
+    StartMeasureAction = new QAction("Start", this);
+    StopMeasureAction  = new QAction("Stop" , this);
+
+    MeasureMenu->addAction(StartMeasureAction);
+    MeasureMenu->addAction(StopMeasureAction);
+
+
+
     this->menuBar()->addMenu("Post-Process");
     this->menuBar()->addMenu("Create Pylon Compensation");
 
@@ -405,7 +422,7 @@ void MainWindow::ShowErrorMessage(QString Description, QString Advice)
 
 void MainWindow::ConnectObjects()
 {
-    connect(TabOfTools->StartMeasurementsButton, &QPushButton::clicked, Process, &ProcessImitation::Measure);
+    //connect(TabOfTools->StartMeasurementsButton, &QPushButton::clicked, Process, &ProcessImitation::Measure);
 
     connect(Process, &ProcessImitation::MeasurementFinished, this, &MainWindow::SetMeasuredFunction);
 
@@ -421,11 +438,9 @@ void MainWindow::ConnectObjects()
 
 
 
-    connect(TabOfTools->StopMeasurementsButton, &QPushButton::clicked, Process, &ProcessImitation::StopEverything);
-
     //connect(TabOfTools->SaveDataButton  , &QPushButton::clicked, ChartTab, &TabWidgetForCharts::SaveData); // Получше придумать как соединять, чтобы по вкладкам (возможно лучше в QidgetForCustomPlot перенести)
 
-    connect(TabOfTools->SaveMeasuredFunctionButton  , &QPushButton::clicked, this, &MainWindow::SaveMeasuredFunction);
+    //connect(TabOfTools->SaveMeasuredFunctionButton  , &QPushButton::clicked, this, &MainWindow::SaveMeasuredFunction);
     //connect(TabOfTools->ImportDataButton, &QPushButton::clicked, ChartTab, &TabWidgetForCharts::CreateNewTabFromImportedData);
 
     //connect(TabOfParameters->MeasurementTab, &MeasurementsParametersWidget::FrequencyParametersChanged, ChartTab,&TabWidgetForCharts::SetFrequencyParameters);
@@ -460,7 +475,17 @@ void MainWindow::ConnectObjects()
 
     //connect(TabOfParameters->FileTreeTab, &TreeWidgetForFiles::FileWasChosenSignal, TabOfParameters->ResultTab, &ResultParametersWidget::FileChosenInTreeWidget);
 
-    connect(TabOfTools->GetPlotDataButton, &QPushButton::clicked, this, &MainWindow::GetPlotFromDat);
+    //connect(TabOfTools->GetPlotDataButton, &QPushButton::clicked, this, &MainWindow::GetPlotFromDat);
+
+
+
+
+    connect(SaveFileAction, &QAction::triggered, this->ChartTab->PlotTabs[0]->customPlot, &PlotClass::SaveAs); // Перенести функцию в другое место
+    connect(OpenFileAction, &QAction::triggered, this->ChartTab->PlotTabs[0]->customPlot, &PlotClass::OpenFile);
+
+    connect(StartMeasureAction, &QAction::triggered, Process , &ProcessImitation::Measure);
+    connect(StopMeasureAction, &QAction::triggered, Process , &ProcessImitation::StopEverything);
+
 
 }
 

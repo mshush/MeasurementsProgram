@@ -330,7 +330,7 @@ void WidgetForCustomPlot::InitiateSaveLayout()
     HorizontalSaveLayout = new QHBoxLayout;
 
     SaveButton = new QPushButton("Сохранить",this);
-    connect(SaveButton, &QPushButton::clicked, customPlot, &PlotClass::SavePlot);
+    connect(SaveButton, &QPushButton::clicked, customPlot, &PlotClass::SaveAs);
 
     //QPushButton * SaveAsDatButton = new QPushButton(".dat", this);
     //connect(SaveAsDatButton, &QPushButton::clicked, this, &WidgetForCustomPlot::SavePlotAsDat);
@@ -518,7 +518,7 @@ void WidgetForCustomPlot::PutMarkerAtLocalMax()
                 MaxValue = CurrentValue;
             }
         }
-        customPlot->AddNewMarker(MaxKey,customPlot->MarkerStyle, customPlot->MarkerColour);
+        customPlot->AddNewMarker(MaxKey,customPlot->MarkerStyle, customPlot->MarkerColour, customPlot->SelectedGraph);
     }
      customPlot->graph(0)->setSelection(QCPDataSelection());
 }
@@ -571,10 +571,28 @@ void WidgetForCustomPlot::PutMarkerAtLocalMin()
                 MinValue = CurrentValue;
             }
         }
-        customPlot->AddNewMarker(MinKey,customPlot->MarkerStyle, customPlot->MarkerColour);
+        customPlot->AddNewMarker(MinKey,customPlot->MarkerStyle, customPlot->MarkerColour, customPlot->SelectedGraph);
     }
     customPlot->graph(0)->setSelection(QCPDataSelection());
 }
+
+
+void WidgetForCustomPlot::PutMarkerAtNextMax()
+{
+
+}
+
+
+void WidgetForCustomPlot::PutMarkerAtPreviousMax()
+{
+
+}
+
+
+
+
+
+
 
 
 
