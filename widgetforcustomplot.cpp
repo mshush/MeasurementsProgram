@@ -11,10 +11,21 @@ WidgetForCustomPlot::WidgetForCustomPlot(QWidget *parent)
     VerticalControlsLayout = new QVBoxLayout;
     //VerticalControlsLayout->setAlignment(Qt::AlignLeft);
 
-    PlotThread = new QThread(this);
+    //PlotThread = new QThread(this);
     customPlot = new PlotClass();
-    customPlot->moveToThread(PlotThread);
-    PlotThread->start();
+    //customPlot->moveToThread(PlotThread);
+    //PlotThread->start();
+
+
+    MarkerTableView = new QTableView(this);
+    QStandardItemModel * ItemModel = new QStandardItemModel(4, 1);
+
+    ItemModel->setHeaderData(0, Qt::Vertical, "N");
+    ItemModel->setHeaderData(1, Qt::Vertical, "Gr");
+    ItemModel->setHeaderData(2, Qt::Vertical, "X");
+    ItemModel->setHeaderData(3, Qt::Vertical, "Y");
+
+    //MarkerTableView->setModel(ItemModel);
 
 
 
@@ -25,7 +36,7 @@ WidgetForCustomPlot::WidgetForCustomPlot(QWidget *parent)
     ControlsWidget = new QWidget(this);
     //ControlsWidget->setFixedSize(260,500);
     //ControlsWidget->setSizePolicy(QSizePolicy::Fixed,QSizePolicy::Expanding);
-    ControlsWidget->setLayout(VerticalControlsLayout);
+    ControlsWidget ->setLayout(VerticalControlsLayout);
     //qDebug()<<"Размер="<<ControlsWidget->size();
 
 
@@ -38,6 +49,7 @@ WidgetForCustomPlot::WidgetForCustomPlot(QWidget *parent)
     InitiateSaveLayout();
     VerticalControlsLayout->addLayout(HorizontalSaveLayout);
 
+    //VerticalControlsLayout->addWidget(MarkerTableView);
     /*
     QPushButton * FourierButton = new QPushButton("F");
     connect(FourierButton, &QPushButton::clicked, this->customPlot, &PlotClass::FourierTransform);
@@ -237,11 +249,11 @@ void WidgetForCustomPlot::InitiateMarkerGroupBox()
     MarkerStyleComboBox->addItem("Квадрат");
     MarkerStyleComboBox->setCurrentIndex(0);
     connect(MarkerStyleComboBox, &QComboBox::currentIndexChanged,this,&WidgetForCustomPlot::ChangeMarkerStyle);
-    MarkerStyleComboBox->setToolTip("Форма маркера");
+    MarkerStyleComboBox->setToolTip("Геометрическая форма маркера");
 
     InitiateMarkerPreviewPlot();
 
-    MarkerAddButton = new QPushButton("Добавить");
+    MarkerAddButton = new QPushButton("+");
     MarkerAddButton->setCheckable(true); // Подпись к маркеру QCPItemText должна не вылазить за пределы графика.
     connect(MarkerAddButton, &QPushButton::clicked, this, [this]()
             {
@@ -253,8 +265,10 @@ void WidgetForCustomPlot::InitiateMarkerGroupBox()
                 customPlot->replot();
             }
             );
+    MarkerAddButton->setToolTip("Добавить маркеры на выбранный график");
 
-    MarkerDeleteButton = new QPushButton("Убрать");
+
+    MarkerDeleteButton = new QPushButton("-");
     MarkerDeleteButton->setCheckable(true);
     connect(MarkerDeleteButton, &QPushButton::clicked, this, [this]()
             {
@@ -273,22 +287,32 @@ void WidgetForCustomPlot::InitiateMarkerGroupBox()
                 customPlot->replot();
             }
             );
+    MarkerDeleteButton->setToolTip("Удалить маркеры");
 
 
     SelectLocalMarkerLayout = new QHBoxLayout();
 
-    SelectLocalMaxButton = new QPushButton("Максимум", this);
+    SelectLocalMaxButton = new QPushButton("max", this); // Установка маркера в случае если в выделенной области нет точек?
     SelectLocalMaxButton->setCheckable(true);
     connect(SelectLocalMaxButton,&QPushButton::clicked, this, &WidgetForCustomPlot::EnterSelectLocalMaxMode);
+    SelectLocalMaxButton->setToolTip("Установить маркер в максимум на выделенной области");
 
-    SelectLocalMinButton = new QPushButton("Минимум", this);
+    SelectLocalMinButton = new QPushButton("min", this);
     SelectLocalMinButton->setCheckable(true);
     connect(SelectLocalMinButton,&QPushButton::clicked, this, &WidgetForCustomPlot::EnterSelectLocalMinMode);
+    SelectLocalMinButton->setToolTip("Установить маркер в минимум на выделенной области");
 
 
-    DeleteAllMarkersButton = new QPushButton("Убрать все");
+    DeleteAllMarkersButton = new QPushButton("0");
     connect(DeleteAllMarkersButton, &QPushButton::clicked, customPlot, &PlotClass::DeleteAllMarkers);
+    DeleteAllMarkersButton->setToolTip("Удалить все маркеры");
 
+
+    QPushButton * MoveSelectedMarkerToNextMaxButton = new QPushButton("→",this);
+    connect(MoveSelectedMarkerToNextMaxButton, &QPushButton::clicked, this, &WidgetForCustomPlot::ToNextMax);
+
+    QPushButton * MoveSelectedMarkerToPrevMaxButton = new QPushButton("←",this);
+    connect(MoveSelectedMarkerToPrevMaxButton, &QPushButton::clicked, this, &WidgetForCustomPlot::ToPrevMax);
 
 
     VerticalMarkerStyleConfigurationLayout = new QVBoxLayout();
@@ -296,7 +320,7 @@ void WidgetForCustomPlot::InitiateMarkerGroupBox()
     GraphChoiceComboBox = new QComboBox(MarkerGroupBox);
 
     GraphChoiceComboBox->addItem("График 1");
-    GraphChoiceComboBox->addItem("График 2");
+    GraphChoiceComboBox->addItem("График 2"); // Нужно добавление неограниченного числа графиков
 
     connect(GraphChoiceComboBox, &QComboBox::currentIndexChanged,customPlot,&PlotClass::ChangeSelectedGraph);
 
@@ -310,15 +334,25 @@ void WidgetForCustomPlot::InitiateMarkerGroupBox()
 
     MarkerAddDeleteLayout->addWidget(MarkerAddButton);
     MarkerAddDeleteLayout->addWidget(MarkerDeleteButton);
+
+    MarkerAddDeleteLayout->addWidget(SelectLocalMaxButton);
+    MarkerAddDeleteLayout->addWidget(SelectLocalMinButton);
+    MarkerAddDeleteLayout->addWidget(DeleteAllMarkersButton);
+
+
+
     MarkerGroupBoxLayout->addLayout(MarkerAddDeleteLayout);
 
-    SelectLocalMarkerLayout->addWidget(SelectLocalMaxButton);
-    SelectLocalMarkerLayout->addWidget(SelectLocalMinButton);
-    MarkerGroupBoxLayout->addLayout(SelectLocalMarkerLayout);
+    //SelectLocalMarkerLayout->addWidget(SelectLocalMaxButton);
+    //SelectLocalMarkerLayout->addWidget(SelectLocalMinButton);
+    //MarkerGroupBoxLayout->addLayout(SelectLocalMarkerLayout);
 
-    MarkerGroupBoxLayout->addWidget(DeleteAllMarkersButton);
+    //MarkerGroupBoxLayout->addWidget(DeleteAllMarkersButton);
 
-
+    QHBoxLayout * MoveMarkerLeftOrRightHorizontalLayout = new QHBoxLayout();
+    MarkerGroupBoxLayout->addLayout(MoveMarkerLeftOrRightHorizontalLayout);
+    MoveMarkerLeftOrRightHorizontalLayout->addWidget(MoveSelectedMarkerToNextMaxButton);
+    MoveMarkerLeftOrRightHorizontalLayout->addWidget(MoveSelectedMarkerToPrevMaxButton);
 
 
 
@@ -559,7 +593,8 @@ void WidgetForCustomPlot::PutMarkerAtLocalMin()
     QCPDataSelection SelectedData = this->customPlot->graph(0)->selection();
     SelectedData.enforceType(QCP::stDataRange);
     QCPDataRange DataRange = SelectedData.dataRange();
-    if (DataRange.size() > 0) {
+    if (DataRange.size() > 0)
+    {
         double MinValue = this->customPlot->graph(0)->data()->at(DataRange.begin())->value;
         double MinKey   = this->customPlot->graph(0)->data()->at(DataRange.begin())->key;
         for (int i = DataRange.begin(); i < DataRange.end(); i++)
@@ -577,18 +612,145 @@ void WidgetForCustomPlot::PutMarkerAtLocalMin()
 }
 
 
-void WidgetForCustomPlot::PutMarkerAtNextMax()
-{
 
+void WidgetForCustomPlot::ToNextMax() // Нужно ли рассмотреть случай маркера на первой координате?
+{
+    if (this->customPlot->selectedItems().size() == 1)
+    {
+        //Переделать получше
+        QCPItemTracer * SelectedMarker = qobject_cast <QCPItemTracer*> (this->customPlot->selectedItems().last());
+
+
+        double CurrentX = SelectedMarker->position->key();
+        double CurrentY = SelectedMarker->position->value();
+
+        //double PrevX;
+        double PrevY;
+
+        //double NextX;
+        double NextY;
+
+        double MaxX = CurrentX;
+
+        QCPGraph * SelectedGraph = SelectedMarker->graph();
+        for (int i = 0; i < SelectedGraph->data()->size(); i++)
+        {
+            double x = SelectedGraph->data()->at(i)->key;
+            if (x > CurrentX)
+            {
+                CurrentX = x;
+                CurrentY = SelectedGraph->data()->at(i)->value;
+
+                if (i<SelectedGraph->data()->size()-1)
+                {
+                    //PrevX = SelectedGraph->data()->at(i-1)->key;
+                    PrevY = SelectedGraph->data()->at(i-1)->value;
+
+                    //NextX = SelectedGraph->data()->at(i+1)->key;
+                    NextY = SelectedGraph->data()->at(i+1)->value;
+
+                    if (NextY<=CurrentY && PrevY<=CurrentY)
+                    {
+                        MaxX = CurrentX;
+                        break;
+                    }
+                }
+                else
+                {
+                    if (SelectedMarker->position->value()<=CurrentY)
+                    {
+                        MaxX = CurrentX;
+                    }
+                    else
+                    {
+                        MaxX = SelectedMarker->position->key();
+                        qDebug()<< "Справа не найдено маркеров";
+                    }
+                }
+
+            }
+        }
+        SelectedMarker->setGraphKey(MaxX);
+        SelectedMarker->updatePosition();
+        customPlot->replot();
+
+    }
+    else
+    {
+        qDebug()<< "Inappropriate number of markers";
+    }
 }
 
-
-void WidgetForCustomPlot::PutMarkerAtPreviousMax()
+void WidgetForCustomPlot::ToPrevMax()
 {
+    if (this->customPlot->selectedItems().size() == 1)
+    {
+        // Как сделать более аккуратно?
+        QCPItemTracer * SelectedMarker = qobject_cast <QCPItemTracer*> (this->customPlot->selectedItems().last());
 
+
+        double CurrentX = SelectedMarker->position->key();
+        double CurrentY = SelectedMarker->position->value();
+
+        //double PrevX;
+        double PrevY;
+
+        //double NextX;
+        double NextY;
+
+        double MaxX = CurrentX;
+
+        QCPGraph * SelectedGraph = SelectedMarker->graph();
+
+        for (int i = SelectedGraph->data()->size()-1; i >= 0 ; i--)
+        {
+            //qDebug()<<i;
+            double x = SelectedGraph->data()->at(i)->key;
+            if (x < SelectedMarker->position->key())
+            {
+                CurrentX = x;
+                CurrentY = SelectedGraph->data()->at(i)->value;
+
+                if (i>0)
+                {
+                    //PrevX = SelectedGraph->data()->at(i-1)->key;
+                    PrevY = SelectedGraph->data()->at(i-1)->value;
+
+                    //NextX = SelectedGraph->data()->at(i+1)->key;
+                    NextY = SelectedGraph->data()->at(i+1)->value;
+
+                    if (NextY<=CurrentY && PrevY<=CurrentY)
+                    {
+                        //qDebug()<<"Was Here!!!";
+                        MaxX = CurrentX;
+                        break;
+                    }
+                }
+                else
+                {
+                    if (SelectedMarker->position->value()<=CurrentY)
+                    {
+                        MaxX = CurrentX;
+                    }
+                    else
+                    {
+                        MaxX = SelectedMarker->position->key();
+                        qDebug()<< "Слева не найдено маркеров";
+                    }
+                }
+
+            }
+        }
+
+        SelectedMarker->setGraphKey(MaxX);
+        SelectedMarker->updatePosition();
+        customPlot->replot();
+    }
+    else
+    {
+        qDebug()<< "Inappropriate number of markers";
+    }
 }
-
-
 
 
 
@@ -628,9 +790,9 @@ void WidgetForCustomPlot::SavePlotAsDat()
 
 WidgetForCustomPlot::~WidgetForCustomPlot()
 {
-    PlotThread->quit();
-    PlotThread->wait();
-    PlotThread->deleteLater();
+    //PlotThread->quit();
+    //PlotThread->wait();
+    //PlotThread->deleteLater();
     customPlot->deleteLater();
 
 }

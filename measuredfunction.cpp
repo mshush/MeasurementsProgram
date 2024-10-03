@@ -155,6 +155,30 @@ QVector <double> MeasuredFunction::FreqVector()
     return FreqVector;
 }
 
+QVector <double> MeasuredFunction::RotVector()
+{
+    QVector <double> RotVector(RNum);
+
+    for (int r=0; r<RNum; r++)
+    {
+        RotVector[r] = RStart + r * (RStop-RStart)/(RNum-1);
+    }
+
+    return RotVector;
+}
+
+
+QVector <double> MeasuredFunction::TiltVector()
+{
+    QVector <double> TiltVector(TNum);
+
+    for (int t=0; t<TNum; t++)
+    {
+        TiltVector[t] = TStart + t * (TStop-TStart)/(TNum-1);
+    }
+
+    return TiltVector;
+}
 
 
 
@@ -167,10 +191,22 @@ QVector <double> MeasuredFunction::AmplitudeVectorAtAngles (int r, int t)
         YVector[f] = abs(ReadFrom(f,r,t));
     }
 
-    //qDebug()<<YVector;
     return YVector;
 }
 
+
+QVector <double> MeasuredFunction::AmplitudeVectorAtFrequencyTilt(int f, int t)
+{
+    {
+        QVector <double> YVector(FNum);
+
+        for (int r=0; f<RNum; r++)
+        {
+            YVector[f] = abs(ReadFrom(f,r,t));
+        }
+        return YVector;
+    }
+}
 
 
 bool MeasuredFunction::CheckBackgroundForSuitability(MeasuredFunction BG)

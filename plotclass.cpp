@@ -114,7 +114,7 @@ void PlotClass::mouseMoveEvent(QMouseEvent *event)
     PlotLabel->setText("x="+xpos+"\n"+"y="+ypos);
     replot();
 
-    if (markeraddbuttonactive or markerdeletebuttonactive)
+    if (markeraddbuttonactive or markerdeletebuttonactive) // Здесь менять видимость label с положением курсора
     {
 
         MouseMoveMarker->setGraphKey(this->xAxis->pixelToCoord(event->pos().x()));
@@ -156,7 +156,9 @@ void PlotClass::SaveAs()
 
         if (fileFormat == "png")
         {
+            this->PlotLabel->setVisible(false); // Если не нужно добавить другой информации в PlotLabel кроме положения курсора, то сделать так везде.
             savePng(filePath);
+            this->PlotLabel->setVisible(true);
         }
         else if (fileFormat == "jpg")
         {
@@ -218,7 +220,6 @@ void PlotClass::DeleteAllMarkers()
     AddedMarkerLabelsList.clear();
 
     replot();
-
 }
 
 
@@ -296,12 +297,13 @@ void PlotClass::AddNewMarker(double Key, int Style, QColor Colour, int GraphNumb
     NewMarker->setBrush(QBrush(Colour));
     NewMarker->setStyle(QCPItemTracer::TracerStyle(Style));
     NewMarker->setGraph(graph(GraphNumber)); // Как обозначать null?
-    NewMarker->setGraphKey( Key ); //Разобраться как работает pixelToCoord
-    //NewMarker->setInterpolating(true); // Плавное передвижение вдоль линий
+    NewMarker->setGraphKey( Key ); //+Разобраться как работает pixelToCoord
+
+    //NewMarker->setInterpolating(true); //Плавное передвижение вдоль линий -- не нужно ставить маркер между точками
     NewMarker->setSize(15);
     //qDebug()<<Key;
 
-    QCPItemText * NewMarkerLabel = new QCPItemText(this); // Сделать подпись в углу, фиксированной
+    QCPItemText * NewMarkerLabel = new QCPItemText(this); // +Сделать подпись в углу, фиксированной.// +Скрывать видимость на время сохранения?
     NewMarkerLabel->setPositionAlignment(Qt::AlignRight|Qt::AlignBottom);
     NewMarkerLabel->position->setCoords(NewMarker->position->key(),NewMarker->position->value());
     QString LabelText = "(" + QString::number(NewMarker->position->key()) + "," + QString::number(NewMarker->position->value()) + ")";
@@ -472,7 +474,6 @@ void PlotClass::saveDat(QString FilePath)  //Доделать сохранени
             QOut << marker->style();
             QOut << marker->brush().color();
         }
-
     }
 
     File.close();
@@ -481,7 +482,7 @@ void PlotClass::saveDat(QString FilePath)  //Доделать сохранени
 
 
 
-void PlotClass::loadDat(QString FilePath) //Перенести туда, где будет использоваться
+void PlotClass::loadDat(QString FilePath) //Перенести туда, где будет использоваться. Что не так???????
 {
 
     QFile File(FilePath);
@@ -516,13 +517,14 @@ void PlotClass::loadDat(QString FilePath) //Перенести туда, где 
             double y;
             QIn >> x >> y;
             qDebug()<<"x,y="<<x<<y;
-            LoadedXVector[j] = x;
-            LoadedYVector[j] = y;
+            LoadedXVector.append(x);
+            LoadedYVector.append(y);
         }
 
-        LoadedPlot->XVector = LoadedXVector;
-        LoadedPlot->YVector = LoadedYVector;
+        //LoadedPlot->XVector = LoadedXVector;
+        //LoadedPlot->YVector = LoadedYVector;
 
+        LoadedPlot->graph(i)->setData(LoadedXVector, LoadedYVector);
 
         int NumberOfMarkersInGraph;
 
@@ -547,33 +549,148 @@ void PlotClass::loadDat(QString FilePath) //Перенести туда, где 
         }
     }
 
+    replot();
     File.close();
 
 }
 
 
+void PlotClass::loadCsv(QString FilePath) //Проверить в Origin и Excel
+{
+    QFile File(FilePath);
+    if (!File.open(QIODevice::ReadOnly | QIODevice::Text)) {
+        qWarning("Не удалось открыть файл для чтения");
+        return;
+    }
+
+
+    clearGraphs();
+
+    QVector <double> XVector, YVector;
+
+    QTextStream in(&File);
+
+    QString Header = in.readLine();
+
+    while (!in.atEnd())
+    {
+        QString line = in.readLine();
+        QStringList fields = line.split(",");
+
+        if (fields.size() >= 2)
+        {
+            bool XIndicatorOfSuccessfulConversion, YIndicatorOfSuccessfulConversion;
+            double x = fields[0].toDouble(&XIndicatorOfSuccessfulConversion);
+            double y = fields[1].toDouble(&YIndicatorOfSuccessfulConversion);
+
+            if (XIndicatorOfSuccessfulConversion && YIndicatorOfSuccessfulConversion)
+            {
+                XVector.append(x);
+                YVector.append(y);
+            }
+        }
+    }
+
+    graph(0)->setData(XVector, YVector);
+    replot();
+    File.close();
+}
+
+
 void PlotClass::saveCsv(QString FilePath)
 {
+    QFile File(FilePath);
+    if (!File.open(QIODevice::WriteOnly | QIODevice::Text))
+    {
+        qDebug()<< "Не получилось прочитать";  // Ошибки в отдельную вкладку
+        return;
+    }
+
+    QDataStream QIn(&File);
+
+    PlotClass * LoadedPlot = this;
+
+    int NumberOfGraphs = 0 ;
+    QIn >> NumberOfGraphs;
+
+    for (int i = 0; i < NumberOfGraphs; i++)    //Выгружаем все данные графиков
+    {
+        LoadedPlot->addGraph();
+
+
+        int NumberOfPointsInGraph;
+
+        QIn >>NumberOfPointsInGraph;            //Число точек графика
+
+        QVector <double> LoadedXVector, LoadedYVector;
+
+
+        for (int j = 0; j < NumberOfPointsInGraph; j++)
+        {
+            double x;
+            double y;
+            QIn >> x >> y;
+            qDebug()<<"x,y="<<x<<y;
+            LoadedXVector.append(x);
+            LoadedYVector.append(y);
+        }
+
+        //LoadedPlot->XVector = LoadedXVector;
+        //LoadedPlot->YVector = LoadedYVector;
+
+        LoadedPlot->graph(i)->setData(LoadedXVector, LoadedYVector);
+
+        int NumberOfMarkersInGraph;
+
+        QIn >> NumberOfMarkersInGraph;
+
+        qDebug()<<NumberOfMarkersInGraph;
+        this->AddedMarkersList.clear();
+
+        for (const auto& marker : this->AddedMarkersList)
+        {
+            double MKey, MValue;
+            int MStyle;
+            QColor MColour;
+
+            QIn >> MKey;
+            QIn >> MValue;
+            QIn >> MStyle;
+            QIn >> MColour;
+            qDebug()<<MColour;
+
+            LoadedPlot->AddNewMarker( MKey, MStyle, MColour, i); //
+        }
+    }
+
+    replot();
+    File.close();
 
 }
 
 
-void PlotClass::loadCsv(QString FilePath)
+
+double PlotClass::SubstractMarkers(QCPItemTracer * Marker1, QCPItemTracer * Marker2)
+{
+    double Result = Marker1->position->value()-Marker2->position->value();
+    return Result;
+}
+
+
+
+
+
+
+void PlotClass::ToNextMax()
 {
 
 }
 
 
-
-void PlotClass::SubstractMarkers(QCPItemTracer * Marker1, QCPItemTracer * Marker2)
+void PlotClass::ToPrevMax()
 {
 
 }
-
-
-
-
-
 
 
 
@@ -757,3 +874,33 @@ void PlotClass::RefreshPlot()
 // Разность между двумя графиками на одной картинке
 // Все ошибки в отдельную вкладку снизу
 // При добавлении маркера можно менять его положение -- двигать, устанавливать в точку итд. Посчитать разность между маркерами на разных графиках.
+// При сохранении графика как картинки остаётся label  с подписью координат курсора. Их необходимо убрать (Удалить и снова добавить? Выделить в отдельный слой графика?)
+// Предпросмотр сохраняемого изображения
+// Разность между маркерами на двух графиках
+// Какие правильные диапазоны
+// Починить координаты у маркеров и добавить таблицу с координатами маркеров
+// Как маркеры отображать в таблице? Нумеровка маркеров.
+// Доделать QTableView
+//
+//
+//
+//
+//
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

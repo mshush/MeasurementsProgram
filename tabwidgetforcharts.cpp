@@ -6,13 +6,25 @@ TabWidgetForCharts::TabWidgetForCharts()
     //ChartTabBar = new QTabBar(this);
     //AddMeasuredTabs();
 
-    MeasurementPlotTab = new WidgetForCustomPlot(this);
-    addTab(MeasurementPlotTab,"Текущее измерение");
-    PlotTabs.push_back(MeasurementPlotTab);
+    // Как обеспечить связь между графиками?
+    // Менять ли окно параметров при переключении или сделать для каждого своё рядом
+    // Не менять окно параметров -- добавить белую вертикальную полосу, символизирующую отображающийся на другом графике угол или частоту
+    //
+    MeasurementPlotTabFrequency = new WidgetForCustomPlot(this);
+    addTab(MeasurementPlotTabFrequency,"Зависимость от частоты");
+    PlotTabs.push_back(MeasurementPlotTabFrequency);
+
+    MeasurementPlotTabAngle = new WidgetForCustomPlot(this);
+    addTab(MeasurementPlotTabAngle,"Зависимость от угла");
+    PlotTabs.push_back(MeasurementPlotTabAngle);
+
 
     TimeOfFlightPlotTab = new WidgetForCustomPlot(this);
     addTab(TimeOfFlightPlotTab,"Дальностный портрет");
     PlotTabs.push_back(TimeOfFlightPlotTab);
+
+    // Добавить окно с предпросмотром сохраняемого изображения.
+
 
     //setTabsClosable(true); Можно было так.
     //this->setTabsMovable(true);

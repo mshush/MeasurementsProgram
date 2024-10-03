@@ -10,6 +10,22 @@ ResultParametersWidget::ResultParametersWidget(QWidget *parent)
     this->setLayout(OutermostVerticalLayout);
 
 
+    // Задаём область сдвига и растяжения углов
+
+    AzimuthScaleAndOffsetGroupBox = new QGroupBox("Azimuth Scale And Offset",this);
+    QLabel * AzimuthScaleLabel      = new QLabel("Scale", AzimuthScaleAndOffsetGroupBox);
+    QLineEdit * AzimuthScaleEdit    = new QLineEdit("1", AzimuthScaleAndOffsetGroupBox);
+    QLabel * AzimuthOffsetLabel     = new QLabel("Offset", AzimuthScaleAndOffsetGroupBox);
+    QLineEdit * AzimuthOffsetEdit   = new QLineEdit("0", AzimuthScaleAndOffsetGroupBox);
+
+    QGridLayout * AzimuthGridLayout = new QGridLayout(AzimuthScaleAndOffsetGroupBox);
+    AzimuthGridLayout->addWidget(AzimuthScaleLabel  ,0,0);
+    AzimuthGridLayout->addWidget(AzimuthScaleEdit   ,0,1);
+    AzimuthGridLayout->addWidget(AzimuthOffsetLabel ,1,0);
+    AzimuthGridLayout->addWidget(AzimuthOffsetEdit  ,1,1);
+    AzimuthScaleAndOffsetGroupBox->setLayout(AzimuthGridLayout);
+    OutermostVerticalLayout->addWidget(AzimuthScaleAndOffsetGroupBox);
+
     // Задаём AnglesGroupBox -- область введения отображаемых углов измеренных данных
     InitiateAnglesGroupBox();
     OutermostVerticalLayout->addWidget(AnglesGroupBox);
@@ -24,11 +40,11 @@ ResultParametersWidget::ResultParametersWidget(QWidget *parent)
 
 
     // Задаём BackgroundGroupBox -- область задания файла фона
-    InitiateBackgroundGroupBox();
+    InitiateBackgroundGroupBox(); // Перенести весь функционал в TabOfTools
     OutermostVerticalLayout->addWidget(BackgroundGroupBox);
 
     // Задаём CalibrationGroupBox -- область задания файла калибровки
-    InitiateCalibrationGroupBox();
+    InitiateCalibrationGroupBox(); // Перенести весь функционал в TabOfTools
     OutermostVerticalLayout->addWidget(CalibrationGroupBox);
 
 

@@ -24,7 +24,7 @@ public:
     QWidget * MessagesTab;
     QWidget * LegendTab;
     TreeWidgetForFiles * File_ManagerTab;
-    QWidget * Debug_MessagesTab;
+    QTableWidget * Debug_MessagesTab;
 
 
     QPushButton * StartMeasurementsButton;
@@ -40,11 +40,17 @@ public:
     QPushButton * SaveMeasuredFunctionButton;
     QPushButton * GetPlotDataButton;
 
+
+
+
 signals:
     void ContinuousMeasurementsButtonClickedSignal(bool CheckedStatus);
+    void ErrorOccured(QString ErrorText);
 
 public slots:
     void SendContinuousMeasurementsButtonClickedSignal();
+    void DisplayError(QString ErrorText);
+
 };
 
 #endif // TABWIDGETFORTOOLS_H

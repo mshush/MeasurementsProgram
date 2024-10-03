@@ -83,9 +83,12 @@ public:
     QPushButton * SelectLocalMaxButton;
     QPushButton * SelectLocalMinButton;
 
-    QThread * PlotThread;
+    //QThread * PlotThread;
     QVBoxLayout  * VerticalMarkerStyleConfigurationLayout;
     QComboBox * GraphChoiceComboBox;
+
+
+    QTableView * MarkerTableView;
 
 
     //Отдельное окно с настройкой внешнего вида маркера
@@ -102,11 +105,11 @@ public slots:
     void PutMarkerAtLocalMin();
     void EnterSelectLocalMaxMode();
     void PutMarkerAtLocalMax();
+    void ToNextMax();
+    void ToPrevMax();
 
 
 
-    void PutMarkerAtNextMax(); // Переместить маркер на следующий максимум справа от текущего положения
-    void PutMarkerAtPreviousMax();
     void OpenMarkerColourDialogue();
     void ChangeMarkerStyle( int ComboIndex);
     //void DialogueResultAccepted();
@@ -116,6 +119,8 @@ public slots:
     void XAxisRangeChanged(const QCPRange &range);
     void YAxisRangeChanged(const QCPRange &range);
     //void SavePlotAsDat(); // Перенесено в PlotClass
+signals:
+    void ErrorOccured(QString ErrorText);
 };
 
 

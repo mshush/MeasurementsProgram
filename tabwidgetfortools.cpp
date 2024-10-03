@@ -8,7 +8,7 @@ TabWidgetForTools::TabWidgetForTools()
     MessagesTab = new QWidget(this);
     LegendTab = new QWidget(this);
     File_ManagerTab = new TreeWidgetForFiles(this);
-    Debug_MessagesTab = new QWidget(this);
+    Debug_MessagesTab = new QTableWidget(this);
 
 
     addTab(PatternTab,       "Pattern");
@@ -16,6 +16,11 @@ TabWidgetForTools::TabWidgetForTools()
     addTab(LegendTab,        "Legend");
     addTab(File_ManagerTab,  "File_Manager");
     addTab(Debug_MessagesTab,"Debug_Messages");
+
+    Debug_MessagesTab->setColumnCount(3);
+    Debug_MessagesTab->setHorizontalHeaderLabels({"Время", "Отправитель", "Сообшение"});
+    Debug_MessagesTab->horizontalHeader()->setStretchLastSection(true);
+
 
 
 
@@ -131,3 +136,20 @@ TabWidgetForTools::~TabWidgetForTools()
     delete Tab2;
     */
 }
+
+
+void TabWidgetForTools::DisplayError(QString ErrorText)
+{
+    int NumberOfRows = Debug_MessagesTab->rowCount();
+    Debug_MessagesTab->insertRow(NumberOfRows);
+    Debug_MessagesTab->setItem(NumberOfRows, 0, new QTableWidgetItem(QDateTime::currentDateTime().toString("yyyy-MM-dd HH:mm:ss")));
+    QStringList ListOf2Items = ErrorText.split(":", Qt::SkipEmptyParts);
+    QString type = ListOf2Items.size() > 0 ? ListOf2Items[0].trimmed() : "Не известен";
+    QString message = ListOf2Items.size() > 1 ? ListOf2Items[1].trimmed() : "Нет сообщения";
+    Debug_MessagesTab->setItem(NumberOfRows, 1, new QTableWidgetItem(type));
+    Debug_MessagesTab->setItem(NumberOfRows, 2, new QTableWidgetItem(message));
+}
+
+
+
+

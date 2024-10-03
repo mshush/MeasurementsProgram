@@ -22,6 +22,10 @@ public:
 
     QVBoxLayout * OutermostVerticalLayout;
 
+    // Область растяжения и сдвига угла
+    QGroupBox * AzimuthScaleAndOffsetGroupBox;
+
+
     // Задание углов
     void InitiateAnglesGroupBox();
     QGroupBox * AnglesGroupBox;
@@ -74,6 +78,9 @@ public:
     QPushButton * CalibrationFindButton;
     QPushButton * CalibrationSetButton;
 
+
+
+
     //QPushButton * CalculateDistancePortraitButton;
 
 
@@ -83,7 +90,7 @@ public:
 
 signals:
 
-
+    void ErrorOccured(QString ErrorText);
 
 public slots:
     void FindBackground();

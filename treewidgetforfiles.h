@@ -17,11 +17,28 @@ class TreeWidgetForFiles : public QWidget
 public:
     TreeWidgetForFiles(QWidget *parent = nullptr);
     //~TreeWidgetForFiles();
+    QFileSystemModel * model;
+
+    QPushButton * MoveRootToParentFolderButton;
+    QLineEdit * RootPathEdit;
+    QPushButton * ChooseRootButton;
+    QPushButton * SaveButton;
+    QPushButton * SaveCopyButton;
 
 
     QTreeView * FileTree;
 
+public slots:
+    void ChooseRootDirectory();
+    void SaveFile();
+    void SaveCopy();
+    void OpenOnClick(const QModelIndex &index);
+    void MoveRootToParentFolder();
+    void ChangeRootDirectoryManually();
+    //void ChangeRootEditBack();
 
+signals:
+    void ErrorOccured(QString ErrorText); // Почему вызывает ошибку?
 
 
     /*
@@ -62,6 +79,8 @@ public:
 signals:
     void FileWasChosenSignal(int Mode, QString FilePath);
 */
+
+
 };
 
 #endif // TREEWIDGETFORFILES_H

@@ -50,8 +50,12 @@ public:
 
     void SetRanges(double FreqStart, double FreqStop, double FreqNumber, double RotStart, double RotStop, double RotNumber, double TiltStart, double TiltStop, double TiltNumber);
 
-    QVector <double> FreqVector (); // Получает вектор частот из MeasuredFunction
+    QVector <double> FreqVector (); // Получает вектор частот         из MeasuredFunction
+    QVector <double> RotVector ();  // Получает вектор углов вращения из MeasuredFunction
+    QVector <double> TiltVector (); // Получает вектор углов наклона  из MeasuredFunction
+
     QVector <double> AmplitudeVectorAtAngles (int r, int t); // Получает вектор амплитуд из MeasuredFunction при углах с индексами r и t
+    QVector <double> AmplitudeVectorAtFrequencyTilt(int f, int t); // Получает вектор амплитуд из MeasuredFunction на частоте f
 
     QVector <double> DistVector (); // Получает вектор расстояний из MeasuredFunction
     QVector <double> FourierAmplVectorAtAngles (int r, int t); // Получает вектор амплитуд фурье образов из MeasuredFunction при углах с индексами r и t

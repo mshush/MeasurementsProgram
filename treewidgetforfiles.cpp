@@ -2,55 +2,199 @@
 
 TreeWidgetForFiles::TreeWidgetForFiles (QWidget *parent)  : QWidget(parent)
 {
-    /*
-    this->setMaximumWidth(300);
-
-
-    OutermostVerticalLayout = new QVBoxLayout(this);
-    DirectoryLabel = new QLabel("Корневая папка:",this);
-    DirectoryEdit = new QLineEdit("C:/Users/HP/Documents/",this);
-    connect(DirectoryEdit, &QLineEdit::returnPressed, this, &TreeWidgetForFiles::ChangeRootDirectory);
-
-
-    FileTree = new QTreeView(this);
-
-    //FileTree->setColumnCount(1);
-    //FileTree->setHeaderLabels(QStringList() << "Навигация по файлам");
-
-    RootDirectory = QDir("C:/Users/HP/Documents/");
-    //RootItem = new QTreeWidgetItem(FileTree);
-
-    SetRootDirectory(RootDirectory);
-
-
-    OutermostVerticalLayout->addWidget(DirectoryLabel);
-    OutermostVerticalLayout->addWidget(DirectoryEdit);
-    OutermostVerticalLayout->addWidget(FileTree);
-
-    this->setLayout(OutermostVerticalLayout);
-
-
-    //connect(FileTree, &QTreeWidget::itemClicked, this, &TreeWidgetForFiles::ShowContextMenu);
-    */
-
-
-
-    QHBoxLayout * HorizontalFileManagerLayout = new QHBoxLayout(this);
     FileTree = new QTreeView(this);
 
 
-    QFileSystemModel *model = new QFileSystemModel(this);
+    model = new QFileSystemModel(this);
     model->setRootPath(QDir::rootPath());
 
     FileTree->setModel(model);
     FileTree->setRootIndex(model->index(QDir::rootPath())); //Сменить папку
-    FileTree->setColumnWidth(0, 250);
-    HorizontalFileManagerLayout->addWidget(FileTree);
+    FileTree->setColumnWidth(10, 250);
+
+    MoveRootToParentFolderButton = new QPushButton("↑", this);
+    RootPathEdit = new QLineEdit(QDir::rootPath(),this);
+    ChooseRootButton = new QPushButton("Открыть", this);
+    SaveButton = new QPushButton("Сохранить", this);
+    SaveCopyButton = new QPushButton("Сохранить копию", this);
+
+
+    connect(MoveRootToParentFolderButton, &QPushButton::clicked, this, &TreeWidgetForFiles::MoveRootToParentFolder);
+    connect(ChooseRootButton, &QPushButton::clicked, this, &TreeWidgetForFiles::ChooseRootDirectory);
+    connect(SaveButton, &QPushButton::clicked, this, &TreeWidgetForFiles::SaveFile);
+    connect(SaveCopyButton, &QPushButton::clicked, this, &TreeWidgetForFiles::SaveCopy);
+    connect(RootPathEdit,&QLineEdit::returnPressed,this, &TreeWidgetForFiles::ChangeRootDirectoryManually);
+    //connect(RootPathEdit,&QLineEdit::editingFinished,this, &TreeWidgetForFiles::ChangeRootEditBack);
+
+
+    QVBoxLayout * VerticalFileManagerLayout = new QVBoxLayout(this);
+    QHBoxLayout * ButtonLayout = new QHBoxLayout();
+    ButtonLayout->setAlignment(Qt::AlignLeft);
+
+
+    ButtonLayout->addWidget(MoveRootToParentFolderButton);
+    ButtonLayout->addWidget(RootPathEdit);
+    ButtonLayout->addWidget(ChooseRootButton);
+    ButtonLayout->addWidget(SaveButton);
+    ButtonLayout->addWidget(SaveCopyButton);
+    VerticalFileManagerLayout->addLayout(ButtonLayout);
+    VerticalFileManagerLayout->addWidget(FileTree);
+
+
+    connect(FileTree, &QTreeView::doubleClicked, this, &TreeWidgetForFiles::OpenOnClick);
+}
 
 
 
+void TreeWidgetForFiles::ChooseRootDirectory()
+{
+    QString dir = QFileDialog::getExistingDirectory(this, "Choose Directory", QDir::rootPath());
+    if (!dir.isEmpty())
+    {
+        FileTree->setRootIndex(model->index(dir));
+    }
+}
+
+
+
+void TreeWidgetForFiles::SaveFile()
+{
+    //Что сохраняется? Что меняется до сохранения? Растяжение и сдвиг по углам?
+}
+
+void TreeWidgetForFiles::SaveCopy()
+{
 
 }
+
+
+void TreeWidgetForFiles::OpenOnClick(const QModelIndex &index)
+{
+    if (!index.isValid())
+    {
+        return;
+    }
+
+
+    QString filePath = model->filePath(index);
+    QFileInfo fileInfo(filePath);
+
+    if (fileInfo.isDir())
+    {
+        FileTree->setRootIndex(model->index(filePath));
+    }
+    else if (fileInfo.isFile())
+    {
+        QDesktopServices::openUrl(QUrl::fromLocalFile(filePath));
+    }
+}
+
+
+
+void TreeWidgetForFiles::MoveRootToParentFolder()
+{
+
+    QModelIndex CurrentRootIndex = FileTree->rootIndex();
+
+    QString FilePathOfCurrentRoot = model->filePath(CurrentRootIndex);
+
+
+
+    QFileInfo FileInfoOfRoot(FilePathOfCurrentRoot);
+
+    QString ParentDirectoryPath = FileInfoOfRoot.absolutePath();
+
+    FileTree->setRootIndex(model->index(ParentDirectoryPath));
+
+    RootPathEdit->setText(ParentDirectoryPath);
+
+}
+
+void TreeWidgetForFiles::ChangeRootDirectoryManually()
+{
+
+    qDebug() << "ChangeRootDirectoryManually called";
+
+    if (!RootPathEdit) {
+        qDebug() << "RootPathEdit is null!";
+        return;
+    }
+
+    QString NewRootPath = RootPathEdit->text();
+    qDebug() << "NewRootPath:" << NewRootPath;
+
+    QFileInfo fileInfo(NewRootPath);
+    qDebug() << "FileInfo exists:" << fileInfo.exists() << "isDir:" << fileInfo.isDir();
+
+    /*
+    if (fileInfo.exists() && fileInfo.isDir())
+    {
+        qDebug() << "Valid directory, proceeding...";
+        // FileTree->setRootIndex(model->index(NewRootPath));
+    }
+    else
+    {
+        qDebug() << "Invalid path, emitting error...";
+        //emit ErrorOccured("TreeWidgetForFiles : Папка не найдена");
+    }
+*/
+
+
+    /*
+    QString NewRootPath = RootPathEdit->text();
+
+    QFileInfo fileInfo(NewRootPath);
+
+    if (fileInfo.exists() && fileInfo.isDir())
+    {
+        //FileTree->setRootIndex(model->index(NewRootPath));
+    }
+    else
+    {
+        //emit ErrorOccured("TreeWidgetForFiles : Папка не найдена");
+    }
+
+    */
+}
+
+/*
+void TreeWidgetForFiles::ChangeRootEditBack()
+{
+    QModelIndex CurrentRootIndex = FileTree->rootIndex();
+
+    QString FilePathOfCurrentRoot = model->filePath(CurrentRootIndex);
+
+    RootPathEdit->setText(FilePathOfCurrentRoot);
+
+}
+*/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

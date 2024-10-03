@@ -123,18 +123,20 @@ void MeasurementsParametersWidget::InitializeFrequencyGroupBox()
     SRangeButton  = new QPushButton("S"  ,FrequencyGroupBox);
     CRangeButton  = new QPushButton("C"  ,FrequencyGroupBox);
     XRangeButton  = new QPushButton("X"  ,FrequencyGroupBox);
-    KuRangeButton = new QPushButton("Ku" ,FrequencyGroupBox);
-    KRangeButton  = new QPushButton("K"  ,FrequencyGroupBox);
-    KaRangeButton = new QPushButton("Ka" ,FrequencyGroupBox);
+    //KuRangeButton = new QPushButton("Ku" ,FrequencyGroupBox);
+    //KRangeButton  = new QPushButton("K"  ,FrequencyGroupBox);
+    K1RangeButton = new QPushButton("K1" ,FrequencyGroupBox);
+    K2RangeButton = new QPushButton("K2" ,FrequencyGroupBox);
 
     //NoRangeButton->setCheckable(true);
     LRangeButton ->setCheckable(true);
     SRangeButton ->setCheckable(true);
     CRangeButton ->setCheckable(true);
     XRangeButton ->setCheckable(true);
-    KuRangeButton->setCheckable(true);
-    KRangeButton ->setCheckable(true);
-    KaRangeButton->setCheckable(true);
+    //KuRangeButton->setCheckable(true);
+    //KRangeButton ->setCheckable(true);
+    K1RangeButton->setCheckable(true);
+    K2RangeButton->setCheckable(true);
 
     //NoRangeButton->setChecked(true);
 
@@ -184,9 +186,10 @@ void MeasurementsParametersWidget::InitializeFrequencyGroupBox()
     SRangeButton ->setStyleSheet(StyleSheetStringForMiddleButton);
     CRangeButton ->setStyleSheet(StyleSheetStringForMiddleButton);
     XRangeButton ->setStyleSheet(StyleSheetStringForMiddleButton);
-    KuRangeButton->setStyleSheet(StyleSheetStringForMiddleButton);
-    KRangeButton ->setStyleSheet(StyleSheetStringForMiddleButton);
-    KaRangeButton->setStyleSheet(StyleSheetStringForRightButton );
+    //KuRangeButton->setStyleSheet(StyleSheetStringForMiddleButton);
+    //KRangeButton ->setStyleSheet(StyleSheetStringForMiddleButton);
+    K1RangeButton->setStyleSheet(StyleSheetStringForMiddleButton );
+    K2RangeButton->setStyleSheet(StyleSheetStringForRightButton );
 
 
 
@@ -196,18 +199,20 @@ void MeasurementsParametersWidget::InitializeFrequencyGroupBox()
     FrequencyRangesButtonGroup->addButton(SRangeButton , 1);
     FrequencyRangesButtonGroup->addButton(CRangeButton , 2);
     FrequencyRangesButtonGroup->addButton(XRangeButton , 3);
-    FrequencyRangesButtonGroup->addButton(KuRangeButton, 4);
-    FrequencyRangesButtonGroup->addButton(KRangeButton , 5);
-    FrequencyRangesButtonGroup->addButton(KaRangeButton, 6);
+    //FrequencyRangesButtonGroup->addButton(KuRangeButton, 4);
+    //FrequencyRangesButtonGroup->addButton(KRangeButton , 5);
+    FrequencyRangesButtonGroup->addButton(K1RangeButton, 4);
+    FrequencyRangesButtonGroup->addButton(K2RangeButton, 5);
 
     //ButtonGroupLayout->addWidget(NoRangeButton);
     ButtonGroupLayout->addWidget(LRangeButton );
     ButtonGroupLayout->addWidget(SRangeButton );
     ButtonGroupLayout->addWidget(CRangeButton );
     ButtonGroupLayout->addWidget(XRangeButton );
-    ButtonGroupLayout->addWidget(KuRangeButton);
-    ButtonGroupLayout->addWidget(KRangeButton );
-    ButtonGroupLayout->addWidget(KaRangeButton);
+    //ButtonGroupLayout->addWidget(KuRangeButton);
+    //ButtonGroupLayout->addWidget(KRangeButton );
+    ButtonGroupLayout->addWidget(K1RangeButton);
+    ButtonGroupLayout->addWidget(K2RangeButton);
     ButtonGroupLayout->setSpacing(0);
 
     connect(FrequencyRangesButtonGroup, &QButtonGroup::idPressed, this, &MeasurementsParametersWidget::FrequencyRangeButtonPressed);
@@ -270,7 +275,7 @@ void MeasurementsParametersWidget::InitializeFrequencyGroupBox()
     FrequencyGroupBoxLayout->addWidget(SetFrequencyParametersButton);
     FrequencyGroupBox->setLayout(FrequencyGroupBoxLayout);
 
-    qDebug()<<"FGB size = " << FrequencyGroupBox->size();
+    //qDebug()<<"FGB size = " << FrequencyGroupBox->size();
 }
 
 

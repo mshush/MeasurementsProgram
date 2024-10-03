@@ -21,8 +21,9 @@ public:
     ~TabWidgetForCharts();
     QVector <WidgetForCustomPlot*> PlotTabs; // Сделать листом?
 
-    WidgetForCustomPlot * MeasurementPlotTab;
+    WidgetForCustomPlot * MeasurementPlotTabFrequency;
     WidgetForCustomPlot * TimeOfFlightPlotTab;
+    WidgetForCustomPlot * MeasurementPlotTabAngle;
 
 
 public slots:

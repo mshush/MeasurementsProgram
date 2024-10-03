@@ -9,7 +9,8 @@
 #include <QDebug>
 #include <QThread>
 
-class ProcessImitation : public QObject {
+class ProcessImitation : public QObject
+{
     Q_OBJECT
 public:
     explicit ProcessImitation(QObject * parent = nullptr);
@@ -47,6 +48,7 @@ signals:
     void MeasurementFinished(MeasuredFunction F_ForSending);
     void ProgressSignal(int CurrentProgressPercent);
     void IterationOfMeasurementFinished(QVector <double> FreqVector);
+    void ErrorOccured(QString ErrorText);
 
 public slots:
     void Measure();

@@ -53,13 +53,13 @@ public:
                                                           {26.5, 40.0}};  //Ka Ka2 36-40
 */
 
-    const std::pair<double, double> FrequencyRanges[7] = {
+    const std::pair<double, double> FrequencyRanges[6] = {
                                                           {1.0,  2.0},     //L
                                                           {2.0,  4.0},     //S
                                                           {4.0,  8.0},     //C
                                                           {8.0,  12.0},    //X
                                                           {26.0, 36.0},   //Ka1  12-26 - не мер. больш погл
-                                                          {18.0, 26.5},   //K  УБРАТЬ!!!!!!! Посмотреть диапазоны в проге
+                                                          //{18.0, 26.5},   //K  УБРАТЬ!!!!!!! Посмотреть диапазоны в проге
                                                           {36.0, 40.0}};  //Ka2
 
 
@@ -73,10 +73,10 @@ public:
     QPushButton * SRangeButton;
     QPushButton * CRangeButton;
     QPushButton * XRangeButton;
-    QPushButton * KuRangeButton;
-    QPushButton * KRangeButton;
-    QPushButton * KaRangeButton;
-
+    //QPushButton * KuRangeButton;
+    //QPushButton * KRangeButton;
+    QPushButton * K1RangeButton;
+    QPushButton * K2RangeButton;
 
 
     //Область задания углов
@@ -132,7 +132,7 @@ public slots:
 signals:
     void FrequencyParametersChanged(double FreqStart, double FreqStop, int FreqNum); //Объединить с углами?
     void AngleParametersChanged(double RotStart, double RotStop, int RotNum, double TiltStart, double TiltStop, int TiltNum);
-
+    void ErrorOccured(QString ErrorText);
 };
 
 #endif // MEASUREMENTSPARAMETERSWIDGET_H

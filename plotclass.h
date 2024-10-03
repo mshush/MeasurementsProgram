@@ -39,7 +39,7 @@ public:
  //   double FreqStop = 2.0;
  //   int NumberOfPoints = 1601;
 
-    QVector <double> XVector, YVector;
+    //QVector <double> XVector, YVector;
     //QVector <std::complex<double>> f; // Убрать вообще
 
     bool ContinuousMeasurementMode = false;
@@ -60,7 +60,7 @@ public slots:
     void DeleteAllMarkers();
     void CopyPlot();
     void SaveData(); // Устар
-    void SubstractMarkers(QCPItemTracer * Marker1, QCPItemTracer * Marker2);
+    double SubstractMarkers(QCPItemTracer * Marker1, QCPItemTracer * Marker2);
     //void ImportData();
     //void FourierTransform(); //Перенести в MainWindow?
     //QVector <std::complex<double>> FourierTransformVector(QVector <std::complex<double>> f);
@@ -79,9 +79,19 @@ public slots:
     void SaveAs();
     void OpenFile();
 
+
+    void ToNextMax(); // Переместить маркер на следующий максимум справа от текущего положения
+    void ToPrevMax();
+
+
+
 protected:
     void mouseMoveEvent(QMouseEvent *event) override;
     void mousePressEvent(QMouseEvent *event) override;
+
+public:
+signals:
+    void ErrorOccured(QString ErrorText);
 
 };
 

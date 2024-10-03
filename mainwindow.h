@@ -109,6 +109,9 @@ public slots:
 
     void GetPlotFromDat();
 
+signals:
+    void ErrorOccured(QString ErrorText);
+
 private:
     Ui::MainWindow *ui;
 };

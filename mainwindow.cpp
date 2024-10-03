@@ -156,9 +156,16 @@ void MainWindow::SetMeasuredFunction(MeasuredFunction F)
     PltPtr0->replot();
 
     PlotClass * PltPtr1 = this->ChartTab->PlotTabs[1]->customPlot;
-    PltPtr1->graph(0)->setData(F.DistVector(), F.FourierAmplVectorAtAngles(r,t));
+    //PltPtr1->graph(0)->setData(F.RotVector(), F.AmplitudeVectorAtFrequencyTilt(10,t));
     PltPtr1->rescaleAxes();
     PltPtr1->replot();
+
+    // Сделать ли зависимость от угла наклона?
+
+    PlotClass * PltPtr2 = this->ChartTab->PlotTabs[2]->customPlot;
+    PltPtr2->graph(0)->setData(F.DistVector(), F.FourierAmplVectorAtAngles(r,t));
+    PltPtr2->rescaleAxes();
+    PltPtr2->replot();
 }
 
 
@@ -197,7 +204,8 @@ void MainWindow::ChangeAngleOfDemonstration()
     }
     else
     {
-        ShowErrorMessage("Измеренных данных не обнаружено!", "Убедитесь, что измерение прошло успешно");
+        emit ErrorOccured("mainwindow : Измеренных данных не обнаружено.");
+        //ShowErrorMessage("Измеренных данных не обнаружено!", "Убедитесь, что измерение прошло успешно");
     }
 }
 
@@ -218,7 +226,8 @@ void MainWindow::SaveMeasuredFunction()
     QFile File(FilePath);
     if (!File.open(QIODevice::WriteOnly))
     {
-        ShowErrorMessage("Не удалось открыть файл для записи!",File.errorString());
+        emit ErrorOccured("mainwindow : Не удалось открыть файл для записи.");
+        //ShowErrorMessage("Не удалось открыть файл для записи!",File.errorString());
         return;
     }
 
@@ -236,7 +245,8 @@ void MainWindow::SaveMeasuredFunction()
     QFile File(TabOfParameters->ResultTab->BackgroundLineEdit->text());
     if (!File.open(QIODevice::ReadOnly))
     {
-        ShowErrorMessage("Не удалось открыть файл для чтения!",File.errorString());
+        emit ErrorOccured("mainwindow : Не удалось открыть файл для чтения");
+        //ShowErrorMessage("Не удалось открыть файл для чтения!",File.errorString());
         return;
     }
 
@@ -279,7 +289,8 @@ void MainWindow::SubstractBackground()
         QFile File(TabOfParameters->ResultTab->BackgroundLineEdit->text());
         if (!File.open(QIODevice::ReadOnly))
         {
-            ShowErrorMessage("Не удалось открыть файл для чтения!",File.errorString());
+             emit ErrorOccured("mainwindow : Не удалось открыть файл для чтения.");
+            //ShowErrorMessage("Не удалось открыть файл для чтения!",File.errorString());
             return;
         }
 
@@ -302,13 +313,15 @@ void MainWindow::SubstractBackground()
         }
         else
         {
+            emit ErrorOccured("mainwindow : Данные фона не подходят по формату.");
             ShowErrorMessage("Данные фона не подходят по формату!", "Убедитесь, что вы выбрали нужный файл");
             return;
         }
     }
     else
     {
-        ShowErrorMessage("Нет данных!", "Убедитесь, что измеренные данные были получены");
+        emit ErrorOccured("mainwindow : Нет данных.");
+        //ShowErrorMessage("Нет данных!", "Убедитесь, что измеренные данные были получены");
         return;
     }
 }
@@ -332,7 +345,8 @@ void MainWindow::SetCalibration()
 
     if (BackgroundFunction.FNum==0)
     {
-        ShowErrorMessage("Не найден фон", "Сперва выберите фон");
+        emit ErrorOccured("mainwindow : Не найден фон.");
+        //ShowErrorMessage("Не найден фон", "Сперва выберите фон");
         return;
     }
     if (CalibrationFunction.FNum==0)
@@ -340,7 +354,8 @@ void MainWindow::SetCalibration()
         QFile File(TabOfParameters->ResultTab->CalibrationLineEdit->text());
         if (!File.open(QIODevice::ReadOnly))
         {
-            ShowErrorMessage("Не удалось открыть файл для чтения!", File.errorString());
+            emit ErrorOccured("mainwindow : Не удалось открыть файл для чтения.");
+            //ShowErrorMessage("Не удалось открыть файл для чтения!", File.errorString());
             return;
         }
 
@@ -479,13 +494,23 @@ void MainWindow::ConnectObjects()
 
 
 
-
+    //Menu Actions: (Действия в меню сверху)
     connect(SaveFileAction, &QAction::triggered, this->ChartTab->PlotTabs[0]->customPlot, &PlotClass::SaveAs); // Перенести функцию в другое место
     connect(OpenFileAction, &QAction::triggered, this->ChartTab->PlotTabs[0]->customPlot, &PlotClass::OpenFile);
-
     connect(StartMeasureAction, &QAction::triggered, Process , &ProcessImitation::Measure);
     connect(StopMeasureAction, &QAction::triggered, Process , &ProcessImitation::StopEverything);
 
+
+    //Ошибки
+
+    connect(this,                               &MainWindow                     ::ErrorOccured, TabOfTools, &TabWidgetForTools::DisplayError);
+    connect(TabOfParameters->MeasurementTab,    &MeasurementsParametersWidget   ::ErrorOccured, TabOfTools, &TabWidgetForTools::DisplayError);
+    connect(TabOfParameters->ResultTab,         &ResultParametersWidget         ::ErrorOccured, TabOfTools, &TabWidgetForTools::DisplayError);
+    connect(this->ChartTab->PlotTabs[0],        &WidgetForCustomPlot            ::ErrorOccured, TabOfTools, &TabWidgetForTools::DisplayError);
+    connect(this->ChartTab->PlotTabs[1],        &WidgetForCustomPlot            ::ErrorOccured, TabOfTools, &TabWidgetForTools::DisplayError);
+    connect(this->ChartTab->PlotTabs[2],        &WidgetForCustomPlot            ::ErrorOccured, TabOfTools, &TabWidgetForTools::DisplayError);
+    connect(ChartTab->PlotTabs[0]->customPlot,  &PlotClass                      ::ErrorOccured, TabOfTools, &TabWidgetForTools::DisplayError);
+    connect(TabOfTools,                         &TabWidgetForTools              ::ErrorOccured, TabOfTools, &TabWidgetForTools::DisplayError);
 
 }
 
@@ -515,7 +540,7 @@ void MainWindow::HandleReceivedMeasuredFreqVector(QVector <double> ReceivedVecto
 
 
 
-        PltPtr->XVector = StoredFunction.FreqVector();
+        //PltPtr->XVector = StoredFunction.FreqVector();
         CurrentPlotIndex=0;
     }
 
@@ -534,11 +559,11 @@ void MainWindow::HandleReceivedMeasuredFreqVector(QVector <double> ReceivedVecto
     int r = (I % (R*F)) / F;
 
 
-    QVector<double> YVector = StoredFunction.AmplitudeVectorAtAngles(r,t);
+    //QVector<double> YVector = StoredFunction.AmplitudeVectorAtAngles(r,t);
 
 
 
-    PltPtr->graph(0)->setData(PltPtr->XVector, YVector);
+    PltPtr->graph(0)->setData(StoredFunction.FreqVector(),StoredFunction.AmplitudeVectorAtAngles(r,t));
 
     /*
     if (r==StoredFunction.RNum-1 and t==StoredFunction.TNum-1) // Через CurrentIndex
