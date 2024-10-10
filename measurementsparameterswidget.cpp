@@ -392,22 +392,21 @@ void MeasurementsParametersWidget::InitializeAngleGroupBox()
 
     AngleGridLayout->addWidget(RotationAngleStartLabel, 0,0); // Переименовать Labelы
     AngleGridLayout->addWidget(RotationAngleStartEdit,  0,1);
-    AngleGridLayout->addWidget(RotationAngleStopLabel,   0,2);
-    AngleGridLayout->addWidget(RotationAngleStopEdit,    0,3);
+    AngleGridLayout->addWidget(RotationAngleStopLabel,  0,2);
+    AngleGridLayout->addWidget(RotationAngleStopEdit,   0,3);
 
     AngleGridLayout->addWidget(RotationAngleNumberOfPointsLabel, 1,0,1,3);
     AngleGridLayout->addWidget(RotationAngleNumberOfPointsEdit,  1,3,1,1);
 
     AngleGridLayout->addWidget(TiltAngleStartLabel, 2,0);
     AngleGridLayout->addWidget(TiltAngleStartEdit,  2,1);
-    AngleGridLayout->addWidget(TiltAngleStopLabel,   2,2);
-    AngleGridLayout->addWidget(TiltAngleStopEdit,    2,3);
+    AngleGridLayout->addWidget(TiltAngleStopLabel,  2,2);
+    AngleGridLayout->addWidget(TiltAngleStopEdit,   2,3);
 
     AngleGridLayout->addWidget(TiltAngleNumberOfPointsLabel, 3,0,1,3);
     AngleGridLayout->addWidget(TiltAngleNumberOfPointsEdit,  3,3,1,1);
 
     AngleGridLayout->addWidget(SetAngleParametersButton,  4,0,1,4);
-
 
     AngleGroupBoxLayout->addLayout(AngleGridLayout);
 
@@ -437,8 +436,4 @@ MeasurementsParametersWidget::~MeasurementsParametersWidget()
 }
 
 
-
 // Делать ли после нажатия на кнопку сброс наведения
-
-
-

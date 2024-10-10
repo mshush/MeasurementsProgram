@@ -17,6 +17,8 @@ void SelectionRectClass::draw(QCPPainter *painter)
             painter->drawRect(mRect);
         }
 
+
+
         if (XAxisLocked)
         {
             painter->setPen(pen());

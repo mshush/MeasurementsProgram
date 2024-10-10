@@ -87,8 +87,9 @@ public:
     QVBoxLayout  * VerticalMarkerStyleConfigurationLayout;
     QComboBox * GraphChoiceComboBox;
 
+    int NumberOfRows=0;
 
-    QTableView * MarkerTableView;
+    QTableWidget * MarkerPositionsTable;
 
 
     //Отдельное окно с настройкой внешнего вида маркера
@@ -109,6 +110,7 @@ public slots:
     void ToPrevMax();
 
 
+    void AddMarkerToTable(QCPItemTracer * MarkerPtr);
 
     void OpenMarkerColourDialogue();
     void ChangeMarkerStyle( int ComboIndex);
@@ -119,6 +121,10 @@ public slots:
     void XAxisRangeChanged(const QCPRange &range);
     void YAxisRangeChanged(const QCPRange &range);
     //void SavePlotAsDat(); // Перенесено в PlotClass
+    void ClearTable();
+    void RemoveMarkerFromTable(int RowNumberOfMarker);
+    void HighlightMarkerInTable(int RowNumberOfMarker);
+    void UnHighlightMarkerInTable(int RowNumberOfMarker);
 signals:
     void ErrorOccured(QString ErrorText);
 };

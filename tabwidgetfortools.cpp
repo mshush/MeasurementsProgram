@@ -11,17 +11,19 @@ TabWidgetForTools::TabWidgetForTools()
     Debug_MessagesTab = new QTableWidget(this);
 
 
+
     addTab(PatternTab,       "Pattern");
     addTab(MessagesTab,      "Messages");
     addTab(LegendTab,        "Legend");
     addTab(File_ManagerTab,  "File_Manager");
     addTab(Debug_MessagesTab,"Debug_Messages");
 
+    /*
     Debug_MessagesTab->setColumnCount(3);
     Debug_MessagesTab->setHorizontalHeaderLabels({"Время", "Отправитель", "Сообшение"});
     Debug_MessagesTab->horizontalHeader()->setStretchLastSection(true);
 
-
+    */
 
 
     /*

@@ -3,7 +3,7 @@
 
 #include <random>
 #include <QObject>
-#include <complex>
+//#include <complex>
 #include <QTimer>
 #include <measuredfunction.h>
 #include <QDebug>

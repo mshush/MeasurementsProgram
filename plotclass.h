@@ -30,8 +30,8 @@ public:
     int iter = 0;
     QColor MarkerColour = Qt::red;
     int MarkerStyle = 1;
-    std::list <QCPItemTracer*> AddedMarkersList;
-    std::list <QCPItemText*> AddedMarkerLabelsList;
+    std::list <QCPItemTracer*> AddedMarkersList;        //Переименовать
+    std::list <QCPItemText*> AddedMarkerLabelsList;     //Переименовать
 
     int SelectedGraph = 0;
 
@@ -92,7 +92,11 @@ protected:
 public:
 signals:
     void ErrorOccured(QString ErrorText);
-
+    void MarkerAddedSignal(QCPItemTracer* MarkerPtr);
+    void AllMarkersDeletedSignal();
+    void MarkerDeletedSignal(int Index);
+    void MarkerSelectedSignal(int Index);
+    void MarkerUnSelectedSignal(int Index);
 };
 
 #endif // PLOTCLASS_H

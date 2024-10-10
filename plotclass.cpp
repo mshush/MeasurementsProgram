@@ -3,7 +3,7 @@
 PlotClass::PlotClass(QWidget * parent) : QCustomPlot(parent)
 {
 
-    this->setMinimumSize(1000,600);
+    this->setMinimumSize(800,600);
     //this->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding);
 
 
@@ -16,20 +16,6 @@ PlotClass::PlotClass(QWidget * parent) : QCustomPlot(parent)
     yAxis->setLabelColor(Qt::white);
     xAxis->setTickLabelColor(Qt::white);
     yAxis->setTickLabelColor(Qt::white);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
     //RefreshTimer = new QTimer(this);
@@ -220,6 +206,7 @@ void PlotClass::DeleteAllMarkers()
     AddedMarkerLabelsList.clear();
 
     replot();
+    emit AllMarkersDeletedSignal();
 }
 
 
@@ -320,17 +307,65 @@ void PlotClass::AddNewMarker(double Key, int Style, QColor Colour, int GraphNumb
 
                 if (markerdeletebuttonactive && NewMarker->selected())
                 {
+
+
+                    int DeletedMarkerIndex = 0;
+                    std::list<QCPItemTracer*>::iterator it = AddedMarkersList.begin();
+                    while (it != AddedMarkersList.end())
+                    {
+                        if (*it == NewMarker)
+                        {
+                            break;
+                        }
+                        it++;
+                        DeletedMarkerIndex++;
+                    }
+                    emit MarkerDeletedSignal(DeletedMarkerIndex);
+
                     removeItem(NewMarker);
                     removeItem(NewMarkerLabel);
                     AddedMarkersList.remove(NewMarker);
                     AddedMarkerLabelsList.remove(NewMarkerLabel);
+
                 }
+                else if (NewMarker->selected())
+                {
+                    int SelectedMarkerIndex = 0;
+                    std::list<QCPItemTracer*>::iterator it = AddedMarkersList.begin();
+                    while (it != AddedMarkersList.end())
+                    {
+                        if (*it == NewMarker)
+                        {
+                            break;
+                        }
+                        it++;
+                        SelectedMarkerIndex++;
+                    }
+                    emit MarkerSelectedSignal(SelectedMarkerIndex);
+                }
+                else if (!NewMarker->selected())
+                {
+                    int UnSelectedMarkerIndex = 0;
+                    std::list<QCPItemTracer*>::iterator it = AddedMarkersList.begin();
+                    while (it != AddedMarkersList.end())
+                    {
+                        if (*it == NewMarker)
+                        {
+                            break;
+                        }
+                        it++;
+                        UnSelectedMarkerIndex++;
+                    }
+                    emit MarkerUnSelectedSignal(UnSelectedMarkerIndex);
+                }
+
             }
             );
 
 
     AddedMarkersList.push_back(NewMarker);
     AddedMarkerLabelsList.push_back(NewMarkerLabel);
+    emit MarkerAddedSignal(NewMarker);
 
 }
 
@@ -683,7 +718,7 @@ double PlotClass::SubstractMarkers(QCPItemTracer * Marker1, QCPItemTracer * Mark
 
 void PlotClass::ToNextMax()
 {
-
+// Перенесено в WidgetForCustomPlot
 }
 
 
@@ -866,7 +901,7 @@ void PlotClass::RefreshPlot()
 
 // +Добавить ProgressBar в QMainWindow
 // +Убрать из plotclass все комплексные функции -- оставить только абсолютные значения
-// !Сохранение всего, что есть в QCustomPlot в .dat файл с помощью встроенной функции.
+// ?Сохранение всего, что есть в QCustomPlot в .dat файл с помощью встроенной функции.
 // Доделать непрерывные измерения (Почему так медленно рисует?)
 // Добавить в QFileTree
 // meas param
@@ -883,8 +918,16 @@ void PlotClass::RefreshPlot()
 // Доделать QTableView
 //
 //
-//
-//
+
+/*
++Придумать способ доказать что графическое отображение соответствует табличным данным -- не съезжает, правильно интерполируется
+
+(Взять данные)
+
+Подводные камни? Скачки, какие ещё проблемы, поискать литературу по проблемам с построением графиков.
+Убедиться, что qcustomplot правильно строит, какая там интерполяция, ничего ли он не пропускает.
+*/
+
 //
 
 

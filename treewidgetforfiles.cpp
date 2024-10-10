@@ -42,6 +42,7 @@ TreeWidgetForFiles::TreeWidgetForFiles (QWidget *parent)  : QWidget(parent)
 
 
     connect(FileTree, &QTreeView::doubleClicked, this, &TreeWidgetForFiles::OpenOnClick);
+
 }
 
 
