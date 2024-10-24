@@ -31,6 +31,7 @@ public:
     QPushButton * CopyButton;
 
 
+    QColor HighlightColor = QColor(200, 200, 255);
 
 
     //GroupBox для движения/приближения
@@ -87,10 +88,11 @@ public:
     QVBoxLayout  * VerticalMarkerStyleConfigurationLayout;
     QComboBox * GraphChoiceComboBox;
 
-    int NumberOfRows=0;
+    //int NumberOfRows=0;
+    int CurrentMarkerIndex = 0;
 
     QTableWidget * MarkerPositionsTable;
-
+    QTableWidget * MarkerDifferenceTable;
 
     //Отдельное окно с настройкой внешнего вида маркера
     //QDialog * MarkerSettingsDialogue;
@@ -109,6 +111,7 @@ public slots:
     void ToNextMax();
     void ToPrevMax();
 
+    void SetRange();
 
     void AddMarkerToTable(QCPItemTracer * MarkerPtr);
 
@@ -125,6 +128,11 @@ public slots:
     void RemoveMarkerFromTable(int RowNumberOfMarker);
     void HighlightMarkerInTable(int RowNumberOfMarker);
     void UnHighlightMarkerInTable(int RowNumberOfMarker);
+    //void SubstractMarkers();
+
+
+    void AdjustContentsOfTableOfDifference(int row, int column);
+
 signals:
     void ErrorOccured(QString ErrorText);
 };

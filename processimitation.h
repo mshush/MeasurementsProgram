@@ -5,7 +5,7 @@
 #include <QObject>
 //#include <complex>
 #include <QTimer>
-#include <measuredfunction.h>
+#include <threedimensionalvector.h>
 #include <QDebug>
 #include <QThread>
 
@@ -21,19 +21,19 @@ public:
     double FrequencyStop = 2;
     int FrequencyNumber = 1601;
 
-    double RotationAngleStart = 0;
-    double RotationAngleStop = 359;
-    int RotationAngleNumber = 360;
+    double AzimuthStart = 0;
+    double AzimuthStop = 359;
+    int AzimuthNumber = 360;
 
-    double TiltAngleStart = 0;
-    double TiltAngleStop = 9;
-    int TiltAngleNumber = 10;
+    double ElevationStart = 0;
+    double ElevationStop = 9;
+    int ElevationNumber = 10;
 
     enum ModeOfMeasurement {Response, Background, Calibration};
     ModeOfMeasurement MeasurementMode = Response; // Calibration; //  Background; //
 
 
-    MeasuredFunction F;
+    ThreeDimensionalVector F; // Переименовать название функции и класса -- ~ 3DVector.
 
     std::default_random_engine generator;
     std::normal_distribution<double> distribution;
@@ -45,7 +45,7 @@ public:
     bool Stopped = false;
 
 signals:
-    void MeasurementFinished(MeasuredFunction F_ForSending);
+    void MeasurementFinished(ThreeDimensionalVector F_ForSending);
     void ProgressSignal(int CurrentProgressPercent);
     void IterationOfMeasurementFinished(QVector <double> FreqVector);
     void ErrorOccured(QString ErrorText);
@@ -55,7 +55,7 @@ public slots:
     void MeasureContinuously(bool CheckedStatus);
 
     void SetFrequencyRange (double FreqStart, double FreqStop, double FreqNumber);
-    void SetAngleRanges (double RotStart, double RotStop, double RotNumber, double TiltStart, double TiltStop, double TiltNumber);
+    void SetAngleRanges (double AzStart, double AzStop, double AzNumber, double ElStart, double ElStop, double ElNumber);
 
     void StopEverything();
 

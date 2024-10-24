@@ -51,9 +51,9 @@ public:
     ProcessImitation * Process;
     //void addItems(const QDir &directory, QTreeWidgetItem *parent); // Перенести в отдельный класс для дерева
 
-    MeasuredFunction StoredFunction; // Хранить в WidgetForCustomPlot чтобы открывать старое?
-    MeasuredFunction CalibrationFunction;
-    MeasuredFunction BackgroundFunction;
+    ThreeDimensionalVector StoredFunction; // Хранить в WidgetForCustomPlot чтобы открывать старое?
+    ThreeDimensionalVector CalibrationFunction;
+    ThreeDimensionalVector BackgroundFunction;
 
     QThread * Thread;
 
@@ -68,12 +68,13 @@ public:
     QAction * OpenFileAction;
     QAction * StartMeasureAction;
     QAction * StopMeasureAction;
+    QAction * MeasureBackground;
+    QAction * MeasureCalibration;
 
 
-
-    void SetMeasuredFunction(MeasuredFunction F);
+    void SetThreeDimensionalVector(ThreeDimensionalVector F);
     void ChangeAngleOfDemonstration();
-    void SaveMeasuredFunction();
+    void SaveThreeDimensionalVector();
     void SetBackground();
     void SubstractBackground();
     void SetCalibration ();
@@ -103,7 +104,7 @@ protected:
 */
 
 public slots:
-    //void TellPlotTabsToChangeAngle(QVector <std::complex<double>> NeededRowFromMeasuredFunction); //
+    //void TellPlotTabsToChangeAngle(QVector <std::complex<double>> NeededRowFromThreeDimensionalVector); //
 
     void HandleReceivedMeasuredFreqVector( QVector <double> ReceivedVector);
 

@@ -13,31 +13,32 @@ ProcessImitation::ProcessImitation(QObject * parent) : QObject(parent)
 void ProcessImitation::Measure()
 {
 
-    F.Resize(FrequencyNumber,RotationAngleNumber,TiltAngleNumber);
+    F.Resize(FrequencyNumber,AzimuthNumber,ElevationNumber);
 
     F.FStart = FrequencyStart;
     F.FStop = FrequencyStop;
     F.FNum =  FrequencyNumber;
 
-    F.RStart = RotationAngleStart;
-    F.RStop = RotationAngleStop;
-    F.RNum =  RotationAngleNumber;
+    F.AStart = AzimuthStart;
+    F.AStop = AzimuthStop;
+    F.ANum =  AzimuthNumber;
 
-    F.TStart = TiltAngleStart;
-    F.TStop = TiltAngleStop;
-    F.TNum =  TiltAngleNumber;
+    F.EStart = ElevationStart;
+    F.EStop = ElevationStop;
+    F.ENum =  ElevationNumber;
 
-    int TotalNumberOfIterations = TiltAngleNumber * RotationAngleNumber * FrequencyNumber;
+
+    int TotalNumberOfIterations = ElevationNumber * AzimuthNumber * FrequencyNumber;
 
     emit ProgressSignal(0);
 
-    for (int t = 0; t < TiltAngleNumber; t++)
+    for (int e = 0; e < ElevationNumber; e++)
     {
-        for (int r = 0; r < RotationAngleNumber; r++)
+        for (int a = 0; a < AzimuthNumber; a++)
         {
             for (int f=0; f < FrequencyNumber; f++)
             {
-                std::complex<double>  PerfectValue = std::complex <double> (std::round(pow(sin(2 * f * M_PI / F.FNum),5)) + r + t, 0);
+                std::complex<double>  PerfectValue = std::complex <double> (std::round(pow(sin(2 * f * M_PI / F.FNum),5)) + a + e, 0);
                 std::complex<double>  Noise = 0.01 * std::complex<double>(distribution(generator),distribution(generator));
                 std::complex<double> MeasuredValue =  PerfectValue + Noise; //  + FOffset[f] + ROffset[r] + TOffset[t];
 
@@ -46,15 +47,17 @@ void ProcessImitation::Measure()
                     MeasuredValue += std::complex <double> (0, pow(cos(2 * f * M_PI / F.FNum),10));
                 }
 
-                if (MeasurementMode == Calibration)
+                if (MeasurementMode == Calibration) // убрать калибровку
                 {
                     MeasuredValue += std::complex <double> (1, 1); ;
                 }
 
-                F.WriteTo(f,r,t, MeasuredValue);
+                F.WriteTo(f,a,e, MeasuredValue);
 
 
-                int iter = t * (F.RNum * F.FNum)  + r * F.FNum + f;
+
+
+                int iter = e * (F.ANum * F.FNum)  + a * F.FNum + f;
                 if (iter % (TotalNumberOfIterations/100) == 0)
                 {
                     int percentage = (iter  * 100) / TotalNumberOfIterations;
@@ -71,12 +74,11 @@ void ProcessImitation::Measure()
 }
 
 
-void ProcessImitation::MeasureContinuously(bool ContinuousModeIsOn)
+void ProcessImitation::MeasureContinuously(bool ContinuousModeIsOn) //Поочерёдно действительная/мнимая части или два массива?
 {
-
     if (ContinuousModeIsOn)
     {
-        int TotalNumberOfIterations = TiltAngleNumber * RotationAngleNumber * FrequencyNumber;
+        int TotalNumberOfIterations = ElevationNumber * AzimuthNumber * FrequencyNumber;
 
         QVector <double> VectorForSending(BufferSize, 0.0);
 
@@ -84,9 +86,9 @@ void ProcessImitation::MeasureContinuously(bool ContinuousModeIsOn)
 
         int VectorIndex = 0;
 
-        for (int t = 0; t < TiltAngleNumber; t++)
+        for (int t = 0; t < ElevationNumber; t++)
         {
-            for (int r = 0; r < RotationAngleNumber; r++)
+            for (int r = 0; r < AzimuthNumber; r++)
             {
                 for (int f=0; f < FrequencyNumber; f++)
                 {
@@ -138,7 +140,7 @@ void ProcessImitation::MeasureContinuously(bool ContinuousModeIsOn)
 
                     if (f%15==0)
                     {
-                        int iter = t * (RotationAngleNumber * FrequencyNumber)  + r * FrequencyNumber + f;
+                        int iter = t * (AzimuthNumber * FrequencyNumber)  + r * FrequencyNumber + f;
                         int percentage = (iter * 100) / TotalNumberOfIterations;
                         //float perflo = double((iter)) / TotalNumberOfIterations;
                         //qDebug()<< iter << perflo;
@@ -166,10 +168,7 @@ void ProcessImitation::MeasureContinuously(bool ContinuousModeIsOn)
     }
     else
     {
-
     }
-
-
 }
 
 
@@ -181,15 +180,15 @@ void ProcessImitation::SetFrequencyRange(double FreqStart, double FreqStop, doub
 }
 
 
-void ProcessImitation::SetAngleRanges(double RotStart, double RotStop, double RotNum, double TiltStart, double TiltStop, double TiltNum)
+void ProcessImitation::SetAngleRanges(double AzStart, double AzStop, double AzNum, double ElStart, double ElStop, double ElNum)
 {
-    RotationAngleStart = RotStart;
-    RotationAngleStop = RotStop;
-    RotationAngleNumber = RotNum;
+    AzimuthStart = AzStart;
+    AzimuthStop = AzStop;
+    AzimuthNumber = AzNum;
 
-    TiltAngleStart = TiltStart;
-    TiltAngleStop = TiltStop;
-    TiltAngleNumber = TiltNum;
+    ElevationStart = ElStart;
+    ElevationStop = ElStop;
+    ElevationNumber = ElNum;
 }
 
 
@@ -207,7 +206,6 @@ void ProcessImitation::PerformNextMeasurement()
         f[i] = f[i+1];
     }
     f[NumberOfPoints-1] = f[NumberOfPoints-2]+ std::complex<double> (distribution(generator),distribution(generator));
-
     emit MeasurementPerformed(f);
     */
 }
@@ -224,7 +222,6 @@ void ProcessImitation::StopEverything()
 
 ProcessImitation::~ProcessImitation()
 {
-
 }
 
 

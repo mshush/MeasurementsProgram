@@ -87,22 +87,22 @@ void ResultParametersWidget::FindCalibration()
 
 
 
-void ResultParametersWidget::HandleRotationSpinBoxChange() // Переделать получше. Новый класс? Округление значений при окончании ввода? Или при нажатии кнопки enter?
+void ResultParametersWidget::HandleAzimuthSpinBoxChange() // Переделать получше. Новый класс? Округление значений при окончании ввода? Или при нажатии кнопки enter?
 {
-    double RotationValue = this->SetCurrentRotationAngleDoubleSpinBox->value();
-    int ClosestIndex = std::round((RotationValue - RotationStart)/(RotationStop-RotationStart)*(RotationNumber-1));
-    double RoundedValue = RotationStart + double(ClosestIndex) * ((RotationStop-RotationStart))/ (RotationNumber-1);
-    this->SetCurrentRotationAngleDoubleSpinBox->setValue(RoundedValue);
-    //emit RotationOrTiltChanged();
+    double AzimuthValue = this->SetCurrentAzimuthDoubleSpinBox->value();
+    int ClosestIndex = std::round((AzimuthValue - AzimuthStart)/(AzimuthStop-AzimuthStart)*(AzimuthNumber-1));
+    double RoundedValue = AzimuthStart + double(ClosestIndex) * ((AzimuthStop-AzimuthStart))/ (AzimuthNumber-1);
+    this->SetCurrentAzimuthDoubleSpinBox->setValue(RoundedValue);
+    //emit AzimuthOrElevationChanged();
 }
 
 
-void ResultParametersWidget::HandleTiltSpinBoxChange()
+void ResultParametersWidget::HandleElevationSpinBoxChange()
 {
-    double TiltValue = this->SetCurrentTiltAngleDoubleSpinBox->value();
-    int ClosestIndex = std::round((TiltValue - TiltStart)/(TiltStop-TiltStart)*(TiltNumber-1));
-    double RoundedValue = TiltStart + double(ClosestIndex) * ((TiltStop-TiltStart))/ (TiltNumber-1);
-    this->SetCurrentTiltAngleDoubleSpinBox->setValue(RoundedValue);
+    double ElevationValue = this->SetCurrentElevationDoubleSpinBox->value();
+    int ClosestIndex = std::round((ElevationValue - ElevationStart)/(ElevationStop-ElevationStart)*(ElevationNumber-1));
+    double RoundedValue = ElevationStart + double(ClosestIndex) * ((ElevationStop-ElevationStart))/ (ElevationNumber-1);
+    this->SetCurrentElevationDoubleSpinBox->setValue(RoundedValue);
 }
 
 
@@ -165,36 +165,36 @@ void ResultParametersWidget::InitiateAnglesGroupBox()
 
     AnglesGroupBoxLayout = new QGridLayout(AnglesGroupBox);
 
-    SetCurrentRotationAngleLabel = new QLabel("Поворот:", this);
+    SetCurrentAzimuthLabel = new QLabel("Поворот:", this);
 
-    SetCurrentRotationAngleDoubleSpinBox = new QDoubleSpinBox(this);
+    SetCurrentAzimuthDoubleSpinBox = new QDoubleSpinBox(this);
 
-    SetCurrentRotationAngleDoubleSpinBox->setRange(RotationStart, RotationStop);
-    SetCurrentRotationAngleDoubleSpinBox->setSingleStep((RotationStop - RotationStart)/(RotationNumber-1));
-    SetCurrentRotationAngleDoubleSpinBox->setDecimals(3);
+    SetCurrentAzimuthDoubleSpinBox->setRange(AzimuthStart, AzimuthStop);
+    SetCurrentAzimuthDoubleSpinBox->setSingleStep((AzimuthStop - AzimuthStart)/(AzimuthNumber-1));
+    SetCurrentAzimuthDoubleSpinBox->setDecimals(3);
 
-    connect(SetCurrentRotationAngleDoubleSpinBox, &QDoubleSpinBox::editingFinished, this, &ResultParametersWidget::HandleRotationSpinBoxChange);
-
-
-    SetCurrentTiltAngleLabel = new QLabel("Наклон:", this);
-    SetCurrentTiltAngleDoubleSpinBox  = new QDoubleSpinBox(this);
-    SetCurrentTiltAngleDoubleSpinBox->setRange(TiltStart, TiltStop);
-    SetCurrentTiltAngleDoubleSpinBox->setSingleStep((TiltStop - TiltStart)/(TiltNumber-1));
-    SetCurrentTiltAngleDoubleSpinBox->setDecimals(3);
+    connect(SetCurrentAzimuthDoubleSpinBox, &QDoubleSpinBox::editingFinished, this, &ResultParametersWidget::HandleAzimuthSpinBoxChange);
 
 
-    connect(SetCurrentTiltAngleDoubleSpinBox, &QDoubleSpinBox::editingFinished, this, &ResultParametersWidget::HandleTiltSpinBoxChange);
+    SetCurrentElevationLabel = new QLabel("Наклон:", this);
+    SetCurrentElevationDoubleSpinBox  = new QDoubleSpinBox(this);
+    SetCurrentElevationDoubleSpinBox->setRange(ElevationStart, ElevationStop);
+    SetCurrentElevationDoubleSpinBox->setSingleStep((ElevationStop - ElevationStart)/(ElevationNumber-1));
+    SetCurrentElevationDoubleSpinBox->setDecimals(3);
+
+
+    connect(SetCurrentElevationDoubleSpinBox, &QDoubleSpinBox::editingFinished, this, &ResultParametersWidget::HandleElevationSpinBoxChange);
 
 
     SetCurrentAngleButton= new QPushButton("Применить", this);
 
     AnglesGroupBox->setLayout(AnglesGroupBoxLayout);
 
-    AnglesGroupBoxLayout ->addWidget(SetCurrentRotationAngleLabel,  0,0);
-    AnglesGroupBoxLayout ->addWidget(SetCurrentRotationAngleDoubleSpinBox,   0,1);
+    AnglesGroupBoxLayout ->addWidget(SetCurrentAzimuthLabel,  0,0);
+    AnglesGroupBoxLayout ->addWidget(SetCurrentAzimuthDoubleSpinBox,   0,1);
 
-    AnglesGroupBoxLayout ->addWidget(SetCurrentTiltAngleLabel,  1,0);
-    AnglesGroupBoxLayout ->addWidget(SetCurrentTiltAngleDoubleSpinBox,   1,1);
+    AnglesGroupBoxLayout ->addWidget(SetCurrentElevationLabel,  1,0);
+    AnglesGroupBoxLayout ->addWidget(SetCurrentElevationDoubleSpinBox,   1,1);
 
     AnglesGroupBoxLayout ->addWidget(SetCurrentAngleButton,  2,0,1,2);
 }

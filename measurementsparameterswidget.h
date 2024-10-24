@@ -86,19 +86,19 @@ public:
     QVBoxLayout * AngleGroupBoxLayout;
     QGridLayout * AngleGridLayout;
 
-    QLabel * RotationAngleStartLabel;
-    QLabel * RotationAngleStopLabel;
-    QLineEdit * RotationAngleStartEdit;
-    QLineEdit * RotationAngleStopEdit;
-    QLabel * RotationAngleNumberOfPointsLabel;
-    QLineEdit * RotationAngleNumberOfPointsEdit;
+    QLabel * AzimuthStartLabel;
+    QLabel * AzimuthStopLabel;
+    QLineEdit * AzimuthStartEdit;
+    QLineEdit * AzimuthStopEdit;
+    QLabel * AzimuthNumberOfPointsLabel;
+    QLineEdit * AzimuthNumberOfPointsEdit;
 
-    QLabel * TiltAngleStartLabel;
-    QLabel * TiltAngleStopLabel;
-    QLineEdit * TiltAngleStartEdit;
-    QLineEdit * TiltAngleStopEdit;
-    QLabel * TiltAngleNumberOfPointsLabel;
-    QLineEdit * TiltAngleNumberOfPointsEdit;
+    QLabel * ElevationStartLabel;
+    QLabel * ElevationStopLabel;
+    QLineEdit * ElevationStartEdit;
+    QLineEdit * ElevationStopEdit;
+    QLabel * ElevationNumberOfPointsLabel;
+    QLineEdit * ElevationNumberOfPointsEdit;
 
     QPushButton * SetAngleParametersButton;
 
@@ -109,13 +109,13 @@ public:
     double FrequencyStop = 2;
     int FrequencyNumber = 1601;
 
-    double RotationAngleStart = 0;
-    double RotationAngleStop = 359;
-    int RotationAngleNumber = 360;
+    double AzimuthStart = 0;
+    double AzimuthStop = 359;
+    int AzimuthNumber = 360;
 
-    double TiltAngleStart = 0;
-    double TiltAngleStop = 9;
-    int TiltAngleNumber = 10;
+    double ElevationStart = 0;
+    double ElevationStop = 9;
+    int ElevationNumber = 10;
 
 
 

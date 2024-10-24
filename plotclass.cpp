@@ -3,8 +3,8 @@
 PlotClass::PlotClass(QWidget * parent) : QCustomPlot(parent)
 {
 
-    this->setMinimumSize(800,600);
-    //this->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding);
+    //this->setMinimumSize(800,600);
+    this->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding);
 
 
     setBackground(QBrush(Qt::black));
@@ -196,15 +196,18 @@ void PlotClass::CopyPlot()
 
 void PlotClass::DeleteAllMarkers()
 {
-    for (QCPItemTracer* MarkerIterator : AddedMarkersList) {
+    for (QCPItemTracer* MarkerIterator : AddedMarkersList)
+    {
         removeItem(MarkerIterator);
     }
-    for (QCPItemText* MarkerLabelIterator : AddedMarkerLabelsList) {
+    for (QCPItemText* MarkerLabelIterator : AddedMarkerLabelsList)
+    {
         removeItem(MarkerLabelIterator);
     }
     AddedMarkersList.clear();
     AddedMarkerLabelsList.clear();
 
+    CurrentMarkerIndex = 0;
     replot();
     emit AllMarkersDeletedSignal();
 }
@@ -286,19 +289,23 @@ void PlotClass::AddNewMarker(double Key, int Style, QColor Colour, int GraphNumb
     NewMarker->setGraph(graph(GraphNumber)); // Как обозначать null?
     NewMarker->setGraphKey( Key ); //+Разобраться как работает pixelToCoord
 
-    //NewMarker->setInterpolating(true); //Плавное передвижение вдоль линий -- не нужно ставить маркер между точками
+    NewMarker->setInterpolating(false); //Плавное передвижение вдоль линий -- не нужно ставить маркер между точками
     NewMarker->setSize(15);
     //qDebug()<<Key;
 
     QCPItemText * NewMarkerLabel = new QCPItemText(this); // +Сделать подпись в углу, фиксированной.// +Скрывать видимость на время сохранения?
     NewMarkerLabel->setPositionAlignment(Qt::AlignRight|Qt::AlignBottom);
     NewMarkerLabel->position->setCoords(NewMarker->position->key(),NewMarker->position->value());
-    QString LabelText = "(" + QString::number(NewMarker->position->key()) + "," + QString::number(NewMarker->position->value()) + ")";
+    //QString LabelText = "(" + QString::number(NewMarker->position->key()) + "," + QString::number(NewMarker->position->value()) + ")";
+    QString LabelText = QString::number(CurrentMarkerIndex);
+    CurrentMarkerIndex++;
     NewMarkerLabel->setText(LabelText);
+    NewMarkerLabel->position->setCoords(NewMarker->position->key(), NewMarker->position->value());
     NewMarkerLabel->setTextAlignment(Qt::AlignLeft);
     NewMarkerLabel->setFont(QFont(font().family(), 9));
     NewMarkerLabel->setColor(Colour);
     NewMarkerLabel->setVisible(false);
+
 
 
     connect(NewMarker,&QCPItemTracer::selectionChanged,this, [NewMarkerLabel, NewMarker,this]()
@@ -905,7 +912,7 @@ void PlotClass::RefreshPlot()
 // Доделать непрерывные измерения (Почему так медленно рисует?)
 // Добавить в QFileTree
 // meas param
-// Доделать команду "Сделать корневой"
+// +Доделать команду "Сделать корневой"
 // Разность между двумя графиками на одной картинке
 // Все ошибки в отдельную вкладку снизу
 // При добавлении маркера можно менять его положение -- двигать, устанавливать в точку итд. Посчитать разность между маркерами на разных графиках.
@@ -916,8 +923,6 @@ void PlotClass::RefreshPlot()
 // Починить координаты у маркеров и добавить таблицу с координатами маркеров
 // Как маркеры отображать в таблице? Нумеровка маркеров.
 // Доделать QTableView
-//
-//
 
 /*
 +Придумать способ доказать что графическое отображение соответствует табличным данным -- не съезжает, правильно интерполируется
@@ -928,15 +933,33 @@ void PlotClass::RefreshPlot()
 Убедиться, что qcustomplot правильно строит, какая там интерполяция, ничего ли он не пропускает.
 */
 
-//
+// Background не отображать
+
+// В measure должны быть параметры для измерения background, calibration, response.
+// Измерение только для одного угла
+// background и response только для одного угла
+
+// response calibration -- поставьте цилиндр. выводится дальностный портрет и на background И на response
+
+// Azimuth elevation
+
+// Убрать кнопку установить параметры -- вместо этого считать параметры из интерфейса в момент запуска measure
+// response -- sweep цилиндра. calibration -- сам процесс калибровки
+// Добавить окно, где видна частота для зависимости от угла, и чтобы мгновенно менялся график (Все)
+// +Массив комплексных чисел -- добавить функцию, которая осуществляет пересчёт массива double в массив комплексных чисел.
+// +Назвать адекватно -- Vector и слова, связанные с его функционалом.
+// Параметры как передавать от интерфейса в функцию, и как сделать, чтобы они были едины для всех. Нужно сделать единую структуру для параметров.
+// struct для параметров, которые передаются на установку?
+// postprocess - ?
+// Древо классов сделать. Таблица + список + сигналы/слоты + не заострять внимание на графиках.
+// ... Во время изм на кажд угле изм зав от част. Вывод дальн портр -> выв диагр, с калибр.
+// +Спросить Алексея про класс обработки
 
 
+// Добавить проверку непустоты графика при установке маркера.
 
 
-
-
-
-
+// Две средние колонки меняются разом!!! При движении маркера влево-вправо
 
 
 

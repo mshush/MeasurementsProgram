@@ -86,16 +86,16 @@ void MeasurementsParametersWidget::OnSetFrequencyParametersButtonClicked()
 
 void MeasurementsParametersWidget::OnSetAngleParametersButtonClicked()
 {
-    RotationAngleStart  = RotationAngleStartEdit->text().toDouble();
-    RotationAngleStop   = RotationAngleStopEdit->text().toDouble();
-    RotationAngleNumber = RotationAngleNumberOfPointsEdit->text().toDouble();
+    AzimuthStart  = AzimuthStartEdit->text().toDouble();
+    AzimuthStop   = AzimuthStopEdit->text().toDouble();
+    AzimuthNumber = AzimuthNumberOfPointsEdit->text().toDouble();
 
-    TiltAngleStart      = TiltAngleStartEdit->text().toDouble();
-    TiltAngleStop       = TiltAngleStopEdit->text().toDouble();
-    TiltAngleNumber     = TiltAngleNumberOfPointsEdit->text().toDouble();
+    ElevationStart      = ElevationStartEdit->text().toDouble();
+    ElevationStop       = ElevationStopEdit->text().toDouble();
+    ElevationNumber     = ElevationNumberOfPointsEdit->text().toDouble();
 
 
-    emit AngleParametersChanged(RotationAngleStart, RotationAngleStop, RotationAngleNumber, TiltAngleStart, TiltAngleStop, TiltAngleNumber);
+    emit AngleParametersChanged(AzimuthStart, AzimuthStop, AzimuthNumber, ElevationStart, ElevationStop, ElevationNumber);
 }
 
 
@@ -361,50 +361,50 @@ void MeasurementsParametersWidget::InitializeAngleGroupBox()
 
     AngleGridLayout = new QGridLayout();
 
-    RotationAngleStartLabel = new QLabel("Поворот:", AngleGroupBox);
-    RotationAngleStartEdit  = new QLineEdit(QString::number(RotationAngleStart), AngleGroupBox);
-    RotationAngleStopLabel   = new QLabel("-", AngleGroupBox);
-    RotationAngleStopEdit    = new QLineEdit(QString::number(RotationAngleStop), AngleGroupBox);
+    AzimuthStartLabel = new QLabel("Поворот:", AngleGroupBox);
+    AzimuthStartEdit  = new QLineEdit(QString::number(AzimuthStart), AngleGroupBox);
+    AzimuthStopLabel   = new QLabel("-", AngleGroupBox);
+    AzimuthStopEdit    = new QLineEdit(QString::number(AzimuthStop), AngleGroupBox);
 
-    TiltAngleStartLabel = new QLabel("Наклон:", AngleGroupBox);
-    TiltAngleStartEdit  = new QLineEdit(QString::number(TiltAngleStart), AngleGroupBox);
-    TiltAngleStopLabel   = new QLabel("-", AngleGroupBox);
-    TiltAngleStopEdit    = new QLineEdit(QString::number(TiltAngleStop), AngleGroupBox);
-
-
-    RotationAngleNumberOfPointsLabel = new QLabel("Число точек поворота:", AngleGroupBox);
-    RotationAngleNumberOfPointsEdit = new QLineEdit(QString::number(RotationAngleNumber),this);
+    ElevationStartLabel = new QLabel("Наклон:", AngleGroupBox);
+    ElevationStartEdit  = new QLineEdit(QString::number(ElevationStart), AngleGroupBox);
+    ElevationStopLabel   = new QLabel("-", AngleGroupBox);
+    ElevationStopEdit    = new QLineEdit(QString::number(ElevationStop), AngleGroupBox);
 
 
-    TiltAngleNumberOfPointsLabel = new QLabel("Число точек наклона:", AngleGroupBox);
-    TiltAngleNumberOfPointsEdit = new QLineEdit(QString::number(TiltAngleNumber),this);
+    AzimuthNumberOfPointsLabel = new QLabel("Число точек поворота:", AngleGroupBox);
+    AzimuthNumberOfPointsEdit = new QLineEdit(QString::number(AzimuthNumber),this);
 
 
-    RotationAngleStartEdit->setMaximumWidth(50);
-    RotationAngleStopEdit->setMaximumWidth(50);
-    RotationAngleNumberOfPointsEdit->setMaximumWidth(50);
-    TiltAngleStartEdit->setMaximumWidth(50);
-    TiltAngleStopEdit->setMaximumWidth(50);
-    TiltAngleNumberOfPointsEdit->setMaximumWidth(50);
+    ElevationNumberOfPointsLabel = new QLabel("Число точек наклона:", AngleGroupBox);
+    ElevationNumberOfPointsEdit = new QLineEdit(QString::number(ElevationNumber),this);
+
+
+    AzimuthStartEdit->setMaximumWidth(50);
+    AzimuthStopEdit->setMaximumWidth(50);
+    AzimuthNumberOfPointsEdit->setMaximumWidth(50);
+    ElevationStartEdit->setMaximumWidth(50);
+    ElevationStopEdit->setMaximumWidth(50);
+    ElevationNumberOfPointsEdit->setMaximumWidth(50);
 
     SetAngleParametersButton = new QPushButton("Установить", AngleGroupBox);
     connect(SetAngleParametersButton,&QPushButton::clicked,this, &MeasurementsParametersWidget::OnSetAngleParametersButtonClicked);
 
-    AngleGridLayout->addWidget(RotationAngleStartLabel, 0,0); // Переименовать Labelы
-    AngleGridLayout->addWidget(RotationAngleStartEdit,  0,1);
-    AngleGridLayout->addWidget(RotationAngleStopLabel,  0,2);
-    AngleGridLayout->addWidget(RotationAngleStopEdit,   0,3);
+    AngleGridLayout->addWidget(AzimuthStartLabel, 0,0); // Переименовать Labelы
+    AngleGridLayout->addWidget(AzimuthStartEdit,  0,1);
+    AngleGridLayout->addWidget(AzimuthStopLabel,  0,2);
+    AngleGridLayout->addWidget(AzimuthStopEdit,   0,3);
 
-    AngleGridLayout->addWidget(RotationAngleNumberOfPointsLabel, 1,0,1,3);
-    AngleGridLayout->addWidget(RotationAngleNumberOfPointsEdit,  1,3,1,1);
+    AngleGridLayout->addWidget(AzimuthNumberOfPointsLabel, 1,0,1,3);
+    AngleGridLayout->addWidget(AzimuthNumberOfPointsEdit,  1,3,1,1);
 
-    AngleGridLayout->addWidget(TiltAngleStartLabel, 2,0);
-    AngleGridLayout->addWidget(TiltAngleStartEdit,  2,1);
-    AngleGridLayout->addWidget(TiltAngleStopLabel,  2,2);
-    AngleGridLayout->addWidget(TiltAngleStopEdit,   2,3);
+    AngleGridLayout->addWidget(ElevationStartLabel, 2,0);
+    AngleGridLayout->addWidget(ElevationStartEdit,  2,1);
+    AngleGridLayout->addWidget(ElevationStopLabel,  2,2);
+    AngleGridLayout->addWidget(ElevationStopEdit,   2,3);
 
-    AngleGridLayout->addWidget(TiltAngleNumberOfPointsLabel, 3,0,1,3);
-    AngleGridLayout->addWidget(TiltAngleNumberOfPointsEdit,  3,3,1,1);
+    AngleGridLayout->addWidget(ElevationNumberOfPointsLabel, 3,0,1,3);
+    AngleGridLayout->addWidget(ElevationNumberOfPointsEdit,  3,3,1,1);
 
     AngleGridLayout->addWidget(SetAngleParametersButton,  4,0,1,4);
 

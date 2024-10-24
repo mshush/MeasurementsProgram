@@ -3,6 +3,11 @@
 TabWidgetForTools::TabWidgetForTools()
 
 {
+    this->adjustSize();
+    this->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Fixed);
+    this->setFixedHeight(300);
+    //this->adjustSize();
+
 
     PatternTab = new QWidget(this);
     MessagesTab = new QWidget(this);
@@ -94,8 +99,8 @@ TabWidgetForTools::TabWidgetForTools()
     */
 ////////////////////////////////////////
     /*
-    SaveMeasuredFunctionButton = new QPushButton("Сохранить результат измерения",this);
-    Tab1Layout->addWidget(SaveMeasuredFunctionButton);
+    SaveThreeDimensionalVectorButton = new QPushButton("Сохранить результат измерения",this);
+    Tab1Layout->addWidget(SaveThreeDimensionalVectorButton);
 
 
     GetPlotDataButton = new QPushButton("Загрузить график", this);

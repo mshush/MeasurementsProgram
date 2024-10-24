@@ -23,6 +23,7 @@ public:
     PlotClass(QWidget *parent = nullptr);
     ~PlotClass();
 
+
     QCPItemTracer * MouseMoveMarker;
     QCPItemText * MouseMoveLabel;
     bool markeraddbuttonactive = false;
@@ -49,6 +50,8 @@ public:
     QTimer * Timer;
 
     QCPItemText * PlotLabel;
+
+    int CurrentMarkerIndex = 0;
 
 
 public slots:
@@ -82,7 +85,6 @@ public slots:
 
     void ToNextMax(); // Переместить маркер на следующий максимум справа от текущего положения
     void ToPrevMax();
-
 
 
 protected:

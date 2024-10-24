@@ -30,20 +30,20 @@ public:
     void InitiateAnglesGroupBox();
     QGroupBox * AnglesGroupBox;
     QGridLayout * AnglesGroupBoxLayout;
-    QLabel * SetCurrentRotationAngleLabel;
-    QDoubleSpinBox * SetCurrentRotationAngleDoubleSpinBox;
-    QLabel * SetCurrentTiltAngleLabel;
-    QDoubleSpinBox * SetCurrentTiltAngleDoubleSpinBox;
+    QLabel * SetCurrentAzimuthLabel;
+    QDoubleSpinBox * SetCurrentAzimuthDoubleSpinBox;
+    QLabel * SetCurrentElevationLabel;
+    QDoubleSpinBox * SetCurrentElevationDoubleSpinBox;
     QPushButton * SetCurrentAngleButton; // Нужно ли? Вбивать и нажатием enter, и кнопки -- избыточно?
 
 
-    double RotationStart = 0;
-    double RotationStop  = 359;
-    int RotationNumber = 360;
+    double AzimuthStart = 0;
+    double AzimuthStop  = 359;
+    int AzimuthNumber = 360;
 
-    double TiltStart     = 0;
-    double TiltStop      = 9;
-    int TiltNumber = 10;
+    double ElevationStart     = 0;
+    double ElevationStop      = 9;
+    int ElevationNumber = 10;
 
 
     /*
@@ -100,8 +100,8 @@ public slots:
     void FindCalibration();
     //void SetCalibration (); // В MainWindow
 
-    void HandleRotationSpinBoxChange();
-    void HandleTiltSpinBoxChange();
+    void HandleAzimuthSpinBoxChange();
+    void HandleElevationSpinBoxChange();
 
     void FileChosenInTreeWidget(int Mode, QString FileName);
 

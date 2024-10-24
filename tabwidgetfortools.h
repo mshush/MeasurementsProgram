@@ -37,7 +37,7 @@ public:
     //QPushButton * FourierTransformButton;
     //QPushButton * InverseFourierTransformButton;
 
-    QPushButton * SaveMeasuredFunctionButton;
+    QPushButton * SaveThreeDimensionalVectorButton;
     QPushButton * GetPlotDataButton;
 
 

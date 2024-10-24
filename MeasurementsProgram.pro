@@ -14,7 +14,6 @@ CONFIG += c++17
 SOURCES += \
     main.cpp \
     mainwindow.cpp \
-    measuredfunction.cpp \
     measurementsparameterswidget.cpp \
     plotclass.cpp \
     processimitation.cpp \
@@ -24,12 +23,12 @@ SOURCES += \
     tabwidgetforcharts.cpp \
     tabwidgetforparameters.cpp \
     tabwidgetfortools.cpp \
+    threedimensionalvector.cpp \
     treewidgetforfiles.cpp \
     widgetforcustomplot.cpp
 
 HEADERS += \
     mainwindow.h \
-    measuredfunction.h \
     measurementsparameterswidget.h \
     plotclass.h \
     processimitation.h \
@@ -39,6 +38,7 @@ HEADERS += \
     tabwidgetforcharts.h \
     tabwidgetforparameters.h \
     tabwidgetfortools.h \
+    threedimensionalvector.h \
     treewidgetforfiles.h \
     widgetforcustomplot.h
 

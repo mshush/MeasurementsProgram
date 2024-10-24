@@ -3,8 +3,9 @@
 WidgetForCustomPlot::WidgetForCustomPlot(QWidget *parent)
     : QWidget{parent}
 {
-    //this->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding);
+    this->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding);
 
+    //this->adjustSize();
     HorizontalPlotLayout = new QHBoxLayout(this);
 
     VerticalControlsLayout = new QVBoxLayout;
@@ -22,8 +23,8 @@ WidgetForCustomPlot::WidgetForCustomPlot(QWidget *parent)
     //customPlot->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding);
 
     ControlsWidget = new QWidget(this);
-    //ControlsWidget->setFixedSize(260,500);
-    //ControlsWidget->setSizePolicy(QSizePolicy::Fixed,QSizePolicy::Expanding);
+    ControlsWidget->adjustSize();
+    ControlsWidget->setSizePolicy(QSizePolicy::Fixed,QSizePolicy::Expanding);
     ControlsWidget ->setLayout(VerticalControlsLayout);
     //qDebug()<<"Размер="<<ControlsWidget->size();
 
@@ -70,7 +71,6 @@ WidgetForCustomPlot::WidgetForCustomPlot(QWidget *parent)
     connect(customPlot, &PlotClass::MarkerUnSelectedSignal, this, &WidgetForCustomPlot::UnHighlightMarkerInTable);
 
 
-    MarkerPositionsTable->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 
 }
 
@@ -81,31 +81,6 @@ WidgetForCustomPlot::WidgetForCustomPlot(QWidget *parent)
 void WidgetForCustomPlot::OpenMarkerColourDialogue() // Почему не меняется сразу???
 {
 
-    /*
-    QColorDialog *colorDialog = new QColorDialog();
-
-    //colorDialog->setCurrentColor(Qt::black);
-    //colorDialog->setCustomColor(0,QColor(1,1,1));
-    colorDialog->setCurrentColor(Qt::red);
-    //colorDialog->setCurrentColor(Qt::black);
-
-    colorDialog->setWindowTitle("Выберите цвет");
-
-
-    connect(colorDialog, &QColorDialog::accepted, this,  [this, colorDialog]()
-            {
-                QColor chosenColor = colorDialog->currentColor();
-                customPlot->MarkerColour = chosenColor;
-                delete colorDialog;
-            }
-            );
-
-    connect(colorDialog, &QColorDialog::rejected, [colorDialog]() {
-        delete colorDialog;
-    });
-
-    colorDialog->open();
-    */
 
     QColor ChosenColour = QColorDialog::getColor(customPlot->MarkerColour, this, "Выберите цвет");
     if (ChosenColour.isValid())
@@ -362,11 +337,26 @@ void WidgetForCustomPlot::InitiateMarkerGroupBox()
 
     MarkerPositionsTable = new QTableWidget(MarkerGroupBox);
 
-    MarkerPositionsTable->setColumnCount(3);
-    MarkerPositionsTable->setHorizontalHeaderLabels({"Gr", "x", "y"});
-    //MarkerPositionsTable->horizontalHeader()->setStretchLastSection(true);
-    MarkerPositionsTable->resizeColumnToContents(0);
+    MarkerPositionsTable->setStyleSheet("QTableWidget { background-color: white; }");
+    //qDebug()<<MarkerPositionsTable->item(0,0)->background();
 
+    MarkerPositionsTable->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+
+    MarkerPositionsTable->setColumnCount(4);
+    MarkerPositionsTable->setHorizontalHeaderLabels({"N", "x", "y", "Gr"});
+    //MarkerPositionsTable->horizontalHeader()->setStretchLastSection(true);
+
+    int ColumnWidth = MarkerPositionsTable->width()/4;
+
+    // Set the width of each column
+    for (int i = 0; i < 4; ++i)
+    {
+        MarkerPositionsTable->setColumnWidth(i, ColumnWidth);
+    }
+
+
+
+    MarkerPositionsTable->verticalHeader()->setVisible(false);
     /*
     for (int i = 0; i < 3; i++)
     {
@@ -375,11 +365,19 @@ void WidgetForCustomPlot::InitiateMarkerGroupBox()
     */
     MarkerGroupBoxLayout->addWidget(MarkerPositionsTable);
 
+    MarkerDifferenceTable = new QTableWidget(this);
+
+    MarkerDifferenceTable->setColumnCount(4);
+    MarkerDifferenceTable->setHorizontalHeaderLabels({"ΔN", "Δx", "Δy", "ΔGr"});
+
+    //MarkerDifferenceTable->insertRow(0);
+
+    connect(MarkerPositionsTable, &QTableWidget::cellChanged, this, &WidgetForCustomPlot::AdjustContentsOfTableOfDifference);
 
 
 
-
-
+    MarkerDifferenceTable->verticalHeader()->setVisible(false);
+    MarkerGroupBoxLayout->addWidget(MarkerDifferenceTable);
 }
 
 
@@ -452,7 +450,7 @@ void WidgetForCustomPlot::InitiateSetRangeGroupBox()
     QString YUpper = QString::number(this->customPlot->yAxis->range().upper);
 
     SetRangeGroupBox = new QGroupBox("Установить вручную");
-    //SetRangeGroupBox->setFixedWidth(240);
+    SetRangeGroupBox->setFixedSize(240, 100);
     //SetRangeGroupBox->setSizePolicy(QSizePolicy::Fixed,QSizePolicy::Expanding);
     SetRangeVerticalLayout = new QVBoxLayout;
     SetRangeLayout = new QGridLayout;
@@ -477,6 +475,16 @@ void WidgetForCustomPlot::InitiateSetRangeGroupBox()
     YRangeEditFrom->setValidator(DoubleValidator);
     YRangeEditTo->setValidator(DoubleValidator);
 
+
+    connect(XRangeEditFrom, &QLineEdit::editingFinished,this, &WidgetForCustomPlot::SetRange);
+    connect(XRangeEditTo  , &QLineEdit::editingFinished,this, &WidgetForCustomPlot::SetRange);
+    connect(YRangeEditFrom, &QLineEdit::editingFinished,this, &WidgetForCustomPlot::SetRange);
+    connect(YRangeEditTo  , &QLineEdit::editingFinished,this, &WidgetForCustomPlot::SetRange);
+
+
+
+
+    /*
     SetRangeButton = new QPushButton("Установить");
     connect(SetRangeButton, &QPushButton::clicked, this,[this]()
             {
@@ -485,7 +493,7 @@ void WidgetForCustomPlot::InitiateSetRangeGroupBox()
                 this->customPlot->replot();
              }
             );
-
+    */
 
 
 
@@ -503,7 +511,7 @@ void WidgetForCustomPlot::InitiateSetRangeGroupBox()
 
 
     SetRangeVerticalLayout->addLayout(SetRangeLayout);
-    SetRangeVerticalLayout->addWidget(SetRangeButton);
+    //SetRangeVerticalLayout->addWidget(SetRangeButton);
 
     SetRangeGroupBox->setLayout(SetRangeVerticalLayout);
 }
@@ -694,8 +702,40 @@ void WidgetForCustomPlot::ToNextMax() // Нужно ли рассмотреть 
 
             }
         }
+
         SelectedMarker->setGraphKey(MaxX);
         SelectedMarker->updatePosition();
+
+        double MaxY = 0;
+        for (int row = 0; row < this->MarkerPositionsTable->rowCount();row++)
+        {
+            if (this->MarkerPositionsTable->item(row,0)->background().color() !=Qt::white)
+            {
+
+
+                QCPGraph * MarkerGraph = SelectedMarker->graph();
+
+                for (int i=0; i < MarkerGraph->data()->size(); i++) // Можно сделать поиск быстрее, учитывая вид x
+                {
+                    if (MarkerGraph->data()->at(i)->key == MaxX)
+                    {
+                        MaxY = MarkerGraph->data()->at(i)->value;
+                    }
+                }
+
+                //MaxY = MarkerGraph->data()->at(MarkerIndex)->value;
+
+                //MarkerPositionsTable->item(2,1)->setText(QString::number(MaxX));
+                //MarkerPositionsTable->item(2,2)->setText(QString::number(MaxY));
+
+                MarkerPositionsTable->setItem(row, 1, new QTableWidgetItem(QString::number(MaxX)));
+                MarkerPositionsTable->setItem(row, 2, new QTableWidgetItem(QString::number(MaxY)));
+
+                MarkerPositionsTable->item(row,1)->setBackground(HighlightColor);
+                MarkerPositionsTable->item(row,2)->setBackground(HighlightColor);
+            }
+        }
+
         customPlot->replot();
     }
     else
@@ -703,6 +743,11 @@ void WidgetForCustomPlot::ToNextMax() // Нужно ли рассмотреть 
         qDebug()<< "Inappropriate number of markers";
     }
 }
+
+
+
+
+
 
 void WidgetForCustomPlot::ToPrevMax()
 {
@@ -767,6 +812,39 @@ void WidgetForCustomPlot::ToPrevMax()
 
         SelectedMarker->setGraphKey(MaxX);
         SelectedMarker->updatePosition();
+
+
+        double MaxY = 0;
+        for (int row = 0; row < this->MarkerPositionsTable->rowCount();row++)
+        {
+            if (this->MarkerPositionsTable->item(row,0)->background().color() !=Qt::white)
+            {
+
+
+                QCPGraph * MarkerGraph = SelectedMarker->graph();
+
+                for (int i=0; i < MarkerGraph->data()->size(); i++) // Можно сделать поиск быстрее, учитывая вид x
+                {
+                    if (MarkerGraph->data()->at(i)->key == MaxX)
+                    {
+                        MaxY = MarkerGraph->data()->at(i)->value;
+                    }
+                }
+
+                //MaxY = MarkerGraph->data()->at(MarkerIndex)->value;
+
+                //MarkerPositionsTable->item(2,1)->setText(QString::number(MaxX));
+                //MarkerPositionsTable->item(2,2)->setText(QString::number(MaxY));
+
+                MarkerPositionsTable->setItem(row, 1, new QTableWidgetItem(QString::number(MaxX)));
+                MarkerPositionsTable->setItem(row, 2, new QTableWidgetItem(QString::number(MaxY)));
+
+                qDebug()<<MarkerPositionsTable->item(0,0)->background();
+
+                MarkerPositionsTable->item(row,1)->setBackground(HighlightColor);
+                MarkerPositionsTable->item(row,2)->setBackground(HighlightColor);
+            }
+        }
         customPlot->replot();
     }
     else
@@ -829,15 +907,46 @@ WidgetForCustomPlot::~WidgetForCustomPlot()
 void WidgetForCustomPlot::AddMarkerToTable(QCPItemTracer * MarkerPtr) // Наладить сдвиг координат при скачках по максимумам
 {
     // Добавляется без графика -- сделать проверку, не пустой ли график
-
-    NumberOfRows = MarkerPositionsTable->rowCount();
+    int NumberOfRows = MarkerPositionsTable->rowCount();
     MarkerPositionsTable->insertRow(MarkerPositionsTable->rowCount());
     //MarkerPositionsTable->insertRow(MarkerPositionsTable->rowCount()+2);
     //MarkerPositionsTable->setItem(NumberOfRows-1, 0, new QTableWidgetItem(QString::number(MarkerPositionsTable->rowCount())));
-    MarkerPositionsTable->setItem(NumberOfRows, 0, new QTableWidgetItem(QString::number(customPlot->SelectedGraph)));
-    MarkerPositionsTable->setItem(NumberOfRows, 1, new QTableWidgetItem(QString::number(MarkerPtr->graphKey())));
-    MarkerPositionsTable->setItem(NumberOfRows, 2, new QTableWidgetItem(QString::number((MarkerPtr->positions())[0]->value())));
+    MarkerPositionsTable->setItem(NumberOfRows, 0, new QTableWidgetItem(QString::number(CurrentMarkerIndex)));
+    CurrentMarkerIndex++;
 
+
+    double MarkerX = MarkerPtr->graphKey();
+    double MarkerY;
+    QCPGraph * MarkerGraph = MarkerPtr->graph();
+
+    double X0 = MarkerGraph->data()->at(0)->key;
+    double X1 = MarkerGraph->data()->at(1)->key;
+    qDebug()<< X0 << X1;
+
+
+    int MarkerIndex = int((MarkerX - X0)/(X1-X0));
+
+    qDebug()<< MarkerIndex << (MarkerX - X0)/(X1-X0);
+
+    qDebug()<< "Index1 = " << MarkerIndex;
+
+    for (int i=0; i < MarkerGraph->data()->size(); i++) // Можно сделать поиск быстрее, учитывая вид x
+    {
+        if (MarkerGraph->data()->at(i)->key == MarkerX)
+        {
+            MarkerX = MarkerGraph->data()->at(i)->key;
+            MarkerY = MarkerGraph->data()->at(i)->value;
+            qDebug()<< "Index2 = " << i;
+        }
+    }
+
+    MarkerY = MarkerGraph->data()->at(MarkerIndex)->value;
+
+    MarkerPositionsTable->setItem(NumberOfRows, 1, new QTableWidgetItem(QString::number(MarkerX)));
+    MarkerPositionsTable->setItem(NumberOfRows, 2, new QTableWidgetItem(QString::number(MarkerY)));
+    MarkerPositionsTable->setItem(NumberOfRows, 3, new QTableWidgetItem(QString::number(customPlot->SelectedGraph)));
+
+    MarkerPositionsTable->resizeColumnToContents(3);
     MarkerPositionsTable->resizeColumnToContents(2);
     MarkerPositionsTable->resizeColumnToContents(1);
     MarkerPositionsTable->resizeColumnToContents(0);
@@ -853,7 +962,6 @@ void WidgetForCustomPlot::RemoveMarkerFromTable(int RowNumberOfMarker)
 void WidgetForCustomPlot::HighlightMarkerInTable(int RowNumberOfMarker)
 {
     //qDebug()<<"HighLighting!";
-    QColor HighlightColor(200, 200, 255);
 
     for (int column = 0; column < MarkerPositionsTable->columnCount(); column++)
     {
@@ -886,14 +994,74 @@ void WidgetForCustomPlot::UnHighlightMarkerInTable(int RowNumberOfMarker)
 void WidgetForCustomPlot::ClearTable()
 {
     MarkerPositionsTable->setRowCount(0);
+    CurrentMarkerIndex = 0;
 }
 
 
 
 
 
+void WidgetForCustomPlot::SetRange()
+{
+    this->customPlot->xAxis->setRange(XRangeEditFrom->text().toDouble(),XRangeEditTo->text().toDouble());
+    this->customPlot->yAxis->setRange(YRangeEditFrom->text().toDouble(),YRangeEditTo->text().toDouble());
+    this->customPlot->replot();
+}
 
 
 
+void WidgetForCustomPlot::AdjustContentsOfTableOfDifference(int row, int column)
+{
+    //qDebug()<<"ok0";
+
+
+    if (this->MarkerPositionsTable->rowCount()>=3) // включая заголовок????
+    {
+        //qDebug()<<"ok0.5" << MarkerPositionsTable->rowCount();
+        if (row<=2)
+        {
+            qDebug()<<"ok0.75";
+            QString Num0 = MarkerPositionsTable->item(0,0)->text();
+            QString Num1 = MarkerPositionsTable->item(1,0)->text();
+            QString x0   = MarkerPositionsTable->item(0,1)->text();
+            QString x1   = MarkerPositionsTable->item(1,1)->text();
+            QString y0   = MarkerPositionsTable->item(0,2)->text();
+            QString y1   = MarkerPositionsTable->item(1,2)->text();
+            QString Gr0  = MarkerPositionsTable->item(0,3)->text();
+            QString Gr1  = MarkerPositionsTable->item(1,3)->text();
+
+            QString DeltaN = Num1 + "-" + Num0;
+            QString DeltaX = QString::number ( x1.toDouble() - x0.toDouble() );
+            QString DeltaY = QString::number ( y1.toDouble() - y0.toDouble() );
+            QString DeltaGr = Gr1 + "-" + Gr0;
+
+
+            qDebug()<< "ok1" <<Num0<<Num1<<x0<<x1<<y0<<y1<<Gr0<<Gr1<<DeltaN<<DeltaX<<DeltaY<<DeltaGr;
+
+            MarkerDifferenceTable->setItem(0, 0, new QTableWidgetItem(DeltaN));
+            MarkerDifferenceTable->setItem(0, 1, new QTableWidgetItem(DeltaX));
+            MarkerDifferenceTable->setItem(0, 2, new QTableWidgetItem(DeltaY));
+            MarkerDifferenceTable->setItem(0, 3, new QTableWidgetItem(DeltaGr));
+
+            qDebug()<<"Success";
+
+        }
+    }
+    else
+    {
+        qDebug()<<"ok6";
+        /*
+        qDebug()<<"ok6";
+        MarkerDifferenceTable->setItem(0, 0, new QTableWidgetItem(""));
+        MarkerDifferenceTable->setItem(0, 1, new QTableWidgetItem(""));
+        MarkerDifferenceTable->setItem(0, 2, new QTableWidgetItem(""));
+        MarkerDifferenceTable->setItem(0, 3, new QTableWidgetItem(""));
+        qDebug()<<"ok7";
+        */
+    }
+
+
+
+}
 
 

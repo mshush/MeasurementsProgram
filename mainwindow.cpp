@@ -27,6 +27,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     QMenu * FileMenu = this->menuBar()->addMenu("File");
     QMenu * MeasureMenu = this->menuBar()->addMenu("Measure");
+
     QMenu * ProcessMenu = this->menuBar()->addMenu("Process");
 
 
@@ -37,11 +38,15 @@ MainWindow::MainWindow(QWidget *parent)
     FileMenu->addAction(SaveFileAction);
     FileMenu->addAction(OpenFileAction);
 
-    StartMeasureAction = new QAction("Start", this);
-    StopMeasureAction  = new QAction("Stop" , this);
+    StartMeasureAction = new QAction("Start",       this);
+    StopMeasureAction  = new QAction("Stop" ,       this);
+    MeasureBackground  = new QAction("Background",  this);
+    MeasureCalibration = new QAction("Calibration", this);
 
     MeasureMenu->addAction(StartMeasureAction);
     MeasureMenu->addAction(StopMeasureAction);
+    MeasureMenu->addAction(MeasureBackground);
+    MeasureMenu->addAction(MeasureCalibration);
 
 
 
@@ -134,18 +139,19 @@ MainWindow::MainWindow(QWidget *parent)
     ConnectObjects();
 
     this->setWindowState(Qt::WindowMaximized);
+    this->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding);
 }
 
 
 
 
-void MainWindow::SetMeasuredFunction(MeasuredFunction F)
+void MainWindow::SetThreeDimensionalVector(ThreeDimensionalVector F)
 {
 
     StoredFunction = F;
     // Сделать double сдесь, а округление потом?
-    r = StoredFunction.FindRotationIndex(TabOfParameters->ResultTab->SetCurrentRotationAngleDoubleSpinBox->value());
-    t = StoredFunction.FindTiltIndex    (TabOfParameters->ResultTab->SetCurrentTiltAngleDoubleSpinBox    ->value());
+    r = StoredFunction.FindAzimuthIndex(TabOfParameters->ResultTab->SetCurrentAzimuthDoubleSpinBox->value());
+    t = StoredFunction.FindElevationIndex    (TabOfParameters->ResultTab->SetCurrentElevationDoubleSpinBox    ->value());
 
     //QVector <std::complex<double>> FreqVectorAtChosenAngle = F.GetFrequencyVectorAt(r,t);
     //this->ChartTab->UpdateMeasurementPlot(FreqVectorAtChosenAngle);
@@ -156,7 +162,7 @@ void MainWindow::SetMeasuredFunction(MeasuredFunction F)
     PltPtr0->replot();
 
     PlotClass * PltPtr1 = this->ChartTab->PlotTabs[1]->customPlot;
-    //PltPtr1->graph(0)->setData(F.RotVector(), F.AmplitudeVectorAtFrequencyTilt(10,t));
+    //PltPtr1->graph(0)->setData(F.RotVector(), F.AmplitudeVectorAtFrequencyElevation(10,t)); // Доделать
     PltPtr1->rescaleAxes();
     PltPtr1->replot();
 
@@ -176,8 +182,8 @@ void MainWindow::ChangeAngleOfDemonstration()
 
     if (PltPtr->graph(0)->data()->size()>0)
     {
-        r = StoredFunction.FindRotationIndex(TabOfParameters->ResultTab->SetCurrentRotationAngleDoubleSpinBox->value());
-        t = StoredFunction.FindTiltIndex(TabOfParameters->ResultTab->SetCurrentTiltAngleDoubleSpinBox->value());
+        r = StoredFunction.FindAzimuthIndex(TabOfParameters->ResultTab->SetCurrentAzimuthDoubleSpinBox->value());
+        t = StoredFunction.FindElevationIndex(TabOfParameters->ResultTab->SetCurrentElevationDoubleSpinBox->value());
 
         PltPtr->graph(0)->setData(StoredFunction.FreqVector(), StoredFunction.AmplitudeVectorAtAngles(r,t));
 
@@ -212,7 +218,7 @@ void MainWindow::ChangeAngleOfDemonstration()
 
 
 
-void MainWindow::SaveMeasuredFunction()
+void MainWindow::SaveThreeDimensionalVector()
 {
     QString DateString = QDate::currentDate().toString("yyyy-MM-dd");
     QString TimeString = QTime::currentTime().toString("HH-mm");
@@ -258,8 +264,8 @@ void MainWindow::SaveMeasuredFunction()
 
     QVector <double> x = BackgroundFunction.FreqVector();
 
-    r = BackgroundFunction.FindRotationIndex(TabOfParameters->ResultTab->SetCurrentRotationAngleDoubleSpinBox->value());
-    t = BackgroundFunction.FindTiltIndex    (TabOfParameters->ResultTab->SetCurrentTiltAngleDoubleSpinBox    ->value());
+    r = BackgroundFunction.FindAzimuthIndex(TabOfParameters->ResultTab->SetCurrentAzimuthDoubleSpinBox->value());
+    t = BackgroundFunction.FindElevationIndex    (TabOfParameters->ResultTab->SetCurrentElevationDoubleSpinBox    ->value());
 
     QVector <std::complex<double>> f = BackgroundFunction.GetFrequencyVectorAt(r,t);
 
@@ -308,7 +314,7 @@ void MainWindow::SubstractBackground()
         {
             StoredFunction.SubstractBackground(BackgroundFunction);
             PltPtr->graph(1)->data()->clear();
-            this->SetMeasuredFunction(StoredFunction);
+            this->SetThreeDimensionalVector(StoredFunction);
             //this->BackgroundFunction.ClearFunction(); // Не очищать! Ещё потребуется при калибровке
         }
         else
@@ -371,8 +377,8 @@ void MainWindow::SetCalibration()
     StoredFunction.Calibrate(CalibrationFunction,SampleTypeIndex);
 
 
-    r = StoredFunction.FindRotationIndex(TabOfParameters->ResultTab->SetCurrentRotationAngleDoubleSpinBox->value());
-    t = StoredFunction.FindTiltIndex(TabOfParameters->ResultTab->SetCurrentTiltAngleDoubleSpinBox->value());
+    r = StoredFunction.FindAzimuthIndex(TabOfParameters->ResultTab->SetCurrentAzimuthDoubleSpinBox->value());
+    t = StoredFunction.FindElevationIndex(TabOfParameters->ResultTab->SetCurrentElevationDoubleSpinBox->value());
 
     PlotClass * PltPtr = this->ChartTab->PlotTabs[0]->customPlot;
     PltPtr->graph(0)->setData(StoredFunction.FreqVector(), StoredFunction.AmplitudeVectorAtAngles(r,t));
@@ -396,8 +402,8 @@ void MainWindow::SetCalibration()
 
     QVector <double> x = BackgroundFunction.FreqVector();
 
-    r = BackgroundFunction.FindRotationIndex(TabOfParameters->ResultTab->SetCurrentRotationAngleDoubleSpinBox->value());
-    t = BackgroundFunction.FindTiltIndex    (TabOfParameters->ResultTab->SetCurrentTiltAngleDoubleSpinBox    ->value());
+    r = BackgroundFunction.FindAzimuthIndex(TabOfParameters->ResultTab->SetCurrentAzimuthDoubleSpinBox->value());
+    t = BackgroundFunction.FindElevationIndex    (TabOfParameters->ResultTab->SetCurrentElevationDoubleSpinBox    ->value());
 
     QVector <std::complex<double>> f = BackgroundFunction.GetFrequencyVectorAt(r,t);
 
@@ -439,7 +445,7 @@ void MainWindow::ConnectObjects()
 {
     //connect(TabOfTools->StartMeasurementsButton, &QPushButton::clicked, Process, &ProcessImitation::Measure);
 
-    connect(Process, &ProcessImitation::MeasurementFinished, this, &MainWindow::SetMeasuredFunction);
+    connect(Process, &ProcessImitation::MeasurementFinished, this, &MainWindow::SetThreeDimensionalVector);
 
 
 
@@ -455,7 +461,7 @@ void MainWindow::ConnectObjects()
 
     //connect(TabOfTools->SaveDataButton  , &QPushButton::clicked, ChartTab, &TabWidgetForCharts::SaveData); // Получше придумать как соединять, чтобы по вкладкам (возможно лучше в QidgetForCustomPlot перенести)
 
-    //connect(TabOfTools->SaveMeasuredFunctionButton  , &QPushButton::clicked, this, &MainWindow::SaveMeasuredFunction);
+    //connect(TabOfTools->SaveThreeDimensionalVectorButton  , &QPushButton::clicked, this, &MainWindow::SaveThreeDimensionalVector);
     //connect(TabOfTools->ImportDataButton, &QPushButton::clicked, ChartTab, &TabWidgetForCharts::CreateNewTabFromImportedData);
 
     //connect(TabOfParameters->MeasurementTab, &MeasurementsParametersWidget::FrequencyParametersChanged, ChartTab,&TabWidgetForCharts::SetFrequencyParameters);
@@ -501,6 +507,8 @@ void MainWindow::ConnectObjects()
     connect(StopMeasureAction, &QAction::triggered, Process , &ProcessImitation::StopEverything);
 
 
+
+
     //Ошибки
     /*
     connect(this,                               &MainWindow                     ::ErrorOccured, TabOfTools, &TabWidgetForTools::DisplayError);
@@ -527,13 +535,13 @@ void MainWindow::HandleReceivedMeasuredFreqVector(QVector <double> ReceivedVecto
         double FStop = TabOfParameters->MeasurementTab->FrequencyStop;
         double FNum = TabOfParameters->MeasurementTab->FrequencyNumber;
 
-        double RStart = TabOfParameters->MeasurementTab->RotationAngleStart;
-        double RStop = TabOfParameters->MeasurementTab->RotationAngleStop;
-        double RNum = TabOfParameters->MeasurementTab->RotationAngleNumber;
+        double RStart = TabOfParameters->MeasurementTab->AzimuthStart;
+        double RStop = TabOfParameters->MeasurementTab->AzimuthStop;
+        double RNum = TabOfParameters->MeasurementTab->AzimuthNumber;
 
-        double TStart = TabOfParameters->MeasurementTab->TiltAngleStart;
-        double TStop = TabOfParameters->MeasurementTab->TiltAngleStop;
-        double TNum = TabOfParameters->MeasurementTab->TiltAngleNumber;
+        double TStart = TabOfParameters->MeasurementTab->ElevationStart;
+        double TStop = TabOfParameters->MeasurementTab->ElevationStop;
+        double TNum = TabOfParameters->MeasurementTab->ElevationNumber;
 
 
         StoredFunction.SetRanges(FStart,FStop,FNum,   RStart,RStop,RNum,   TStart,TStop,TNum);
@@ -553,23 +561,23 @@ void MainWindow::HandleReceivedMeasuredFreqVector(QVector <double> ReceivedVecto
 
 
     int I = StoredFunction.CurrentIndex/2;
-    int R = StoredFunction.RNum;
+    int A = StoredFunction.ANum;
     int F = StoredFunction.FNum;
-    int t = I / (R*F);
-    int r = (I % (R*F)) / F;
+    int e = I / (A*F);
+    int a = (I % (A*F)) / F;
 
 
     //QVector<double> YVector = StoredFunction.AmplitudeVectorAtAngles(r,t);
 
 
 
-    PltPtr->graph(0)->setData(StoredFunction.FreqVector(),StoredFunction.AmplitudeVectorAtAngles(r,t));
+    PltPtr->graph(0)->setData(StoredFunction.FreqVector(),StoredFunction.AmplitudeVectorAtAngles(a,e));
 
     /*
     if (r==StoredFunction.RNum-1 and t==StoredFunction.TNum-1) // Через CurrentIndex
     {
         //Сохранить, и занулить, чтобы начать следующую
-        SaveMeasuredFunction();
+        SaveThreeDimensionalVector();
         StoredFunction.ClearFunction();
     }
     */
