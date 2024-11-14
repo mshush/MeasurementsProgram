@@ -106,6 +106,15 @@ void ResultParametersWidget::HandleElevationSpinBoxChange()
 }
 
 
+void ResultParametersWidget::HandleFrequencySpinBoxChange()
+{
+    double FrequencyValue = this->SetCurrentFrequencyDoubleSpinBox->value();
+    int ClosestIndex = std::round((FrequencyValue - FrequencyStart)/(FrequencyStop-FrequencyStart)*(FrequencyNumber-1));
+    double RoundedValue = FrequencyStart + double(ClosestIndex) * ((FrequencyStop-FrequencyStart))/ (FrequencyNumber-1);
+    this->SetCurrentFrequencyDoubleSpinBox->setValue(RoundedValue);
+}
+
+
 
 
 
@@ -161,14 +170,12 @@ void ResultParametersWidget::InitiateCalibrationGroupBox()
 
 void ResultParametersWidget::InitiateAnglesGroupBox()
 {
-    AnglesGroupBox = new QGroupBox("Углы наклона и поворота", this);
+    AnglesGroupBox = new QGroupBox("Show Azimuth, Elevation, Frequency", this);
 
     AnglesGroupBoxLayout = new QGridLayout(AnglesGroupBox);
 
-    SetCurrentAzimuthLabel = new QLabel("Поворот:", this);
-
+    SetCurrentAzimuthLabel = new QLabel("Azimuth:", this);
     SetCurrentAzimuthDoubleSpinBox = new QDoubleSpinBox(this);
-
     SetCurrentAzimuthDoubleSpinBox->setRange(AzimuthStart, AzimuthStop);
     SetCurrentAzimuthDoubleSpinBox->setSingleStep((AzimuthStop - AzimuthStart)/(AzimuthNumber-1));
     SetCurrentAzimuthDoubleSpinBox->setDecimals(3);
@@ -176,17 +183,25 @@ void ResultParametersWidget::InitiateAnglesGroupBox()
     connect(SetCurrentAzimuthDoubleSpinBox, &QDoubleSpinBox::editingFinished, this, &ResultParametersWidget::HandleAzimuthSpinBoxChange);
 
 
-    SetCurrentElevationLabel = new QLabel("Наклон:", this);
+    SetCurrentElevationLabel = new QLabel("Elevation:", this);
     SetCurrentElevationDoubleSpinBox  = new QDoubleSpinBox(this);
     SetCurrentElevationDoubleSpinBox->setRange(ElevationStart, ElevationStop);
     SetCurrentElevationDoubleSpinBox->setSingleStep((ElevationStop - ElevationStart)/(ElevationNumber-1));
     SetCurrentElevationDoubleSpinBox->setDecimals(3);
 
-
     connect(SetCurrentElevationDoubleSpinBox, &QDoubleSpinBox::editingFinished, this, &ResultParametersWidget::HandleElevationSpinBoxChange);
 
+    SetCurrentFrequencyLabel = new QLabel("Frequency:", this);
+    SetCurrentFrequencyDoubleSpinBox  = new QDoubleSpinBox(this);
+    SetCurrentFrequencyDoubleSpinBox->setRange(FrequencyStart, FrequencyStop);
+    SetCurrentFrequencyDoubleSpinBox->setSingleStep((FrequencyStop - FrequencyStart)/(FrequencyNumber-1));
+    SetCurrentFrequencyDoubleSpinBox->setDecimals(3);
 
-    SetCurrentAngleButton= new QPushButton("Применить", this);
+
+    connect(SetCurrentFrequencyDoubleSpinBox, &QDoubleSpinBox::editingFinished, this, &ResultParametersWidget::HandleFrequencySpinBoxChange);
+
+
+    //SetCurrentAngleButton= new QPushButton("Применить", this);
 
     AnglesGroupBox->setLayout(AnglesGroupBoxLayout);
 
@@ -196,7 +211,11 @@ void ResultParametersWidget::InitiateAnglesGroupBox()
     AnglesGroupBoxLayout ->addWidget(SetCurrentElevationLabel,  1,0);
     AnglesGroupBoxLayout ->addWidget(SetCurrentElevationDoubleSpinBox,   1,1);
 
-    AnglesGroupBoxLayout ->addWidget(SetCurrentAngleButton,  2,0,1,2);
+    AnglesGroupBoxLayout ->addWidget(SetCurrentElevationLabel,  2,0);
+    AnglesGroupBoxLayout ->addWidget(SetCurrentElevationDoubleSpinBox,   2,1);
+
+
+    //AnglesGroupBoxLayout ->addWidget(SetCurrentAngleButton,  2,0,1,2);
 }
 
 

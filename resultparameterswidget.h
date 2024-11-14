@@ -18,8 +18,6 @@ public:
 
     //enum ModeOfMeasurement {Response, Background, Calibration};
 
-
-
     QVBoxLayout * OutermostVerticalLayout;
 
     // Область растяжения и сдвига угла
@@ -30,21 +28,28 @@ public:
     void InitiateAnglesGroupBox();
     QGroupBox * AnglesGroupBox;
     QGridLayout * AnglesGroupBoxLayout;
+
     QLabel * SetCurrentAzimuthLabel;
-    QDoubleSpinBox * SetCurrentAzimuthDoubleSpinBox;
     QLabel * SetCurrentElevationLabel;
+    QLabel * SetCurrentFrequencyLabel;
+
+    QDoubleSpinBox * SetCurrentAzimuthDoubleSpinBox;
     QDoubleSpinBox * SetCurrentElevationDoubleSpinBox;
-    QPushButton * SetCurrentAngleButton; // Нужно ли? Вбивать и нажатием enter, и кнопки -- избыточно?
+    QDoubleSpinBox * SetCurrentFrequencyDoubleSpinBox;
 
+    QPushButton * SetCurrentAngleButton; // Кнопку убрать -- вводить через сигнал об окончании изменений
 
-    double AzimuthStart = 0;
-    double AzimuthStop  = 359;
-    int AzimuthNumber = 360;
+    double AzimuthStart      = 0;
+    double AzimuthStop       = 359;
+    int    AzimuthNumber     = 360;
 
-    double ElevationStart     = 0;
-    double ElevationStop      = 9;
-    int ElevationNumber = 10;
+    double ElevationStart    = 0;
+    double ElevationStop     = 9;
+    int    ElevationNumber   = 10;
 
+    double FrequencyStart    = 1;
+    double FrequencyStop     = 2;
+    int    FrequencyNumber   = 1601;
 
     /*
     // Задание отклика
@@ -65,7 +70,7 @@ public:
 
 
 
-    //Область параметров калибровочного образца // Перенесено из MeasurementsParametersWidget
+    //Область параметров калибровочного образца // Перенесено сюда из MeasurementsParametersWidget
     void InitiateCalibrationGroupBox();
 
     //QVBoxLayout * CalibrationSampleMainLayout;
@@ -102,6 +107,7 @@ public slots:
 
     void HandleAzimuthSpinBoxChange();
     void HandleElevationSpinBoxChange();
+    void HandleFrequencySpinBoxChange();
 
     void FileChosenInTreeWidget(int Mode, QString FileName);
 

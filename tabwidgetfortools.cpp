@@ -3,9 +3,9 @@
 TabWidgetForTools::TabWidgetForTools()
 
 {
-    this->adjustSize();
-    this->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Fixed);
-    this->setFixedHeight(300);
+    //this->adjustSize();
+    //this->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding);
+    this->setFixedHeight(190);
     //this->adjustSize();
 
 

@@ -2,40 +2,46 @@
 
 ThreeDimensionalVector::ThreeDimensionalVector()
 {
-    FNum = 0;
-    ANum = 0;
-    ENum = 0;
 
 }
 
 void ThreeDimensionalVector::Resize(int FNumber, int ANumber, int ENumber)
 {
-    FNum = FNumber;
-    ANum = ANumber;
-    ENum = ENumber;
+    VNAParameters.NumOfPoi = FNumber;
+    OPUParameters.AzTrigPoints = ANumber;
+    OPUParameters.ElTrigPoints = ENumber;
 
-    Function.resize(FNum*ANum*ENum);
+    ObjectMeasurementResult.resize(FNumber*ANumber*ENumber);
+    BackgroundMeasurementResult.resize(FNumber);
+    ResponseMeasurementResult.resize(FNumber);
+
 }
 
-std::complex<double> ThreeDimensionalVector::ReadFrom(int f, int r, int t)
+std::complex<double> ThreeDimensionalVector::ReadFromObjectResult(int f, int a, int e)
 {
-    return Function[t * (ANum * FNum)  + r * FNum + f];
+    return ObjectMeasurementResult[e * (OPUParameters.AzTrigPoints * VNAParameters.NumOfPoi)  + a * VNAParameters.NumOfPoi + f];
 }
 
-void ThreeDimensionalVector::WriteTo(int f, int r, int t, std::complex<double> NewValue)
+
+
+
+
+
+
+
+void ThreeDimensionalVector::WriteToObjectResult(int f, int a, int e, std::complex<double> NewValue)
 {
-    Function[t * (ANum * FNum)  + r * FNum + f] = NewValue;
+    ObjectMeasurementResult[e * (OPUParameters.AzTrigPoints * VNAParameters.NumOfPoi)  + a * VNAParameters.NumOfPoi + f] = NewValue;
 }
 
-QVector<std::complex<double>> ThreeDimensionalVector::GetFrequencyVectorAt(int r, int t)
+QVector<std::complex<double>> ThreeDimensionalVector::GetFrequencyVectorAt(int a, int e)
 {
-    QVector <std::complex<double>> FreqVector(FNum);
+    QVector <std::complex<double>> FreqVector(VNAParameters.NumOfPoi);
 
-    for (int f = 0; f < FNum; f ++)
+    for (int f = 0; f < VNAParameters.NumOfPoi; f ++)
     {
-        FreqVector[f] = ReadFrom(f,r,t);
+        FreqVector[f] = ReadFromObjectResult(f,a,e);
     }
-
     return FreqVector;
 }
 
@@ -50,260 +56,28 @@ ThreeDimensionalVector::~ThreeDimensionalVector()
 
 int ThreeDimensionalVector::FindAzimuthIndex(double AzimuthValue)
 {
-    int Result = int( (AzimuthValue - AStart)/(AStop - AStart) * double(ANum-1) ) ;
+    int Result = int( (AzimuthValue - OPUParameters.startAzAngl)/(OPUParameters.stopAzAngl - OPUParameters.startAzAngl) * double(OPUParameters.AzTrigPoints-1) ) ;
     return Result;
 }
 
 
 int ThreeDimensionalVector::FindElevationIndex(double ElevationValue)
 {
-    int Result = int( (ElevationValue - EStart)/(EStop - EStart) * double(ENum-1) ) ;
-    return Result;
-}
-
-
-QDataStream &operator<<(QDataStream &out, const ThreeDimensionalVector &MyMF)
-{
-    out << MyMF.FNum
-        << MyMF.ANum
-        << MyMF.ENum
-        << MyMF.FStart
-        << MyMF.AStart
-        << MyMF.EStart
-        << MyMF.FStop
-        << MyMF.AStop
-        << MyMF.EStop;
-
-    QVector<double> RealValuesOfFunction(MyMF.Function.size());
-    QVector<double> ImagValuesOfFunction(MyMF.Function.size());
-
-    for (int i = 0; i < MyMF.Function.size(); ++i)
-    {
-        RealValuesOfFunction[i] = MyMF.Function[i].real();
-        ImagValuesOfFunction[i] = MyMF.Function[i].imag();
-    }
-
-    out << RealValuesOfFunction << ImagValuesOfFunction;
-    return out;
-}
-
-
-
-QDataStream &operator>>(QDataStream &in, ThreeDimensionalVector &MyThreeDimensionalVector)
-{
-    in >> MyThreeDimensionalVector.FNum
-        >> MyThreeDimensionalVector.ANum
-        >> MyThreeDimensionalVector.ENum
-        >> MyThreeDimensionalVector.FStart
-        >> MyThreeDimensionalVector.AStart
-        >> MyThreeDimensionalVector.EStart
-        >> MyThreeDimensionalVector.FStop
-        >> MyThreeDimensionalVector.AStop
-        >> MyThreeDimensionalVector.EStop;
-
-
-    QVector<double> RealValuesOfFunction;
-    QVector<double> ImagValuesOfFunction;
-
-    in >> RealValuesOfFunction >> ImagValuesOfFunction;
-
-    MyThreeDimensionalVector.Function.resize(RealValuesOfFunction.size());
-    for (int i = 0; i < RealValuesOfFunction.size(); ++i)
-    {
-        MyThreeDimensionalVector.Function[i] = std::complex<double>(RealValuesOfFunction[i], ImagValuesOfFunction[i]);
-    }
-    return in;
-}
-
-
-
-
-void ThreeDimensionalVector::SubstractBackground(ThreeDimensionalVector BG)
-{
-    for (int t = 0; t < ENum; t++)
-    {
-        for (int r = 0; r < ANum; r++)
-        {
-            for (int f=0; f < FNum; f++)
-            {
-                std::complex<double> ValueAtPoint = this->ReadFrom(f,r,t) - BG.ReadFrom(f,r,t);
-                this->WriteTo(f,r,t,ValueAtPoint);
-            }
-        }
-    }
-    // Добавить вывод ошибки при несовпадении параметров
-}
-
-
-
-
-QVector <double> ThreeDimensionalVector::FreqVector()
-{
-    QVector <double> FreqVector(FNum);
-
-    for (int f=0; f<FNum; f++)
-    {
-        FreqVector[f] = FStart + f * (FStop-FStart)/(FNum-1);
-    }
-
-    return FreqVector;
-}
-
-QVector <double> ThreeDimensionalVector::AzimuthVector()
-{
-    QVector <double> AzimuthVector(ANum);
-
-    for (int r=0; r<ANum; r++)
-    {
-        AzimuthVector[r] = AStart + r * (AStop-AStart)/(ANum-1);
-    }
-
-    return AzimuthVector;
-}
-
-
-QVector <double> ThreeDimensionalVector::ElevationVector()
-{
-    QVector <double> ElevationVector(ENum);
-
-    for (int t=0; t<ENum; t++)
-    {
-        ElevationVector[t] = EStart + t * (EStop-EStart)/(ENum-1);
-    }
-
-    return ElevationVector;
-}
-
-
-
-QVector <double> ThreeDimensionalVector::AmplitudeVectorAtAngles (int r, int t)
-{
-    QVector <double> YVector(FNum);
-
-    for (int f=0; f<FNum; f++)
-    {
-        YVector[f] = abs(ReadFrom(f,r,t));
-    }
-
-    return YVector;
-}
-
-
-QVector <double> ThreeDimensionalVector::AmplitudeVectorAtFrequencyElevation(int f, int t)
-{
-    {
-        QVector <double> YVector(FNum);
-
-        for (int r=0; f<ANum; r++)
-        {
-            YVector[f] = abs(ReadFrom(f,r,t));
-        }
-        return YVector;
-    }
-}
-
-
-bool ThreeDimensionalVector::CheckBackgroundForSuitability(ThreeDimensionalVector BG)
-{
-    bool FreqRangeSuitable = (FStart == BG.FStart &&  FStop == BG.FStop &&  FStart == BG.FStart);
-    bool AzimuthRangeSuitable = (AStart == BG.AStart &&  AStop == BG.AStop &&  AStart == BG.AStart);
-    bool ElevationRangeSuitable = (EStart == BG.EStart &&  EStop == BG.EStop &&  EStart == BG.EStart);
-
-    bool Result = FreqRangeSuitable && AzimuthRangeSuitable && ElevationRangeSuitable;
-
+    int Result = int( (ElevationValue - OPUParameters.startElAngl)/(OPUParameters.stopElAngl - OPUParameters.startElAngl) * double(OPUParameters.ElTrigPoints-1) ) ;
     return Result;
 }
 
 
 
 
-void ThreeDimensionalVector::ClearFunction()
-{
-    Resize(0,0,0);
 
-    FNum = 0;
-    ANum = 0;
-    ENum = 0;
-
-    FStart = 0;
-    AStart = 0;
-    EStart = 0;
-
-    FStop = 0;
-    AStop = 0;
-    EStop = 0;
-}
-
-
-
-void ThreeDimensionalVector::Calibrate(ThreeDimensionalVector C, int SampleType)
-{
-    //Добавить проверку размерности
-    for (int t = 0; t < ENum; t++)
-    {
-        for (int r = 0; r < ANum; r++)
-        {
-            for (int f=0; f < FNum; f++)
-            {
-                std::complex<double> Multiplier = C.ReadFrom(f,r,t) * pow(std::complex<double>(f,0), SampleType+1);
-                std::complex<double> ValueAtPoint = ReadFrom(f,r,t)  * Multiplier;
-                this->WriteTo(f,r,t,ValueAtPoint);
-            }
-        }
-    }
-}
-
-
-
-
-
-QVector <double> ThreeDimensionalVector::DistVector ()
-{
-    QVector <double> Result(FNum);
-    for (int d=0; d<FNum; d++)
-    {
-        Result[d] = d;
-    }
-    return Result;
-}
-
-
-QVector <double> ThreeDimensionalVector::FourierAmplVectorAtAngles (int r, int t)
-{
-
-    QVector <std::complex<double>> F = GetFrequencyVectorAt(r,t);
-    QVector <std::complex<double>> Transform(FNum);
-
-
-    for (int d=0; d<FNum; d++)
-    {
-        Transform[d] = 0;
-        for (int f=0; f<FNum; f++)
-        {
-            Transform[d] += F[f] * exp( - std::complex<double>(0, 2 * M_PI * f * d / FNum));
-        }
-        Transform[d]/=FNum;
-    }
-
-    QVector <double> y(FNum);
-
-    for (int d=0; d<FNum; d++)
-    {
-        y[d] = abs(Transform[d]);
-    }
-
-    return y;
-}
-
-
-
-void ThreeDimensionalVector::WriteToRow(int r, int t, QVector <std::complex<double>> FreqVect)
+void ThreeDimensionalVector::WriteToRowOfObjectResult(int r, int t, QVector <std::complex<double>> FreqVect)
 {
     //Добавить проверку размерности
 
-    for(int f=0; f<FNum; f++)
+    for(int f=0; f<VNAParameters.NumOfPoi; f++)
     {
-        WriteTo(f,r,t,FreqVect[f]);
+        WriteToObjectResult(f,r,t,FreqVect[f]);
     }
 }
 
@@ -312,89 +86,127 @@ void ThreeDimensionalVector::SetRanges(double FreqStart,  double FreqStop,    do
                                  double AzimuthStart,   double AzimuthStop,     double AzimuthNumber,
                                  double ElevationStart,  double ElevationStop,    double ElevationNumber)
 {
-    Function = QVector<std::complex<double>>(FreqNumber * AzimuthNumber * ElevationNumber, std::complex<double>(0.0,0.0));
+    ObjectMeasurementResult = QVector<std::complex<double>>(FreqNumber * AzimuthNumber * ElevationNumber, std::complex<double>(0.0,0.0));
 
-    FStart = FreqStart;
-    FStop = FreqStop;
-    FNum =  FreqNumber;
+    VNAParameters.StartFreq = FreqStart;
+    VNAParameters.StopFreq = FreqStop;
+    VNAParameters.NumOfPoi =  FreqNumber;
 
-    AStart = AzimuthStart;
-    AStop = AzimuthStop;
-    ANum =  AzimuthNumber;
+    OPUParameters.startAzAngl = AzimuthStart;
+    OPUParameters.stopAzAngl = AzimuthStop;
+    OPUParameters.AzTrigPoints =  AzimuthNumber;
 
-    EStart = ElevationStart;
-    EStop = ElevationStop;
-    ENum =  ElevationNumber;
+    OPUParameters.startElAngl = ElevationStart;
+    OPUParameters.stopElAngl = ElevationStop;
+    OPUParameters.ElTrigPoints =  ElevationNumber;
 
 }
 
 
-double ThreeDimensionalVector::FindAzimuthValue(int r)
+double ThreeDimensionalVector::FindAzimuthValue(int a)
 {
-    double Result = AStart + double(r) * (AStop - AStart) / double(ANum-1)  ;
+    double Result = OPUParameters.startAzAngl + double(a) * (OPUParameters.stopAzAngl - OPUParameters.startAzAngl) / double(OPUParameters.AzTrigPoints-1)  ;
     return Result;
 }
 
 
 
 
-double ThreeDimensionalVector::FindElevationValue (int t)
+double ThreeDimensionalVector::FindElevationValue (int e)
 {
-    double Result = EStart + double(t) * (EStop - EStart) / double(ENum-1)  ;
+    double Result = OPUParameters.startElAngl + double(e) * (OPUParameters.stopElAngl - OPUParameters.startElAngl) / double(OPUParameters.ElTrigPoints-1)  ;
     return Result;
 }
 
 
 
-void ThreeDimensionalVector::AddMeasuredValues(QVector <double> VectorToBeAdded)
+void ThreeDimensionalVector::AddMeasuredRow(QVector <std::complex<double>> FrequencyRow)
+{
+
+    int a = CurrentAzimuthIndex;
+    int e = CurrentElevationIndex;
+    if ( a < OPUParameters.AzTrigPoints)
+    {
+        this->WriteToRowOfObjectResult(a,e,FrequencyRow);
+        a++;
+    }
+    else
+    {
+        a=0;
+        e++;
+        this->WriteToRowOfObjectResult(a,e,FrequencyRow);
+    }
+}
+
+QVector<std::complex<double>> ThreeDimensionalVector::MakeItScarcer(QVector<std::complex<double>> MyVector)
+{
+    // Для прореживания background и response: (Не совсем уверен, так ли он делается)
+    QVector<std::complex<double>> ResultVector(MyVector.size()/4);
+    for (int i=0; i<ResultVector.size(); i++)
+    {
+        ResultVector[i] = MyVector[4*i];
+    }
+    return ResultVector;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+/*
+void ThreeDimensionalVector::AddMeasuredObjectValues(QVector <double> VectorToBeAdded) // Для последовательного заполнения массивом элементами double, идущими "Через один"
 {
     //qDebug()<< "VECT = " << VectorToBeAdded.mid(0,2);
-
-
-
     for (int i=0;i<VectorToBeAdded.size(); i++)
     {
         if (CurrentIndex % 2 == 0)
         {
-            Function[int(CurrentIndex/2)] = std::complex(VectorToBeAdded[i],Function[CurrentIndex/2].real());
-            //if (i==0) qDebug()<<"REAL = " << Function[int(CurrentIndex/2)] .real();
+            ObjectMeasurementResult[int(CurrentIndex/2)] = std::complex(VectorToBeAdded[i],ObjectMeasurementResult[CurrentIndex/2].real());
+            //if (i==0) qDebug()<<"REAL = " << ObjectMeasurementResult[int(CurrentIndex/2)] .real();
             CurrentIndex++;
         }
         else
         {
-            Function[int(CurrentIndex/2)] = std::complex(VectorToBeAdded[i],Function[CurrentIndex/2].imag());
-            //if (i==1) qDebug()<<"IMAG = " << Function[int(CurrentIndex/2)] .imag();
+            ObjectMeasurementResult[int(CurrentIndex/2)] = std::complex(VectorToBeAdded[i],ObjectMeasurementResult[CurrentIndex/2].imag());
+            //if (i==1) qDebug()<<"IMAG = " << ObjectMeasurementResult[int(CurrentIndex/2)] .imag();
             CurrentIndex++;
         }
     }
 
-    if (CurrentIndex == Function.size()*2)
+    if (CurrentIndex == ObjectMeasurementResult.size()*2)
     {
         CurrentIndex = 0;
     }
 
 }
+*/
 
 
 
-
-void ThreeDimensionalVector::FillComplexVectorWithDoubleValues(QVector<double> ReceivedVector)
+void ThreeDimensionalVector::FillComplexVectorWithDoubleValues(QVector<double> ReceivedVector) // для заполнения мнимыми и действительными числами, если они чередуются в поступающем массиве данных
 {
-    if (ReceivedVector.size() == FNum*ANum*ENum*2)
+    if (ReceivedVector.size() == VNAParameters.NumOfPoi*OPUParameters.AzTrigPoints*OPUParameters.ElTrigPoints*2)
     {
         int index = 0;
-        for (int t=0; t<ENum; t++)
+        for (int e=0; e<OPUParameters.ElTrigPoints; e++)
         {
-            for (int r=0; r<ANum; r++)
+            for (int a=0; a<OPUParameters.AzTrigPoints; a++)
             {
-                for (int f=0; f<FNum; f++)
+                for (int f=0; f<VNAParameters.NumOfPoi; f++)
                 {
                     double RealPart = ReceivedVector[index];
                     index++;
                     double ImagPart = ReceivedVector[index];
                     index++;
                     std::complex<double> ComplexValue = std::complex<double> (RealPart, ImagPart);
-                    this->WriteTo(f,r,t, ComplexValue);
+                    this->WriteToObjectResult(f,a,e, ComplexValue);
                 }
             }
         }
@@ -408,4 +220,376 @@ void ThreeDimensionalVector::FillComplexVectorWithDoubleValues(QVector<double> R
 
 
 
+
+QVector<double> ThreeDimensionalVector::SubstractBackgroundAndCalibrate()
+{
+
+    QVector <std::complex<double>> TempVector(this->ObjectMeasurementResult.size()); // Массив того же размера
+    QVector <std::complex<double>> ObjectExample(this->VNAParameters.NumOfPoi);
+
+
+    for (int e=0; e<OPUParameters.ElTrigPoints; e++)
+    {
+        for (int a=0; a<OPUParameters.AzTrigPoints; a++)
+        {
+            for (int f=0; f<VNAParameters.NumOfPoi; f++)
+            {
+                //Вычитание фона:
+                std::complex<double>     ObjectValue = this->ReadFromObjectResult(f,a,e);
+                std::complex<double> BackgroundValue = BackgroundMeasurementResult[f];
+                std::complex<double> ResultValue1 = ObjectValue - BackgroundValue;
+
+                std::complex<double> ResultValue2 = ResultValue1 / ResponseMeasurementResult[f] * ObjectExample[f];
+
+                TempVector[e * (OPUParameters.AzTrigPoints * VNAParameters.NumOfPoi)  + a * VNAParameters.NumOfPoi + f] = ResultValue2;
+            }
+        }
+    }
+
+    QVector <double> AbsVector(TempVector.size());
+
+    for (int i=0; i<TempVector.size(); i++)
+    {
+        AbsVector[i] = abs(TempVector[i]);
+    }
+
+
+    return AbsVector;
+}
+
+
+
+
+QDataStream &operator<<(QDataStream &out, const ThreeDimensionalVector &MyMF)
+{
+    out << MyMF.VNAParameters.NumOfPoi
+        << MyMF.OPUParameters.AzTrigPoints
+        << MyMF.OPUParameters.ElTrigPoints
+        << MyMF.VNAParameters.StartFreq
+        << MyMF.OPUParameters.startAzAngl
+        << MyMF.OPUParameters.startElAngl
+        << MyMF.VNAParameters.StopFreq
+        << MyMF.OPUParameters.stopAzAngl
+        << MyMF.OPUParameters.stopElAngl;
+
+    QVector<double> RealValuesOfObjectMeasurement(MyMF.ObjectMeasurementResult.size());
+    QVector<double> ImagValuesOfObjectMeasurement(MyMF.ObjectMeasurementResult.size());
+
+    for (int i = 0; i < MyMF.ObjectMeasurementResult.size(); ++i)
+    {
+        RealValuesOfObjectMeasurement[i] = MyMF.ObjectMeasurementResult[i].real();
+        ImagValuesOfObjectMeasurement[i] = MyMF.ObjectMeasurementResult[i].imag();
+    }
+
+    out << RealValuesOfObjectMeasurement << ImagValuesOfObjectMeasurement;
+
+    QVector<double> RealValuesOfBackgroundMeasurement(MyMF.BackgroundMeasurementResult.size());
+    QVector<double> ImagValuesOfBackgroundMeasurement(MyMF.BackgroundMeasurementResult.size());
+
+    for (int i = 0; i < MyMF.BackgroundMeasurementResult.size(); ++i)
+    {
+        RealValuesOfBackgroundMeasurement[i] = MyMF.BackgroundMeasurementResult[i].real();
+        ImagValuesOfBackgroundMeasurement[i] = MyMF.BackgroundMeasurementResult[i].imag();
+    }
+
+    out << RealValuesOfBackgroundMeasurement << ImagValuesOfBackgroundMeasurement;
+
+    QVector<double> RealValuesOfResponseMeasurement(MyMF.ResponseMeasurementResult.size());
+    QVector<double> ImagValuesOfResponseMeasurement(MyMF.ResponseMeasurementResult.size());
+
+    for (int i = 0; i < MyMF.ObjectMeasurementResult.size(); ++i)
+    {
+        RealValuesOfResponseMeasurement[i] = MyMF.ResponseMeasurementResult[i].real();
+        ImagValuesOfResponseMeasurement[i] = MyMF.ResponseMeasurementResult[i].imag();
+    }
+
+    out << RealValuesOfResponseMeasurement << ImagValuesOfResponseMeasurement;
+
+    return out;
+}
+
+
+
+QDataStream &operator>>(QDataStream &in, ThreeDimensionalVector &MyThreeDimensionalVector)
+{
+    in >> MyThreeDimensionalVector.VNAParameters.NumOfPoi
+        >> MyThreeDimensionalVector.OPUParameters.AzTrigPoints
+        >> MyThreeDimensionalVector.OPUParameters.ElTrigPoints
+        >> MyThreeDimensionalVector.VNAParameters.StartFreq
+        >> MyThreeDimensionalVector.OPUParameters.startAzAngl
+        >> MyThreeDimensionalVector.OPUParameters.startElAngl
+        >> MyThreeDimensionalVector.VNAParameters.StopFreq
+        >> MyThreeDimensionalVector.OPUParameters.stopAzAngl
+        >> MyThreeDimensionalVector.OPUParameters.stopElAngl;
+
+    int Size = MyThreeDimensionalVector.VNAParameters.NumOfPoi * MyThreeDimensionalVector.OPUParameters.AzTrigPoints *  MyThreeDimensionalVector.OPUParameters.ElTrigPoints; // Размер массива по углам и частотам
+
+    QVector<double> RealValuesOfObjectMeasurement(Size);
+    QVector<double> ImagValuesOfObjectMeasurement(Size);
+
+    in >> RealValuesOfObjectMeasurement >> ImagValuesOfObjectMeasurement;
+
+    MyThreeDimensionalVector.ObjectMeasurementResult.resize(Size);
+    for (int i = 0; i < Size; ++i)
+    {
+        MyThreeDimensionalVector.ObjectMeasurementResult[i] = std::complex<double>(RealValuesOfObjectMeasurement[i], ImagValuesOfObjectMeasurement[i]);
+    }
+
+
+    int FNum = MyThreeDimensionalVector.VNAParameters.NumOfPoi;
+
+    QVector<double> RealValuesOfBackgroundMeasurement(FNum);
+    QVector<double> ImagValuesOfBackgroundMeasurement(FNum);
+
+    in >> RealValuesOfBackgroundMeasurement >> ImagValuesOfBackgroundMeasurement;
+
+    MyThreeDimensionalVector.BackgroundMeasurementResult.resize(FNum);
+    for (int i = 0; i < FNum; ++i)
+    {
+        MyThreeDimensionalVector.BackgroundMeasurementResult[i] = std::complex<double>(RealValuesOfBackgroundMeasurement[i], ImagValuesOfBackgroundMeasurement[i]);
+    }
+
+
+    QVector<double> RealValuesOfResponseMeasurement(FNum);
+    QVector<double> ImagValuesOfResponseMeasurement(FNum);
+
+    in >> RealValuesOfResponseMeasurement >> ImagValuesOfResponseMeasurement;
+
+    MyThreeDimensionalVector.ResponseMeasurementResult.resize(FNum);
+    for (int i = 0; i < FNum; ++i)
+    {
+        MyThreeDimensionalVector.ResponseMeasurementResult[i] = std::complex<double>(RealValuesOfResponseMeasurement[i], ImagValuesOfResponseMeasurement[i]);
+    }
+
+
+
+
+    return in;
+}
+
+
+
+
+QVector <double> ThreeDimensionalVector::FreqVector()
+{
+    QVector <double> FreqVector(VNAParameters.NumOfPoi);
+
+    for (int f=0; f<VNAParameters.NumOfPoi; f++)
+    {
+        FreqVector[f] = VNAParameters.StartFreq + f * (VNAParameters.StopFreq-VNAParameters.StartFreq)/(VNAParameters.NumOfPoi-1);
+    }
+
+    return FreqVector;
+}
+
+QVector <double> ThreeDimensionalVector::AzimuthVector()
+{
+    QVector <double> AzimuthVector(OPUParameters.AzTrigPoints);
+
+    for (int a=0; a<OPUParameters.AzTrigPoints; a++)
+    {
+        AzimuthVector[a] = OPUParameters.startAzAngl + a * (OPUParameters.stopAzAngl-OPUParameters.startAzAngl)/(OPUParameters.AzTrigPoints-1);
+    }
+
+    return AzimuthVector;
+}
+
+
+QVector <double> ThreeDimensionalVector::ElevationVector()
+{
+    QVector <double> ElevationVector(OPUParameters.ElTrigPoints);
+
+    for (int e=0; e<OPUParameters.ElTrigPoints; e++)
+    {
+        ElevationVector[e] = OPUParameters.startElAngl + e * (OPUParameters.stopElAngl-OPUParameters.startElAngl)/(OPUParameters.ElTrigPoints-1);
+    }
+    return ElevationVector;
+}
+
+
+// Для подключения как слотов:
+void ThreeDimensionalVector::ReceiveBackgroundVector(QVector<std::complex<double>> MeasuredBackground)
+{
+    this->BackgroundMeasurementResult = MeasuredBackground;
+}
+
+
+void ThreeDimensionalVector::ReceiveResponseVector(QVector<std::complex<double>> MeasuredResponse)
+{
+    this->ResponseMeasurementResult = MeasuredResponse;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+// Вектор амплитуды при заданных углах
+QVector <double> ThreeDimensionalVector::AmplitudeVectorAtAngles (int a, int e)
+{
+    QVector <double> YVector(VNAParameters.NumOfPoi);
+
+    for (int f=0; f<VNAParameters.NumOfPoi; f++)
+    {
+        YVector[f] = abs(ReadFromObjectResult(f,a,e));
+    }
+
+    return YVector;
+}
+
+
+
+
+// Далее устаревшие куски программы
+
+
+/*
+QVector <double> ThreeDimensionalVector::AmplitudeVectorAtFrequencyElevation(int f, int e)
+{
+
+    QVector <double> YVector(VNAParameters.NumOfPoi);
+
+    for (int a=0; a<OPUParameters.AzTrigPoints; a++)
+    {
+        YVector[a] = abs(ReadFromObjectResult(f,a,e));
+    }
+
+    return YVector;
+}
+*/
+/*
+bool ThreeDimensionalVector::CheckBackgroundForSuitability(ThreeDimensionalVector BG)
+{
+    bool FreqRangeSuitable      = (VNAParameters.StartFreq == BG.VNAParameters.StartFreq &&  VNAParameters.StopFreq == BG.VNAParameters.StopFreq &&  VNAParameters.StartFreq == BG.VNAParameters.StartFreq);
+    bool AzimuthRangeSuitable   = (OPUParameters.startAzAngl == BG.OPUParameters.startAzAngl &&  OPUParameters.stopAzAngl == BG.OPUParameters.stopAzAngl &&  OPUParameters.startAzAngl == BG.OPUParameters.startAzAngl);
+    bool ElevationRangeSuitable = (OPUParameters.startElAngl == BG.OPUParameters.startElAngl &&  OPUParameters.stopElAngl == BG.OPUParameters.stopElAngl &&  OPUParameters.startElAngl == BG.OPUParameters.startElAngl);
+
+    bool Result = FreqRangeSuitable && AzimuthRangeSuitable && ElevationRangeSuitable;
+
+    return Result;
+}
+*/
+
+
+/*
+void ThreeDimensionalVector::ClearFunction()
+{
+    Resize(0,0,0);
+
+    VNAParameters.NumOfPoi = 0;
+    OPUParameters.AzTrigPoints = 0;
+    OPUParameters.ElTrigPoints = 0;
+
+    VNAParameters.StartFreq = 0;
+    OPUParameters.startAzAngl = 0;
+    OPUParameters.startElAngl = 0;
+
+    VNAParameters.StopFreq = 0;
+    OPUParameters.stopAzAngl = 0;
+    OPUParameters.stopElAngl = 0;
+}
+*/
+
+
+/*
+void ThreeDimensionalVector::Calibrate(ThreeDimensionalVector C, int SampleType)
+{
+    //Добавить проверку размерности
+    for (int t = 0; t < OPUParameters.ElTrigPoints; t++)
+    {
+        for (int r = 0; r < OPUParameters.AzTrigPoints; r++)
+        {
+            for (int f=0; f < VNAParameters.NumOfPoi; f++)
+            {
+                std::complex<double> Multiplier = C.ReadFromObjectResult(f,r,t) * pow(std::complex<double>(f,0), SampleType+1);
+                std::complex<double> ValueAtPoint = ReadFromObjectResult(f,r,t)  * Multiplier;
+                this->WriteToObjectResult(f,r,t,ValueAtPoint);
+            }
+        }
+    }
+}
+*/
+
+
+
+/*
+QVector <double> ThreeDimensionalVector::DistVector ()
+{
+    QVector <double> Result(VNAParameters.NumOfPoi);
+    for (int d=0; d<VNAParameters.NumOfPoi; d++)
+    {
+        Result[d] = d;
+    }
+    return Result;
+}
+
+
+QVector <double> ThreeDimensionalVector::FourierAmplVectorAtAngles (int r, int t)
+{
+
+    QVector <std::complex<double>> F = GetFrequencyVectorAt(r,t);
+    QVector <std::complex<double>> Transform(VNAParameters.NumOfPoi);
+
+
+    for (int d=0; d<VNAParameters.NumOfPoi; d++)
+    {
+        Transform[d] = 0;
+        for (int f=0; f<VNAParameters.NumOfPoi; f++)
+        {
+            Transform[d] += F[f] * exp( - std::complex<double>(0, 2 * M_PI * f * d / VNAParameters.NumOfPoi));
+        }
+        Transform[d]/=VNAParameters.NumOfPoi;
+    }
+
+    QVector <double> y(VNAParameters.NumOfPoi);
+
+    for (int d=0; d<VNAParameters.NumOfPoi; d++)
+    {
+        y[d] = abs(Transform[d]);
+    }
+
+    return y;
+}
+*/
+
+/*
+ * Убираю, так как не нужно
+std::complex<double> ThreeDimensionalVector::ReadFromBackgroundResult(int f)
+{
+    return ObjectMeasurementResult[f];
+}
+
+std::complex<double> ThreeDimensionalVector::ReadFromResponseResult(int f)
+{
+    return ObjectMeasurementResult[f];
+}
+*/
+
+
+
+/*
+
+void ThreeDimensionalVector::SubstractBackground(ThreeDimensionalVector BG)
+{
+    for (int t = 0; t < OPUParameters.ElTrigPoints; t++)
+    {
+        for (int r = 0; r < OPUParameters.AzTrigPoints; r++)
+        {
+            for (int f=0; f < VNAParameters.NumOfPoi; f++)
+            {
+                std::complex<double> ValueAtPoint =ReadFromObjectResult(f,r,t) - BG.ReadFromObjectResult(f,r,t);
+                this->WriteToObjectResult(f,r,t,ValueAtPoint);
+            }
+        }
+    }
+    // Добавить вывод ошибки при несовпадении параметров
+}
+
+*/
 

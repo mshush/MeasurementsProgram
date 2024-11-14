@@ -15,17 +15,17 @@ void ProcessImitation::Measure()
 
     F.Resize(FrequencyNumber,AzimuthNumber,ElevationNumber);
 
-    F.FStart = FrequencyStart;
-    F.FStop = FrequencyStop;
-    F.FNum =  FrequencyNumber;
+    F.VNAParameters.StartFreq = FrequencyStart;
+    F.VNAParameters.StopFreq = FrequencyStop;
+    F.VNAParameters.NumOfPoi =  FrequencyNumber;
 
-    F.AStart = AzimuthStart;
-    F.AStop = AzimuthStop;
-    F.ANum =  AzimuthNumber;
+    F.OPUParameters.startAzAngl = AzimuthStart;
+    F.OPUParameters.stopAzAngl = AzimuthStop;
+    F.OPUParameters.AzTrigPoints =  AzimuthNumber;
 
-    F.EStart = ElevationStart;
-    F.EStop = ElevationStop;
-    F.ENum =  ElevationNumber;
+    F.OPUParameters.startElAngl = ElevationStart;
+    F.OPUParameters.stopElAngl = ElevationStop;
+    F.OPUParameters.ElTrigPoints =  ElevationNumber;
 
 
     int TotalNumberOfIterations = ElevationNumber * AzimuthNumber * FrequencyNumber;
@@ -38,26 +38,24 @@ void ProcessImitation::Measure()
         {
             for (int f=0; f < FrequencyNumber; f++)
             {
-                std::complex<double>  PerfectValue = std::complex <double> (std::round(pow(sin(2 * f * M_PI / F.FNum),5)) + a + e, 0);
+                std::complex<double>  PerfectValue = std::complex <double> (std::round(pow(sin(2 * f * M_PI / F.VNAParameters.NumOfPoi),5)) + 0.01*a + e, 0);
                 std::complex<double>  Noise = 0.01 * std::complex<double>(distribution(generator),distribution(generator));
                 std::complex<double> MeasuredValue =  PerfectValue + Noise; //  + FOffset[f] + ROffset[r] + TOffset[t];
 
                 if (MeasurementMode == Response)
                 {
-                    MeasuredValue += std::complex <double> (0, pow(cos(2 * f * M_PI / F.FNum),10));
+                    MeasuredValue += std::complex <double> (0, pow(cos(2 * f * M_PI / F.VNAParameters.NumOfPoi),10));
                 }
 
-                if (MeasurementMode == Calibration) // убрать калибровку
+                if (MeasurementMode == Calibration) // убрать калибровку -- она не здесь
                 {
                     MeasuredValue += std::complex <double> (1, 1); ;
                 }
 
-                F.WriteTo(f,a,e, MeasuredValue);
+                F.WriteToObjectResult(f,a,e, MeasuredValue);
 
 
-
-
-                int iter = e * (F.ANum * F.FNum)  + a * F.FNum + f;
+                int iter = e * (F.OPUParameters.AzTrigPoints * F.VNAParameters.NumOfPoi)  + a * F.VNAParameters.NumOfPoi + f;
                 if (iter % (TotalNumberOfIterations/100) == 0)
                 {
                     int percentage = (iter  * 100) / TotalNumberOfIterations;
@@ -70,7 +68,6 @@ void ProcessImitation::Measure()
 
     emit ProgressSignal(100);
     emit MeasurementFinished(F);
-
 }
 
 
@@ -86,9 +83,9 @@ void ProcessImitation::MeasureContinuously(bool ContinuousModeIsOn) //Пооче
 
         int VectorIndex = 0;
 
-        for (int t = 0; t < ElevationNumber; t++)
+        for (int e = 0; e < ElevationNumber; e++)
         {
-            for (int r = 0; r < AzimuthNumber; r++)
+            for (int a = 0; a < AzimuthNumber; a++)
             {
                 for (int f=0; f < FrequencyNumber; f++)
                 {
@@ -140,7 +137,7 @@ void ProcessImitation::MeasureContinuously(bool ContinuousModeIsOn) //Пооче
 
                     if (f%15==0)
                     {
-                        int iter = t * (AzimuthNumber * FrequencyNumber)  + r * FrequencyNumber + f;
+                        int iter = e * (AzimuthNumber * FrequencyNumber)  + a * FrequencyNumber + f;
                         int percentage = (iter * 100) / TotalNumberOfIterations;
                         //float perflo = double((iter)) / TotalNumberOfIterations;
                         //qDebug()<< iter << perflo;
@@ -214,15 +211,13 @@ void ProcessImitation::PerformNextMeasurement()
 
 void ProcessImitation::StopEverything()
 {
-    Stopped = true;
+    Stopped = true; // Неправильно работает // Нужно ли вообще убрать?
 }
-
 
 
 
 ProcessImitation::~ProcessImitation()
-{
-}
+{}
 
 
 

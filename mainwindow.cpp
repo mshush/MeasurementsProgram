@@ -27,7 +27,6 @@ MainWindow::MainWindow(QWidget *parent)
 
     QMenu * FileMenu = this->menuBar()->addMenu("File");
     QMenu * MeasureMenu = this->menuBar()->addMenu("Measure");
-
     QMenu * ProcessMenu = this->menuBar()->addMenu("Process");
 
 
@@ -49,7 +48,6 @@ MainWindow::MainWindow(QWidget *parent)
     MeasureMenu->addAction(MeasureCalibration);
 
 
-
     this->menuBar()->addMenu("Post-Process");
     this->menuBar()->addMenu("Create Pylon Compensation");
 
@@ -65,8 +63,8 @@ MainWindow::MainWindow(QWidget *parent)
     //QVBoxLayout *OutermostVerticalLayout = new QVBoxLayout;
 
     TabOfTools = new TabWidgetForTools;
-    TabOfTools->resize(800,200);
-    TabOfTools->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Fixed);
+    //TabOfTools->resize(800,200);
+    //TabOfTools->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Fixed);
     //OutermostVerticalLayout->addWidget(TabOfTools);
 
     //QHBoxLayout * MiddleHorizontalLayout = new QHBoxLayout;
@@ -139,7 +137,10 @@ MainWindow::MainWindow(QWidget *parent)
     ConnectObjects();
 
     this->setWindowState(Qt::WindowMaximized);
-    this->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding);
+    //this->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding);
+
+
+    qDebug()<<this->size();
 }
 
 
@@ -150,26 +151,26 @@ void MainWindow::SetThreeDimensionalVector(ThreeDimensionalVector F)
 
     StoredFunction = F;
     // Сделать double сдесь, а округление потом?
-    r = StoredFunction.FindAzimuthIndex(TabOfParameters->ResultTab->SetCurrentAzimuthDoubleSpinBox->value());
-    t = StoredFunction.FindElevationIndex    (TabOfParameters->ResultTab->SetCurrentElevationDoubleSpinBox    ->value());
+    azim = StoredFunction.FindAzimuthIndex(TabOfParameters->ResultTab->SetCurrentAzimuthDoubleSpinBox->value());
+    elev = StoredFunction.FindElevationIndex    (TabOfParameters->ResultTab->SetCurrentElevationDoubleSpinBox    ->value());
 
     //QVector <std::complex<double>> FreqVectorAtChosenAngle = F.GetFrequencyVectorAt(r,t);
     //this->ChartTab->UpdateMeasurementPlot(FreqVectorAtChosenAngle);
 
     PlotClass * PltPtr0 = this->ChartTab->PlotTabs[0]->customPlot;
-    PltPtr0->graph(0)->setData(F.FreqVector(), F.AmplitudeVectorAtAngles(r,t));
+    //PltPtr0->graph(0)->setData(F.FreqVector(), F.AmplitudeVectorAtAngles(azim,elev));
     PltPtr0->rescaleAxes();
     PltPtr0->replot();
 
     PlotClass * PltPtr1 = this->ChartTab->PlotTabs[1]->customPlot;
-    //PltPtr1->graph(0)->setData(F.RotVector(), F.AmplitudeVectorAtFrequencyElevation(10,t)); // Доделать
+    //PltPtr1->graph(0)->setData(F.AzimuthVector(), F.AmplitudeVectorAtFrequencyElevation(0,elev));
     PltPtr1->rescaleAxes();
     PltPtr1->replot();
 
     // Сделать ли зависимость от угла наклона?
 
     PlotClass * PltPtr2 = this->ChartTab->PlotTabs[2]->customPlot;
-    PltPtr2->graph(0)->setData(F.DistVector(), F.FourierAmplVectorAtAngles(r,t));
+    //PltPtr2->graph(0)->setData(F.DistVector(), F.FourierAmplVectorAtAngles(azim,elev));
     PltPtr2->rescaleAxes();
     PltPtr2->replot();
 }
@@ -182,10 +183,10 @@ void MainWindow::ChangeAngleOfDemonstration()
 
     if (PltPtr->graph(0)->data()->size()>0)
     {
-        r = StoredFunction.FindAzimuthIndex(TabOfParameters->ResultTab->SetCurrentAzimuthDoubleSpinBox->value());
-        t = StoredFunction.FindElevationIndex(TabOfParameters->ResultTab->SetCurrentElevationDoubleSpinBox->value());
+        azim = StoredFunction.FindAzimuthIndex(TabOfParameters->ResultTab->SetCurrentAzimuthDoubleSpinBox->value());
+        elev = StoredFunction.FindElevationIndex(TabOfParameters->ResultTab->SetCurrentElevationDoubleSpinBox->value());
 
-        PltPtr->graph(0)->setData(StoredFunction.FreqVector(), StoredFunction.AmplitudeVectorAtAngles(r,t));
+        PltPtr->graph(0)->setData(StoredFunction.FreqVector(), StoredFunction.AmplitudeVectorAtAngles(azim,elev));
 
 
         //QVector <std::complex<double>> FreqVectorAtChosenAngle = StoredFunction.GetFrequencyVectorAt(r,t);
@@ -193,17 +194,17 @@ void MainWindow::ChangeAngleOfDemonstration()
 
         if (PltPtr->graph(1)->data()->size()>0)
         {
-            PltPtr->graph(1)->setData(BackgroundFunction.FreqVector(), BackgroundFunction.AmplitudeVectorAtAngles(r,t));
+            //PltPtr->graph(1)->setData(BackgroundFunction.FreqVector(), BackgroundFunction.AmplitudeVectorAtAngles(azim,elev));
 
             PlotClass * PltPtr1 = this->ChartTab->PlotTabs[1]->customPlot;
-            PltPtr1->graph(1)->setData(BackgroundFunction.DistVector(), BackgroundFunction.FourierAmplVectorAtAngles(r,t));
+            //PltPtr1->graph(1)->setData(BackgroundFunction.DistVector(), BackgroundFunction.FourierAmplVectorAtAngles(azim,elev));
 
         }
         PltPtr->rescaleAxes();
         PltPtr->replot();
 
         PlotClass * PltPtr1 = this->ChartTab->PlotTabs[1]->customPlot;
-        PltPtr1->graph(0)->setData(StoredFunction.DistVector(), StoredFunction.FourierAmplVectorAtAngles(r,t));
+        //PltPtr1->graph(0)->setData(StoredFunction.DistVector(), StoredFunction.FourierAmplVectorAtAngles(azim,elev));
         PltPtr1->rescaleAxes();
         PltPtr1->replot();
 
@@ -264,14 +265,14 @@ void MainWindow::SaveThreeDimensionalVector()
 
     QVector <double> x = BackgroundFunction.FreqVector();
 
-    r = BackgroundFunction.FindAzimuthIndex(TabOfParameters->ResultTab->SetCurrentAzimuthDoubleSpinBox->value());
-    t = BackgroundFunction.FindElevationIndex    (TabOfParameters->ResultTab->SetCurrentElevationDoubleSpinBox    ->value());
+    azim = BackgroundFunction.FindAzimuthIndex(TabOfParameters->ResultTab->SetCurrentAzimuthDoubleSpinBox->value());
+    elev = BackgroundFunction.FindElevationIndex    (TabOfParameters->ResultTab->SetCurrentElevationDoubleSpinBox    ->value());
 
-    QVector <std::complex<double>> f = BackgroundFunction.GetFrequencyVectorAt(r,t);
+    QVector <std::complex<double>> f = BackgroundFunction.GetFrequencyVectorAt(azim,elev);
 
-    QVector <double> y(BackgroundFunction.FNum);
+    QVector <double> y(BackgroundFunction.VNAParameters.NumOfPoi);
 
-    for (int i=0;i<BackgroundFunction.FNum;i++)
+    for (int i=0;i<BackgroundFunction.VNAParameters.NumOfPoi;i++)
     {
         y[i] = abs(f[i]);
     }
@@ -290,7 +291,7 @@ void MainWindow::SaveThreeDimensionalVector()
 void MainWindow::SubstractBackground()
 {
 
-    if (BackgroundFunction.Function.size()==0)
+    if (BackgroundFunction.ObjectMeasurementResult.size()==0)
     {
         QFile File(TabOfParameters->ResultTab->BackgroundLineEdit->text());
         if (!File.open(QIODevice::ReadOnly))
@@ -310,14 +311,14 @@ void MainWindow::SubstractBackground()
 
     if (PltPtr->graph(0)->data()->size()>0)
     {
-        if (StoredFunction.CheckBackgroundForSuitability(BackgroundFunction) )
+        //if (StoredFunction.CheckBackgroundForSuitability(BackgroundFunction) )
         {
-            StoredFunction.SubstractBackground(BackgroundFunction);
+            //StoredFunction.SubstractBackground(BackgroundFunction);
             PltPtr->graph(1)->data()->clear();
             this->SetThreeDimensionalVector(StoredFunction);
             //this->BackgroundFunction.ClearFunction(); // Не очищать! Ещё потребуется при калибровке
         }
-        else
+        //else
         {
             emit ErrorOccured("mainwindow : Данные фона не подходят по формату.");
             ShowErrorMessage("Данные фона не подходят по формату!", "Убедитесь, что вы выбрали нужный файл");
@@ -349,13 +350,13 @@ MainWindow::~MainWindow()
 void MainWindow::SetCalibration()
 {
 
-    if (BackgroundFunction.FNum==0)
+    if (BackgroundFunction.VNAParameters.NumOfPoi==0)
     {
         emit ErrorOccured("mainwindow : Не найден фон.");
         //ShowErrorMessage("Не найден фон", "Сперва выберите фон");
         return;
     }
-    if (CalibrationFunction.FNum==0)
+    if (CalibrationFunction.VNAParameters.NumOfPoi==0)
     {
         QFile File(TabOfParameters->ResultTab->CalibrationLineEdit->text());
         if (!File.open(QIODevice::ReadOnly))
@@ -370,18 +371,18 @@ void MainWindow::SetCalibration()
         File.close();
     }
 
-    CalibrationFunction.SubstractBackground(BackgroundFunction);
+    //CalibrationFunction.SubstractBackground(BackgroundFunction);
 
     int SampleTypeIndex = this->TabOfParameters->ResultTab->CalibrationSampleComboBox->currentIndex();
 
-    StoredFunction.Calibrate(CalibrationFunction,SampleTypeIndex);
+    //StoredFunction.Calibrate(CalibrationFunction,SampleTypeIndex);
 
 
-    r = StoredFunction.FindAzimuthIndex(TabOfParameters->ResultTab->SetCurrentAzimuthDoubleSpinBox->value());
-    t = StoredFunction.FindElevationIndex(TabOfParameters->ResultTab->SetCurrentElevationDoubleSpinBox->value());
+    azim = StoredFunction.FindAzimuthIndex(TabOfParameters->ResultTab->SetCurrentAzimuthDoubleSpinBox->value());
+    elev = StoredFunction.FindElevationIndex(TabOfParameters->ResultTab->SetCurrentElevationDoubleSpinBox->value());
 
     PlotClass * PltPtr = this->ChartTab->PlotTabs[0]->customPlot;
-    PltPtr->graph(0)->setData(StoredFunction.FreqVector(), StoredFunction.AmplitudeVectorAtAngles(r,t));
+    //PltPtr->graph(0)->setData(StoredFunction.FreqVector(), StoredFunction.AmplitudeVectorAtAngles(azim,elev));
     PltPtr->rescaleAxes();
     PltPtr->replot();
 
@@ -407,9 +408,9 @@ void MainWindow::SetCalibration()
 
     QVector <std::complex<double>> f = BackgroundFunction.GetFrequencyVectorAt(r,t);
 
-    QVector <double> y(BackgroundFunction.FNum);
+    QVector <double> y(BackgroundFunction.VNAParameters.NumOfPoi);
 
-    for (int i=0;i<BackgroundFunction.FNum;i++)
+    for (int i=0;i<BackgroundFunction.VNAParameters.NumOfPoi;i++)
     {
         y[i] = abs(f[i]);
     }
@@ -444,68 +445,53 @@ void MainWindow::ShowErrorMessage(QString Description, QString Advice)
 void MainWindow::ConnectObjects()
 {
     //connect(TabOfTools->StartMeasurementsButton, &QPushButton::clicked, Process, &ProcessImitation::Measure);
+    //connect(TabOfTools->ContinuousMeasurementsButton, &QPushButton::clicked, ChartTab, &TabWidgetForCharts::ContinuousMeasurementModeChanged);
+    //connect(TabOfTools->SaveDataButton  , &QPushButton::clicked, ChartTab, &TabWidgetForCharts::SaveData); // Получше придумать как соединять, чтобы по вкладкам (возможно лучше в QidgetForCustomPlot перенести)
+    //connect(TabOfTools->SaveThreeDimensionalVectorButton  , &QPushButton::clicked, this, &MainWindow::SaveThreeDimensionalVector);
+    //connect(TabOfTools->ImportDataButton, &QPushButton::clicked, ChartTab, &TabWidgetForCharts::CreateNewTabFromImportedData);
+    //connect(TabOfParameters->MeasurementTab, &MeasurementsParametersWidget::FrequencyParametersChanged, ChartTab,&TabWidgetForCharts::SetFrequencyParameters);
+    //connect(TabOfParameters->MeasurementTab, &MeasurementsParametersWidget::AngleParametersChanged,     ChartTab,&TabWidgetForCharts::SetAngleParameters); // Нужно ли()
+    //connect(TabOfTools->FourierTransformButton,        &QPushButton::clicked, ChartTab, &TabWidgetForCharts::PerformFourierTransformOfCurrentPlot);
+    //connect(TabOfTools->InverseFourierTransformButton, &QPushButton::clicked, ChartTab, &TabWidgetForCharts::PerformInverseFourierTransformOfCurrentPlot);
+    //connect(TabOfParameters->ResultTab->SetCurrentAngleButton, &QPushButton::clicked, ChartTab, &TabWidgetForCharts::ChangeDemonstratedAngles);
+    //connect(Process, &ProcessImitation::ProgressSignal, this->ProgressBar, &QProgressBar::setValue);
+    //connect(TabOfParameters->FileTreeTab, &TreeWidgetForFiles::FileWasChosenSignal, TabOfParameters->ResultTab, &ResultParametersWidget::FileChosenInTreeWidget);
+    //connect(TabOfTools->GetPlotDataButton, &QPushButton::clicked, this, &MainWindow::GetPlotFromDat);
+    //connect(TabOfParameters->ResultTab->CalculateDistancePortraitButton, &QPushButton::clicked, this, &MainWindow::CalculateDistancePortrait);
+
+
 
     connect(Process, &ProcessImitation::MeasurementFinished, this, &MainWindow::SetThreeDimensionalVector);
 
-
-
-    connect(TabOfTools, &TabWidgetForTools::ContinuousMeasurementsButtonClickedSignal, Process, &ProcessImitation::MeasureContinuously);
-
+    connect(TabOfTools, &TabWidgetForTools::ContinuousMeasurementsButtonClickedSignal, Process,                           &ProcessImitation::MeasureContinuously);
     connect(TabOfTools, &TabWidgetForTools::ContinuousMeasurementsButtonClickedSignal, ChartTab->PlotTabs[0]->customPlot, &PlotClass::ContinuousMeasurementsModeChanged);
+    // Такой же connect для PlotTabs[1]???? Или наоборот только для углов?
 
-
-
-    //connect(TabOfTools->ContinuousMeasurementsButton, &QPushButton::clicked, ChartTab, &TabWidgetForCharts::ContinuousMeasurementModeChanged);
-
-
-
-    //connect(TabOfTools->SaveDataButton  , &QPushButton::clicked, ChartTab, &TabWidgetForCharts::SaveData); // Получше придумать как соединять, чтобы по вкладкам (возможно лучше в QidgetForCustomPlot перенести)
-
-    //connect(TabOfTools->SaveThreeDimensionalVectorButton  , &QPushButton::clicked, this, &MainWindow::SaveThreeDimensionalVector);
-    //connect(TabOfTools->ImportDataButton, &QPushButton::clicked, ChartTab, &TabWidgetForCharts::CreateNewTabFromImportedData);
-
-    //connect(TabOfParameters->MeasurementTab, &MeasurementsParametersWidget::FrequencyParametersChanged, ChartTab,&TabWidgetForCharts::SetFrequencyParameters);
-    //connect(TabOfParameters->MeasurementTab, &MeasurementsParametersWidget::AngleParametersChanged,     ChartTab,&TabWidgetForCharts::SetAngleParameters); // Нужно ли()
 
     connect(TabOfParameters->MeasurementTab, &MeasurementsParametersWidget::FrequencyParametersChanged, Process, &ProcessImitation::SetFrequencyRange);
     connect(TabOfParameters->MeasurementTab, &MeasurementsParametersWidget::AngleParametersChanged,     Process, &ProcessImitation::SetAngleRanges);
-
     connect(TabOfParameters->MeasurementTab, &MeasurementsParametersWidget::FrequencyParametersChanged, Process, &ProcessImitation::SetFrequencyRange);
 
-    //connect(TabOfTools->FourierTransformButton,        &QPushButton::clicked, ChartTab, &TabWidgetForCharts::PerformFourierTransformOfCurrentPlot);
-    //connect(TabOfTools->InverseFourierTransformButton, &QPushButton::clicked, ChartTab, &TabWidgetForCharts::PerformInverseFourierTransformOfCurrentPlot);
-
-    //connect(TabOfParameters->ResultTab->SetCurrentAngleButton, &QPushButton::clicked, ChartTab, &TabWidgetForCharts::ChangeDemonstratedAngles);
-
-    connect(TabOfParameters->ResultTab->SetCurrentAngleButton, &QPushButton::clicked, this, &MainWindow::ChangeAngleOfDemonstration);
+    connect(TabOfParameters->ResultTab->SetCurrentAngleButton,      &QPushButton::clicked, this, &MainWindow::ChangeAngleOfDemonstration);
+    connect(TabOfParameters->ResultTab->BackgroundAddButton,        &QPushButton::clicked, this, &MainWindow::SetBackground);
+    connect(TabOfParameters->ResultTab->BackgroundSubstractButton,  &QPushButton::clicked, this, &MainWindow::SubstractBackground);
+    connect(TabOfParameters->ResultTab->CalibrationSetButton,       &QPushButton::clicked, this, &MainWindow::SetCalibration);
 
 
-    connect(TabOfParameters->ResultTab->BackgroundAddButton, &QPushButton::clicked, this, &MainWindow::SetBackground);
-    connect(TabOfParameters->ResultTab->BackgroundSubstractButton, &QPushButton::clicked, this, &MainWindow::SubstractBackground);
+    connect(Thread, &QThread::finished, Thread, &QThread::deleteLater); // Можно убрать
 
+    connect(Process, &ProcessImitation::IterationOfMeasurementFinished, this, &MainWindow::HandleReceivedMeasuredFreqVector);
 
-    connect(TabOfParameters->ResultTab->CalibrationSetButton, &QPushButton::clicked, this, &MainWindow::SetCalibration);
-
-    //connect(TabOfParameters->ResultTab->CalculateDistancePortraitButton, &QPushButton::clicked, this, &MainWindow::CalculateDistancePortrait);
-
-    connect(Thread, &QThread::finished, Thread, &QThread::deleteLater);
-
-    //connect(Process, &ProcessImitation::ProgressSignal, this->ProgressBar, &QProgressBar::setValue);
-
-    connect(Process, &ProcessImitation::IterationOfMeasurementFinished,this, &MainWindow::HandleReceivedMeasuredFreqVector);
-
-    //connect(TabOfParameters->FileTreeTab, &TreeWidgetForFiles::FileWasChosenSignal, TabOfParameters->ResultTab, &ResultParametersWidget::FileChosenInTreeWidget);
-
-    //connect(TabOfTools->GetPlotDataButton, &QPushButton::clicked, this, &MainWindow::GetPlotFromDat);
 
 
 
     //Menu Actions: (Действия в меню сверху)
-    connect(SaveFileAction, &QAction::triggered, this->ChartTab->PlotTabs[0]->customPlot, &PlotClass::SaveAs); // Перенести функцию в другое место
-    connect(OpenFileAction, &QAction::triggered, this->ChartTab->PlotTabs[0]->customPlot, &PlotClass::OpenFile);
-    connect(StartMeasureAction, &QAction::triggered, Process , &ProcessImitation::Measure);
-    connect(StopMeasureAction, &QAction::triggered, Process , &ProcessImitation::StopEverything);
-
+    connect(SaveFileAction,     &QAction::triggered, ChartTab->PlotTabs[0]->customPlot, &PlotClass::SaveAs);
+    connect(OpenFileAction,     &QAction::triggered, ChartTab->PlotTabs[0]->customPlot, &PlotClass::OpenFile);
+    connect(StartMeasureAction, &QAction::triggered, Process ,                          &ProcessImitation::Measure);
+    connect(StopMeasureAction,  &QAction::triggered, Process ,                          &ProcessImitation::StopEverything);
+    // Перенести функцию сохранения в другое место
+    // Как осуществлять отдельно сохранение графика от угла?
 
 
 
@@ -535,43 +521,45 @@ void MainWindow::HandleReceivedMeasuredFreqVector(QVector <double> ReceivedVecto
         double FStop = TabOfParameters->MeasurementTab->FrequencyStop;
         double FNum = TabOfParameters->MeasurementTab->FrequencyNumber;
 
-        double RStart = TabOfParameters->MeasurementTab->AzimuthStart;
-        double RStop = TabOfParameters->MeasurementTab->AzimuthStop;
-        double RNum = TabOfParameters->MeasurementTab->AzimuthNumber;
+        double AStart = TabOfParameters->MeasurementTab->AzimuthStart;
+        double AStop = TabOfParameters->MeasurementTab->AzimuthStop;
+        double ANum = TabOfParameters->MeasurementTab->AzimuthNumber;
 
-        double TStart = TabOfParameters->MeasurementTab->ElevationStart;
-        double TStop = TabOfParameters->MeasurementTab->ElevationStop;
-        double TNum = TabOfParameters->MeasurementTab->ElevationNumber;
-
-
-        StoredFunction.SetRanges(FStart,FStop,FNum,   RStart,RStop,RNum,   TStart,TStop,TNum);
+        double EStart = TabOfParameters->MeasurementTab->ElevationStart;
+        double EStop = TabOfParameters->MeasurementTab->ElevationStop;
+        double ENum = TabOfParameters->MeasurementTab->ElevationNumber;
 
 
+        StoredFunction.SetRanges(FStart,FStop, FNum,   AStart, AStop, ANum,   EStart, EStop, ENum);
 
-        //PltPtr->XVector = StoredFunction.FreqVector();
         CurrentPlotIndex=0;
     }
 
-
-
-
-
-
-    StoredFunction.AddMeasuredValues(ReceivedVector);
+    //StoredFunction.AddMeasuredValues(ReceivedVector);
 
 
     int I = StoredFunction.CurrentIndex/2;
-    int A = StoredFunction.ANum;
-    int F = StoredFunction.FNum;
-    int e = I / (A*F);
+    int A = StoredFunction.OPUParameters.AzTrigPoints;
+    int F = StoredFunction.VNAParameters.NumOfPoi;
+    int e =  I / (A*F);
     int a = (I % (A*F)) / F;
-
-
+    int f = (I % (A*F)) % F;
     //QVector<double> YVector = StoredFunction.AmplitudeVectorAtAngles(r,t);
 
 
+    PlotClass * PltPtrAz = ChartTab->PlotTabs[1]->customPlot;
 
-    PltPtr->graph(0)->setData(StoredFunction.FreqVector(),StoredFunction.AmplitudeVectorAtAngles(a,e));
+    //PltPtr  ->graph(0)->setData(StoredFunction.FreqVector()   , StoredFunction.AmplitudeVectorAtAngles(a,e));
+
+    //PltPtrAz->graph(0)->setData(StoredFunction.AzimuthVector(), StoredFunction.AmplitudeVectorAtFrequencyElevation(f,e));
+
+    qDebug()<<"Was Here!"<<PltPtrAz->graph(0)->data() ->dataRange();
+
+
+
+
+
+
 
     /*
     if (r==StoredFunction.RNum-1 and t==StoredFunction.TNum-1) // Через CurrentIndex

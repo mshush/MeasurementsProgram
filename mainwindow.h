@@ -91,8 +91,8 @@ public:
     //QProgressBar * ProgressBar;
 
 
-    int r=0;
-    int t=0;
+    int azim=0;
+    int elev=0;
 
 
     int CurrentPlotIndex=0;
