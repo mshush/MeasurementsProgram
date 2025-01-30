@@ -24,6 +24,12 @@ public:
     WidgetForCustomPlot * MeasurementPlotTabFrequency;
     WidgetForCustomPlot * TimeOfFlightPlotTab;
     WidgetForCustomPlot * MeasurementPlotTabAngle;
+    WidgetForCustomPlot * CrossRangeTab;
+    WidgetForCustomPlot * ColorMapTab;
+    WidgetForCustomPlot * StatisticaTab;
+    WidgetForCustomPlot * FrequencyTab;
+    WidgetForCustomPlot * ScriptEditorTab;
+    WidgetForCustomPlot * PrintPreviewTab;
 
 
 public slots:

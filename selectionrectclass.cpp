@@ -2,7 +2,6 @@
 
 SelectionRectClass::SelectionRectClass(QCustomPlot *parent): QCPSelectionRect(parent)
 {
-
 }
 
 
@@ -16,8 +15,6 @@ void SelectionRectClass::draw(QCPPainter *painter)
             painter->setBrush(QBrush(QColor(0,0,255,50)));
             painter->drawRect(mRect);
         }
-
-
 
         if (XAxisLocked)
         {
@@ -38,10 +35,7 @@ void SelectionRectClass::draw(QCPPainter *painter)
             TempRect.setBottom(qobject_cast<QCustomPlot*>(this->parent())->axisRect()->bottom());
             painter->drawRect(TempRect);
         }
-
     }
 
     //QCPSelectionRect::draw(painter);
 }
-
-

@@ -65,9 +65,9 @@ void ProcessImitation::Measure()
             }
         }
     }
-
     emit ProgressSignal(100);
-    emit MeasurementFinished(F);
+    emit MeasurementFinished(F); // (Не передаёт фон и калибровку, хотя массивы под фон и калибровку в F имеются -- они пока не заполнены)
+
 }
 
 
@@ -224,7 +224,8 @@ ProcessImitation::~ProcessImitation()
 
 
 
-/* // Старая функция измерений
+/*
+    // Старая функция измерений
     f = QVector <std::complex<double>> (NumberOfPoints);
 
     f[0] = std::complex<double>(0,0);

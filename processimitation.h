@@ -52,6 +52,7 @@ signals:
 
 public slots:
     void Measure();
+
     void MeasureContinuously(bool CheckedStatus);
 
     void SetFrequencyRange (double FreqStart, double FreqStop, double FreqNumber);

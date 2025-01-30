@@ -3,6 +3,7 @@
 TabWidgetForCharts::TabWidgetForCharts()
 
 {
+
     //ChartTabBar = new QTabBar(this);
     //AddMeasuredTabs();
 
@@ -10,26 +11,69 @@ TabWidgetForCharts::TabWidgetForCharts()
     // Менять ли окно параметров при переключении или сделать для каждого своё рядом
     // Не менять окно параметров -- добавить белую вертикальную полосу, символизирующую отображающийся на другом графике угол или частоту
     //
+    //this->setFixedHeight(600);
     MeasurementPlotTabFrequency = new WidgetForCustomPlot(this);
-    addTab(MeasurementPlotTabFrequency,"Зависимость от частоты");
+    addTab(MeasurementPlotTabFrequency,"Preview");
     PlotTabs.push_back(MeasurementPlotTabFrequency);
 
+/*
     MeasurementPlotTabAngle = new WidgetForCustomPlot(this);
-    addTab(MeasurementPlotTabAngle,"Зависимость от угла");
+    MeasurementPlotTabAngle->customPlot->xAxis->setLabel("Угол поворота, градусы");
+    MeasurementPlotTabAngle->XRangeUnitsLabel->setText("град");
+    addTab(MeasurementPlotTabAngle,"Pattern");
     PlotTabs.push_back(MeasurementPlotTabAngle);
 
 
     TimeOfFlightPlotTab = new WidgetForCustomPlot(this);
-    addTab(TimeOfFlightPlotTab,"Дальностный портрет");
+    TimeOfFlightPlotTab->customPlot->xAxis->setLabel("Расстояние, м");
+    TimeOfFlightPlotTab->XRangeUnitsLabel->setText("м");
+    addTab(TimeOfFlightPlotTab,"Cross-range");
     PlotTabs.push_back(TimeOfFlightPlotTab);
 
-    // Добавить окно с предпросмотром сохраняемого изображения.
 
+
+    CrossRangeTab = new WidgetForCustomPlot(this);
+    addTab(CrossRangeTab,"Cross-range");
+    PlotTabs.push_back(CrossRangeTab);
+
+
+    ColorMapTab = new WidgetForCustomPlot(this);
+    addTab(ColorMapTab,"Color map");
+    PlotTabs.push_back(ColorMapTab);
+
+
+    StatisticaTab = new WidgetForCustomPlot(this);
+    addTab(StatisticaTab,"Statistica");
+    PlotTabs.push_back(StatisticaTab);
+
+
+    FrequencyTab = new WidgetForCustomPlot(this);
+    addTab(FrequencyTab,"Frequency");
+    PlotTabs.push_back(FrequencyTab);
+
+
+    ScriptEditorTab = new WidgetForCustomPlot(this);
+    addTab(ScriptEditorTab,"Script Editor");
+    PlotTabs.push_back(ScriptEditorTab);
+
+
+    PrintPreviewTab = new WidgetForCustomPlot(this);
+    addTab(PrintPreviewTab,"Print Preview");
+    PlotTabs.push_back(PrintPreviewTab);
+
+
+    */
+
+
+
+    //this->setSizePolicy(QSizePolicy::MinimumExpanding,QSizePolicy::MinimumExpanding);
+    // Добавить окно с предпросмотром сохраняемого изображения.
+    //qDebug()<<"PlotWindowSize = " << this->size();
 
     //setTabsClosable(true); Можно было так.
     //this->setTabsMovable(true);
 
-    this->setTabToolTip(0, "Вкладка по умолчанию, на которую влияют кнопки запуска и непрерывного измерения");
+    //this->setTabToolTip(0, "Вкладка по умолчанию, на которую влияют кнопки запуска и непрерывного измерения");
 
 
 }
@@ -209,11 +253,13 @@ void TabWidgetForCharts::InitiateCloseTabButton()
 
     QWidget * TempTabPtr = this->widget(this->count()-1);
 
-    connect(TempCloseButton, &QPushButton::clicked, this, [TempTabPtr,this]()
+    /*
+    ////connect(TempCloseButton, &QPushButton::clicked, this, [TempTabPtr,this]()
             {
                 removeTab(indexOf(TempTabPtr));
             }
             );
+    */
 }
 
 

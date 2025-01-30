@@ -15,6 +15,7 @@
 //#include <cmath>
 //#include <complex>
 #include <selectionrectclass.h>
+#include <QVector>
 
 class PlotClass : public QCustomPlot
 {
@@ -53,6 +54,17 @@ public:
 
     int CurrentMarkerIndex = 0;
 
+    QColor GenerateColor(int n) // Чтобы графики были разных цветов, но не слишком тёмными
+    {
+        int R = 0;//255;//100 + (n * 222) % 156;
+        int G = 255;//100 + (n * 553) % 156;
+        int B = 0;//255;//100 + (n * 819) % 156;
+
+        return QColor(R,G,B);
+    }
+
+    QVector <QCPGraph *> GraphVector;
+    void AddEmptyGraphToPlot();
 
 public slots:
     //void UpdateMeasuredData  (QVector <std::complex<double>> MeasuredData);

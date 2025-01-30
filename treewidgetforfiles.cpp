@@ -2,6 +2,7 @@
 
 TreeWidgetForFiles::TreeWidgetForFiles (QWidget *parent)  : QWidget(parent)
 {
+    /*
     FileTree = new QTreeView(this);
 
 
@@ -15,16 +16,17 @@ TreeWidgetForFiles::TreeWidgetForFiles (QWidget *parent)  : QWidget(parent)
     MoveRootToParentFolderButton = new QPushButton("↑", this);
     RootPathEdit = new QLineEdit(QDir::rootPath(),this);
     ChooseRootButton = new QPushButton("Открыть", this);
-    SaveButton = new QPushButton("Сохранить", this);
-    SaveCopyButton = new QPushButton("Сохранить копию", this);
+    //SaveButton = new QPushButton("Сохранить", this);
+    //SaveCopyButton = new QPushButton("Сохранить копию", this);
 
 
-    connect(MoveRootToParentFolderButton, &QPushButton::clicked, this, &TreeWidgetForFiles::MoveRootToParentFolder);
-    connect(ChooseRootButton, &QPushButton::clicked, this, &TreeWidgetForFiles::ChooseRootDirectory);
-    connect(SaveButton, &QPushButton::clicked, this, &TreeWidgetForFiles::SaveFile);
-    connect(SaveCopyButton, &QPushButton::clicked, this, &TreeWidgetForFiles::SaveCopy);
-    connect(RootPathEdit,&QLineEdit::returnPressed,this, &TreeWidgetForFiles::ChangeRootDirectoryManually);
-    //connect(RootPathEdit,&QLineEdit::editingFinished,this, &TreeWidgetForFiles::ChangeRootEditBack);
+    ////connect(MoveRootToParentFolderButton, &QPushButton::clicked, this, &TreeWidgetForFiles::MoveRootToParentFolder);
+    ////connect(ChooseRootButton, &QPushButton::clicked, this, &TreeWidgetForFiles::ChooseRootDirectory);
+    //////connect(SaveButton, &QPushButton::clicked, this, &TreeWidgetForFiles::SaveFile);
+    ////connect(SaveCopyButton, &QPushButton::clicked, this, &TreeWidgetForFiles::SaveCopy);
+    //connect(RootPathEdit,&QLineEdit::returnPressed,this, &TreeWidgetForFiles::ChangeRootDirectoryManually);
+    ////connect(RootPathEdit,&QLineEdit::editingFinished,this, &TreeWidgetForFiles::ChangeRootEditBack);
+
 
 
     QVBoxLayout * VerticalFileManagerLayout = new QVBoxLayout(this);
@@ -35,14 +37,14 @@ TreeWidgetForFiles::TreeWidgetForFiles (QWidget *parent)  : QWidget(parent)
     ButtonLayout->addWidget(MoveRootToParentFolderButton);
     ButtonLayout->addWidget(RootPathEdit);
     ButtonLayout->addWidget(ChooseRootButton);
-    ButtonLayout->addWidget(SaveButton);
-    ButtonLayout->addWidget(SaveCopyButton);
+    //ButtonLayout->addWidget(SaveButton);
+    //ButtonLayout->addWidget(SaveCopyButton);
     VerticalFileManagerLayout->addLayout(ButtonLayout);
     VerticalFileManagerLayout->addWidget(FileTree);
 
 
-    connect(FileTree, &QTreeView::doubleClicked, this, &TreeWidgetForFiles::OpenOnClick);
-
+    //connect(FileTree, &QTreeView::doubleClicked, this, &TreeWidgetForFiles::OpenOnClick);
+    */
 }
 
 
@@ -54,13 +56,30 @@ void TreeWidgetForFiles::ChooseRootDirectory()
     {
         FileTree->setRootIndex(model->index(dir));
     }
+    this->RootPathEdit->setText(dir);
 }
 
 
 
 void TreeWidgetForFiles::SaveFile()
 {
-    //Что сохраняется? Что меняется до сохранения? Растяжение и сдвиг по углам?
+    /*
+    QString filePath = QFileDialog::getSaveFileName(this, "Save File", "", "Data files (*.dat)");
+    if (!filePath.isEmpty())
+    {
+        QFile file(filePath);
+        if (file.open(QIODevice::WriteOnly))
+        {
+            // Внести в открытый файл какие-то нужные изменения и сохранить
+            file.close();
+            QMessageBox::information(this, "Сохранено!", "Файл успешно сохранён");
+        }
+        else
+        {
+            QMessageBox::warning(this, "Ошибка!", "Не удалось сохранить файл");
+        }
+    }
+    */
 }
 
 void TreeWidgetForFiles::SaveCopy()
@@ -76,18 +95,20 @@ void TreeWidgetForFiles::OpenOnClick(const QModelIndex &index)
         return;
     }
 
-
     QString filePath = model->filePath(index);
     QFileInfo fileInfo(filePath);
 
     if (fileInfo.isDir())
     {
         FileTree->setRootIndex(model->index(filePath));
+        this->RootPathEdit->setText(filePath);
     }
     else if (fileInfo.isFile())
     {
         QDesktopServices::openUrl(QUrl::fromLocalFile(filePath));
     }
+
+
 }
 
 
@@ -109,6 +130,13 @@ void TreeWidgetForFiles::MoveRootToParentFolder()
 
     RootPathEdit->setText(ParentDirectoryPath);
 
+    /*  Не нужно
+    if (ParentDirectoryPath != "???????")
+    {
+        QMessageBox::warning(this, "Недопустимая операция", "Нет более старших папок");
+        return;
+    }
+    */
 }
 
 void TreeWidgetForFiles::ChangeRootDirectoryManually()
@@ -275,9 +303,9 @@ void TreeWidgetForFiles::ShowContextMenu(QTreeWidgetItem *item, int column)
     QAction * ChooseCalibration = ContextMenu.addAction(CreateColorIcon(Qt::blue )  , "Калибровка");
     QAction * TurnIntoRoot      = ContextMenu.addAction("Сделать корневой");
 
-    connect(ChooseResponce      , &QAction::triggered, this, [this, item]() { SetResponce     (item); });
-    connect(ChooseBackground    , &QAction::triggered, this, [this, item]() { SetBackground   (item); });
-    connect(ChooseCalibration   , &QAction::triggered, this, [this, item]() { SetCalibration  (item); });
+    //connect(ChooseResponce      , &QAction::triggered, this, [this, item]() { SetResponce     (item); });
+    //connect(ChooseBackground    , &QAction::triggered, this, [this, item]() { SetBackground   (item); });
+    ////connect(ChooseCalibration   , &QAction::triggered, this, [this, item]() { SetCalibration  (item); });
 
 
     ContextMenu.exec(QCursor::pos());

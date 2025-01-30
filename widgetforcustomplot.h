@@ -43,6 +43,7 @@ public:
     QPushButton * RubberBandButton;
     QPushButton * LockXAxisButton;
     QPushButton * LockYAxisButton;
+
     //GroupBox для установки диапазона вручную
     void InitiateSetRangeGroupBox();
     QGroupBox * SetRangeGroupBox;
@@ -113,6 +114,8 @@ public slots:
 
     void SetRange();
 
+    void DeleteMarkerSlot();
+    void AddMarkerSlot();
     void AddMarkerToTable(QCPItemTracer * MarkerPtr);
 
     void OpenMarkerColourDialogue();

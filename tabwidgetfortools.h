@@ -23,6 +23,7 @@ public:
     QWidget * PatternTab;
     QWidget * MessagesTab;
     QWidget * LegendTab;
+    QWidget * ScriptTab;
     TreeWidgetForFiles * File_ManagerTab;
     QTableWidget * Debug_MessagesTab;
 
@@ -39,7 +40,6 @@ public:
 
     QPushButton * SaveThreeDimensionalVectorButton;
     QPushButton * GetPlotDataButton;
-
 
 
 

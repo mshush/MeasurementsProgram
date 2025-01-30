@@ -5,12 +5,12 @@ TabWidgetForParameters::TabWidgetForParameters(QWidget *parent) : QTabWidget(par
     //this->setMaximumWidth(300);
     //this->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Expanding);
     this->setFixedWidth(300);
-    MeasurementTab = new MeasurementsParametersWidget();
-    ResultTab = new ResultParametersWidget();
+    MeasurementTab = new CustomMeasurementTreeWidget();
+    ProcessingTab  = new CustomProcessingTreeWidget();
     //FileTreeTab = new TreeWidgetForFiles();
 
-    addTab(MeasurementTab, "Измерение");
-    addTab(ResultTab, "Результат");
+    addTab(MeasurementTab, "Setup");
+    addTab(ProcessingTab, "Processing");
     //addTab(FileTreeTab, "Навигация");
 }
 

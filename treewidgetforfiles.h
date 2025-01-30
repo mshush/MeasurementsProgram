@@ -22,7 +22,7 @@ public:
     QPushButton * MoveRootToParentFolderButton;
     QLineEdit * RootPathEdit;
     QPushButton * ChooseRootButton;
-    QPushButton * SaveButton;
+    //QPushButton * SaveButton;
     QPushButton * SaveCopyButton;
 
 

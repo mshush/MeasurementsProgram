@@ -1,4 +1,5 @@
 #include "measurementsparameterswidget.h"
+#include "qsplitter.h"
 
 
 MeasurementsParametersWidget::MeasurementsParametersWidget(QWidget *parent)
@@ -7,7 +8,7 @@ MeasurementsParametersWidget::MeasurementsParametersWidget(QWidget *parent)
 
     //this->setFixedWidth(300);
     //this->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Expanding);
-
+    this->setFixedSize(300,830);
     //resize(300,900);
 
     //qDebug()<<size();
@@ -20,20 +21,73 @@ MeasurementsParametersWidget::MeasurementsParametersWidget(QWidget *parent)
 
     VerticalLayoutOfParameters = new QVBoxLayout(this);
 
+    MeasParamTreeWidget = new CustomMeasurementTreeWidget(this);
+    VerticalLayoutOfParameters->addWidget(MeasParamTreeWidget);
+
+    //QSplitter * TemporaryVerticalSplitter = new QSplitter(Qt::Vertical, this);
+    //VerticalLayoutOfParameters->addWidget(TemporaryVerticalSplitter);
+/*
     InitializeFrequencyGroupBox();
     VerticalLayoutOfParameters->addWidget(FrequencyGroupBox);
 
     InitializeAngleGroupBox();
     VerticalLayoutOfParameters->addWidget(AngleGroupBox);
 
-    //InitializeCalibrationGroupBox(); // Перенесено в обработку???
-    //VerticalLayoutOfParameters->addWidget(CalibrationSampleGroupBox);
+    InitiateCalibrationGroupBox(); // Вернул из обработки -- нужно здесь
+    VerticalLayoutOfParameters->addWidget(CalibrationGroupBox);
+*/
+
+
+
 
     setLayout(VerticalLayoutOfParameters);
 
 
 }
 
+
+
+
+void MeasurementsParametersWidget::InitiateCalibrationGroupBox()
+{
+    CalibrationGroupBox = new QGroupBox("Калибровка", this);
+
+    QVBoxLayout * CalibrationGroupBoxLayout = new QVBoxLayout(CalibrationGroupBox);
+    QHBoxLayout * CalibrationButtonsLayout = new QHBoxLayout;
+
+    //QLabel * CalibrationLabel = new QLabel("Калибровка", BackgroundAndCalibrationGroupBox);
+
+    CalibrationLineEdit = new QLineEdit(CalibrationGroupBox);
+    CalibrationFindButton = new QPushButton("Найти", CalibrationGroupBox);
+    //////////////connect(CalibrationFindButton, &QPushButton::clicked, this, &MeasurementsParametersWidget::FindCalibration);
+    CalibrationSetButton  = new QPushButton("Откалибровать", CalibrationGroupBox);
+    //////////////connect(CalibrationSetButton, &QPushButton::clicked, this, &ResultParametersWidget::SetCalibration);
+
+    CalibrationGroupBox->setLayout(CalibrationGroupBoxLayout);
+
+    CalibrationGroupBoxLayout->addWidget(CalibrationLineEdit);
+
+    CalibrationButtonsLayout -> addWidget(CalibrationFindButton);
+    CalibrationButtonsLayout -> addWidget(CalibrationSetButton);
+
+    CalibrationGroupBoxLayout->addLayout(CalibrationButtonsLayout);
+
+
+    CalibrationSampleTypeLayout = new QHBoxLayout();
+    CalibrationSampleTypeLayout->addWidget(new QLabel("Вид образца"));
+    CalibrationSampleComboBox = new QComboBox(this);
+    CalibrationSampleComboBox->addItem("Цилиндр");
+    CalibrationSampleComboBox->addItem("Сфера");
+
+    CalibrationSampleTypeLayout->addWidget(CalibrationSampleComboBox);
+    CalibrationGroupBoxLayout->addLayout(CalibrationSampleTypeLayout);
+
+    CalibrationSampleParametersLayout = new QHBoxLayout();
+    CalibrationSampleParametersLayout->addWidget(new QLabel("Параметры",this));
+    CalibrationSampleParametersLayout->addWidget(new QLineEdit("Введите параметр",this));
+
+    CalibrationGroupBoxLayout->addLayout(CalibrationSampleParametersLayout);
+}
 
 
 
@@ -94,7 +148,6 @@ void MeasurementsParametersWidget::OnSetAngleParametersButtonClicked()
     ElevationStop       = ElevationStopEdit->text().toDouble();
     ElevationNumber     = ElevationNumberOfPointsEdit->text().toDouble();
 
-
     emit AngleParametersChanged(AzimuthStart, AzimuthStop, AzimuthNumber, ElevationStart, ElevationStop, ElevationNumber);
 }
 
@@ -108,6 +161,7 @@ void MeasurementsParametersWidget::OnSetAngleParametersButtonClicked()
 void MeasurementsParametersWidget::InitializeFrequencyGroupBox()
 {
     FrequencyGroupBox = new QGroupBox("Диапазон частот измерения",this);
+    FrequencyGroupBox->setCheckable(true);
     //FrequencyGroupBox->setFixedSize(280,250);
     FrequencyGroupBox->setSizePolicy(QSizePolicy::Fixed,QSizePolicy::Fixed);
     FrequencyGroupBoxLayout = new QVBoxLayout(FrequencyGroupBox);
@@ -215,17 +269,17 @@ void MeasurementsParametersWidget::InitializeFrequencyGroupBox()
     ButtonGroupLayout->addWidget(K2RangeButton);
     ButtonGroupLayout->setSpacing(0);
 
-    connect(FrequencyRangesButtonGroup, &QButtonGroup::idPressed, this, &MeasurementsParametersWidget::FrequencyRangeButtonPressed);
-    connect(FrequencyRangesButtonGroup, &QButtonGroup::idClicked, this, &MeasurementsParametersWidget::FrequencyRangeButtonClicked);
+    //////////////connect(FrequencyRangesButtonGroup, &QButtonGroup::idPressed, this, &MeasurementsParametersWidget::FrequencyRangeButtonPressed);
+    ////////////connect(FrequencyRangesButtonGroup, &QButtonGroup::idClicked, this, &MeasurementsParametersWidget::FrequencyRangeButtonClicked);
 
     FrequencyGroupBoxLayout->addLayout(ButtonGroupLayout);
 
 
 
     StartStopButton = new QRadioButton("Начало-Конец",FrequencyGroupBox);
-    connect(StartStopButton,&QRadioButton::clicked,this,&MeasurementsParametersWidget::StartStopButtonClicked);
+    ////////////connect(StartStopButton,&QRadioButton::clicked,this,&MeasurementsParametersWidget::StartStopButtonClicked);
     CenterSpanButton = new QRadioButton("Центр-Ширина",FrequencyGroupBox);
-    connect(CenterSpanButton,&QRadioButton::clicked,this,&MeasurementsParametersWidget::CenterSpanButtonClicked);
+    //////////////connect(CenterSpanButton,&QRadioButton::clicked,this,&MeasurementsParametersWidget::CenterSpanButtonClicked);
     FrequencyGroupBoxLayout->addWidget(StartStopButton);
     StartStopButton->setChecked(true);
     FrequencyGroupBoxLayout->addWidget(CenterSpanButton);
@@ -241,8 +295,8 @@ void MeasurementsParametersWidget::InitializeFrequencyGroupBox()
     FrequencyStopSpanEdit = new QLineEdit(QString::number(FrequencyStop),FrequencyGroupBox);
     FrequencyStopSpanEdit->setValidator(DoubleValidator);
 
-    connect(FrequencyStartCenterEdit, &QLineEdit::textEdited,this, &MeasurementsParametersWidget::RenewStartStopFrequencies);
-    connect(FrequencyStopSpanEdit,    &QLineEdit::textEdited,this, &MeasurementsParametersWidget::RenewStartStopFrequencies);
+    ////////////connect(FrequencyStartCenterEdit, &QLineEdit::textEdited,this, &MeasurementsParametersWidget::RenewStartStopFrequencies);
+    ////////////connect(FrequencyStopSpanEdit,    &QLineEdit::textEdited,this, &MeasurementsParametersWidget::RenewStartStopFrequencies);
 
 
     FrequencyStopSpanUnitsLabel = new QLabel("ГГц", FrequencyGroupBox);
@@ -267,7 +321,7 @@ void MeasurementsParametersWidget::InitializeFrequencyGroupBox()
     FrequencyNumberOfPointsLayout->addWidget(FrequencyNumberOfPointsEdit);
 
     SetFrequencyParametersButton = new QPushButton("Установить", FrequencyGroupBox);
-    connect(SetFrequencyParametersButton,&QPushButton::clicked,this,&MeasurementsParametersWidget::OnSetFrequencyParametersButtonClicked);
+    ////////////connect(SetFrequencyParametersButton,&QPushButton::clicked,this,&MeasurementsParametersWidget::OnSetFrequencyParametersButtonClicked);
 
 
     FrequencyGroupBoxLayout->addLayout(FrequencyRangeLayout);
@@ -388,7 +442,7 @@ void MeasurementsParametersWidget::InitializeAngleGroupBox()
     ElevationNumberOfPointsEdit->setMaximumWidth(50);
 
     SetAngleParametersButton = new QPushButton("Установить", AngleGroupBox);
-    connect(SetAngleParametersButton,&QPushButton::clicked,this, &MeasurementsParametersWidget::OnSetAngleParametersButtonClicked);
+    ////////////connect(SetAngleParametersButton,&QPushButton::clicked,this, &MeasurementsParametersWidget::OnSetAngleParametersButtonClicked);
 
     AngleGridLayout->addWidget(AzimuthStartLabel, 0,0); // Переименовать Labelы
     AngleGridLayout->addWidget(AzimuthStartEdit,  0,1);
@@ -411,6 +465,16 @@ void MeasurementsParametersWidget::InitializeAngleGroupBox()
     AngleGroupBoxLayout->addLayout(AngleGridLayout);
 
     AngleGroupBox->setLayout(AngleGroupBoxLayout);
+}
+
+double MeasurementsParametersWidget::getFrequencyStart() const
+{
+    return FrequencyStart;
+}
+
+void MeasurementsParametersWidget::setFrequencyStart(double newFrequencyStart)
+{
+    FrequencyStart = newFrequencyStart;
 }
 
 

@@ -25,6 +25,7 @@
 //#include <QLocale>
 #include <QThread>
 #include <QProgressBar>
+#include <measurement.h>
 
 
 QT_BEGIN_NAMESPACE
@@ -103,6 +104,10 @@ protected:
     //void CalculateDistancePortrait();
 */
 
+    void FillMenu();
+
+
+
 public slots:
     //void TellPlotTabsToChangeAngle(QVector <std::complex<double>> NeededRowFromThreeDimensionalVector); //
 
@@ -116,5 +121,6 @@ signals:
 private:
     Ui::MainWindow *ui;
 };
+
 #endif // MAINWINDOW_H
 

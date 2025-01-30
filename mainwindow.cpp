@@ -3,6 +3,7 @@
 
 
 #include <QScreen>
+#include <iostream>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -25,39 +26,16 @@ MainWindow::MainWindow(QWidget *parent)
     ui->setupUi(this);
 
 
-    QMenu * FileMenu = this->menuBar()->addMenu("File");
-    QMenu * MeasureMenu = this->menuBar()->addMenu("Measure");
-    QMenu * ProcessMenu = this->menuBar()->addMenu("Process");
+    FillMenu();
 
-
-    SaveFileAction = new QAction("Save as...", this);
-    OpenFileAction = new QAction("Load", this);
-
-
-    FileMenu->addAction(SaveFileAction);
-    FileMenu->addAction(OpenFileAction);
-
-    StartMeasureAction = new QAction("Start",       this);
-    StopMeasureAction  = new QAction("Stop" ,       this);
-    MeasureBackground  = new QAction("Background",  this);
-    MeasureCalibration = new QAction("Calibration", this);
-
-    MeasureMenu->addAction(StartMeasureAction);
-    MeasureMenu->addAction(StopMeasureAction);
-    MeasureMenu->addAction(MeasureBackground);
-    MeasureMenu->addAction(MeasureCalibration);
-
-
-    this->menuBar()->addMenu("Post-Process");
-    this->menuBar()->addMenu("Create Pylon Compensation");
 
 
     Process = new ProcessImitation();
 
     Thread = new QThread(this);
 
-    Process->moveToThread(Thread);
-    Thread->start();
+    //Process->moveToThread(Thread);
+    //Thread->start();
 
 
     //QVBoxLayout *OutermostVerticalLayout = new QVBoxLayout;
@@ -111,6 +89,7 @@ MainWindow::MainWindow(QWidget *parent)
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+
     QLayout * MainLayout = new QVBoxLayout(); // Задавать абстрактным лучше или хуже?
     QSplitter * OutermostHorizontalSplitter = new QSplitter(Qt::Horizontal, this);
     MainLayout->addWidget(OutermostHorizontalSplitter);
@@ -120,6 +99,9 @@ MainWindow::MainWindow(QWidget *parent)
 
     LeftVerticalSplitter->addWidget(ChartTab);
     LeftVerticalSplitter->addWidget(TabOfTools);
+
+    ChartTab    ->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Expanding);
+    TabOfTools  ->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Expanding);
 
     OutermostHorizontalSplitter->addWidget(TabOfParameters);
 
@@ -150,29 +132,37 @@ void MainWindow::SetThreeDimensionalVector(ThreeDimensionalVector F)
 {
 
     StoredFunction = F;
-    // Сделать double сдесь, а округление потом?
-    azim = StoredFunction.FindAzimuthIndex(TabOfParameters->ResultTab->SetCurrentAzimuthDoubleSpinBox->value());
-    elev = StoredFunction.FindElevationIndex    (TabOfParameters->ResultTab->SetCurrentElevationDoubleSpinBox    ->value());
+    // !!! ПЕРЕДЕЛАТЬ !!!
+    //azim = StoredFunction.FindAzimuthIndex   (TabOfParameters->ResultTab->SetCurrentAzimuthDoubleSpinBox    ->value());
+    //elev = StoredFunction.FindElevationIndex (TabOfParameters->ResultTab->SetCurrentElevationDoubleSpinBox  ->value());
 
-    //QVector <std::complex<double>> FreqVectorAtChosenAngle = F.GetFrequencyVectorAt(r,t);
+    //QVector <std::complex<double>> FreqVectorAtChosenAngle = F.GetFrequencyVectorAt(azim, elev);
     //this->ChartTab->UpdateMeasurementPlot(FreqVectorAtChosenAngle);
 
+    auto start0 = std::chrono::system_clock::now();
+
     PlotClass * PltPtr0 = this->ChartTab->PlotTabs[0]->customPlot;
-    //PltPtr0->graph(0)->setData(F.FreqVector(), F.AmplitudeVectorAtAngles(azim,elev));
+    PltPtr0->graph(0)->setData(F.FreqVector(), F.AmplitudeVectorAtAngles(azim,elev));
     PltPtr0->rescaleAxes();
     PltPtr0->replot();
 
+
     PlotClass * PltPtr1 = this->ChartTab->PlotTabs[1]->customPlot;
-    //PltPtr1->graph(0)->setData(F.AzimuthVector(), F.AmplitudeVectorAtFrequencyElevation(0,elev));
+    PltPtr1->graph(0)->setData(F.AzimuthVector(), F.AmplitudeVectorAtFrequencyElevation(0,elev));
     PltPtr1->rescaleAxes();
     PltPtr1->replot();
 
     // Сделать ли зависимость от угла наклона?
 
     PlotClass * PltPtr2 = this->ChartTab->PlotTabs[2]->customPlot;
-    //PltPtr2->graph(0)->setData(F.DistVector(), F.FourierAmplVectorAtAngles(azim,elev));
+    PltPtr2->graph(0)->setData(F.DistVector(), F.FourierAmplVectorAtAngles(azim,elev));
     PltPtr2->rescaleAxes();
     PltPtr2->replot();
+
+    auto end0 = std::chrono::system_clock::now();
+    auto elapsed0 =  std::chrono::duration_cast<std::chrono::milliseconds>(end0 - start0);
+    qDebug() << " Время отрисовки всех графиков " << elapsed0.count() << '\n';
+
 }
 
 
@@ -183,8 +173,9 @@ void MainWindow::ChangeAngleOfDemonstration()
 
     if (PltPtr->graph(0)->data()->size()>0)
     {
-        azim = StoredFunction.FindAzimuthIndex(TabOfParameters->ResultTab->SetCurrentAzimuthDoubleSpinBox->value());
-        elev = StoredFunction.FindElevationIndex(TabOfParameters->ResultTab->SetCurrentElevationDoubleSpinBox->value());
+        // !!! Переделать !!!
+        //azim = StoredFunction.FindAzimuthIndex(TabOfParameters->ResultTab->SetCurrentAzimuthDoubleSpinBox->value());
+        //elev = StoredFunction.FindElevationIndex(TabOfParameters->ResultTab->SetCurrentElevationDoubleSpinBox->value());
 
         PltPtr->graph(0)->setData(StoredFunction.FreqVector(), StoredFunction.AmplitudeVectorAtAngles(azim,elev));
 
@@ -196,7 +187,7 @@ void MainWindow::ChangeAngleOfDemonstration()
         {
             //PltPtr->graph(1)->setData(BackgroundFunction.FreqVector(), BackgroundFunction.AmplitudeVectorAtAngles(azim,elev));
 
-            PlotClass * PltPtr1 = this->ChartTab->PlotTabs[1]->customPlot;
+            //PlotClass * PltPtr1 = this->ChartTab->PlotTabs[1]->customPlot;
             //PltPtr1->graph(1)->setData(BackgroundFunction.DistVector(), BackgroundFunction.FourierAmplVectorAtAngles(azim,elev));
 
         }
@@ -214,6 +205,7 @@ void MainWindow::ChangeAngleOfDemonstration()
         emit ErrorOccured("mainwindow : Измеренных данных не обнаружено.");
         //ShowErrorMessage("Измеренных данных не обнаружено!", "Убедитесь, что измерение прошло успешно");
     }
+
 }
 
 
@@ -249,6 +241,8 @@ void MainWindow::SaveThreeDimensionalVector()
 
  void MainWindow::SetBackground()
  {
+    // !!! Переделать !!!
+    /*
     QFile File(TabOfParameters->ResultTab->BackgroundLineEdit->text());
     if (!File.open(QIODevice::ReadOnly))
     {
@@ -265,8 +259,9 @@ void MainWindow::SaveThreeDimensionalVector()
 
     QVector <double> x = BackgroundFunction.FreqVector();
 
-    azim = BackgroundFunction.FindAzimuthIndex(TabOfParameters->ResultTab->SetCurrentAzimuthDoubleSpinBox->value());
-    elev = BackgroundFunction.FindElevationIndex    (TabOfParameters->ResultTab->SetCurrentElevationDoubleSpinBox    ->value());
+    // !!! Переделать !!!
+    //azim = BackgroundFunction.FindAzimuthIndex(TabOfParameters->ResultTab->SetCurrentAzimuthDoubleSpinBox->value());
+    //elev = BackgroundFunction.FindElevationIndex    (TabOfParameters->ResultTab->SetCurrentElevationDoubleSpinBox    ->value());
 
     QVector <std::complex<double>> f = BackgroundFunction.GetFrequencyVectorAt(azim,elev);
 
@@ -279,18 +274,20 @@ void MainWindow::SaveThreeDimensionalVector()
 
     if (ChartTab->PlotTabs[0]->customPlot->graphCount()==1)
     {
-        ChartTab->PlotTabs[0]->customPlot->addGraph();
+        ChartTab->PlotTabs[0]->customPlot->AddEmptyGraphToPlot();
     }
 
     ChartTab->PlotTabs[0]->customPlot->graph(1)->setData(x,y);
 
     ChartTab->PlotTabs[0]->customPlot->replot();
+    */
  }
 
 
 void MainWindow::SubstractBackground()
 {
-
+    // !!! Переделать !!!
+    /*
     if (BackgroundFunction.ObjectMeasurementResult.size()==0)
     {
         QFile File(TabOfParameters->ResultTab->BackgroundLineEdit->text());
@@ -331,6 +328,7 @@ void MainWindow::SubstractBackground()
         //ShowErrorMessage("Нет данных!", "Убедитесь, что измеренные данные были получены");
         return;
     }
+    */
 }
 
 
@@ -346,7 +344,7 @@ MainWindow::~MainWindow()
 }
 
 
-
+/*
 void MainWindow::SetCalibration()
 {
 
@@ -387,7 +385,7 @@ void MainWindow::SetCalibration()
     PltPtr->replot();
 
 
-    /*
+    """
     QFile File(TabOfParameters->ResultTab->BackgroundLineEdit->text());
     if (!File.open(QIODevice::ReadOnly)) {
         qWarning() << "Не получилось открыть файл для чтения: " << File.errorString();
@@ -423,9 +421,9 @@ void MainWindow::SetCalibration()
     ChartTab->PlotTabs[0]->customPlot->graph(1)->setData(x,y);
 
     ChartTab->PlotTabs[0]->customPlot->replot();
-    */
+    """
 }
-
+*/
 
 
 
@@ -444,6 +442,7 @@ void MainWindow::ShowErrorMessage(QString Description, QString Advice)
 
 void MainWindow::ConnectObjects()
 {
+    /*
     //connect(TabOfTools->StartMeasurementsButton, &QPushButton::clicked, Process, &ProcessImitation::Measure);
     //connect(TabOfTools->ContinuousMeasurementsButton, &QPushButton::clicked, ChartTab, &TabWidgetForCharts::ContinuousMeasurementModeChanged);
     //connect(TabOfTools->SaveDataButton  , &QPushButton::clicked, ChartTab, &TabWidgetForCharts::SaveData); // Получше придумать как соединять, чтобы по вкладкам (возможно лучше в QidgetForCustomPlot перенести)
@@ -467,15 +466,16 @@ void MainWindow::ConnectObjects()
     connect(TabOfTools, &TabWidgetForTools::ContinuousMeasurementsButtonClickedSignal, ChartTab->PlotTabs[0]->customPlot, &PlotClass::ContinuousMeasurementsModeChanged);
     // Такой же connect для PlotTabs[1]???? Или наоборот только для углов?
 
+    //!!!ПЕРЕДЕЛАТЬ!!!
+    //connect(TabOfParameters->MeasurementTab, &MeasurementsParametersWidget::FrequencyParametersChanged, Process, &ProcessImitation::SetFrequencyRange);
+    //connect(TabOfParameters->MeasurementTab, &MeasurementsParametersWidget::AngleParametersChanged,     Process, &ProcessImitation::SetAngleRanges);
+    //connect(TabOfParameters->MeasurementTab, &MeasurementsParametersWidget::FrequencyParametersChanged, Process, &ProcessImitation::SetFrequencyRange);
 
-    connect(TabOfParameters->MeasurementTab, &MeasurementsParametersWidget::FrequencyParametersChanged, Process, &ProcessImitation::SetFrequencyRange);
-    connect(TabOfParameters->MeasurementTab, &MeasurementsParametersWidget::AngleParametersChanged,     Process, &ProcessImitation::SetAngleRanges);
-    connect(TabOfParameters->MeasurementTab, &MeasurementsParametersWidget::FrequencyParametersChanged, Process, &ProcessImitation::SetFrequencyRange);
-
-    connect(TabOfParameters->ResultTab->SetCurrentAngleButton,      &QPushButton::clicked, this, &MainWindow::ChangeAngleOfDemonstration);
-    connect(TabOfParameters->ResultTab->BackgroundAddButton,        &QPushButton::clicked, this, &MainWindow::SetBackground);
-    connect(TabOfParameters->ResultTab->BackgroundSubstractButton,  &QPushButton::clicked, this, &MainWindow::SubstractBackground);
-    connect(TabOfParameters->ResultTab->CalibrationSetButton,       &QPushButton::clicked, this, &MainWindow::SetCalibration);
+    // !!! Переделать !!!
+    //connect(TabOfParameters->ResultTab->SetCurrentAngleButton,      &QPushButton::clicked, this, &MainWindow::ChangeAngleOfDemonstration);
+    //connect(TabOfParameters->ResultTab->BackgroundAddButton,        &QPushButton::clicked, this, &MainWindow::SetBackground);
+    //connect(TabOfParameters->ResultTab->BackgroundSubstractButton,  &QPushButton::clicked, this, &MainWindow::SubstractBackground);
+    //connect(TabOfParameters->ResultTab->CalibrationSetButton,       &QPushButton::clicked, this, &MainWindow::SetCalibration);
 
 
     connect(Thread, &QThread::finished, Thread, &QThread::deleteLater); // Можно убрать
@@ -493,7 +493,7 @@ void MainWindow::ConnectObjects()
     // Перенести функцию сохранения в другое место
     // Как осуществлять отдельно сохранение графика от угла?
 
-
+    */
 
     //Ошибки
     /*
@@ -594,3 +594,134 @@ void MainWindow::showEvent(QShowEvent *event)
     this->setWindowState(Qt::WindowMaximized);
 }
 */
+
+
+
+void MainWindow::FillMenu()
+{
+
+    //File
+    QMenu * MenuFile = this->menuBar()->addMenu("File");
+
+    QMenu * MenuFileWrite = new QMenu("Write", this);
+    MenuFileWrite->addAction("Sketch");
+    MenuFileWrite->addSeparator();
+    MenuFileWrite->addAction("Bkgnd Calibration");
+    MenuFileWrite->addAction("Response Calibration");
+    MenuFileWrite->addSeparator();
+    MenuFile->addMenu(MenuFileWrite);
+    QMenu * MenuFileRead = new QMenu("Read", this);
+    MenuFileRead->addAction("Sketch");
+    MenuFileRead->addSeparator();
+    MenuFileRead->addAction("Bkgnd Calibration");
+    MenuFileRead->addAction("Response Calibration");
+    MenuFileRead->addSeparator();
+    MenuFile->addMenu(MenuFileRead);
+    MenuFile->addSeparator();
+    MenuFile->addAction("Change Database Folder");
+    MenuFile->addAction("Print...");
+    MenuFile->addSeparator();
+    MenuFile->addAction("Exit");
+    //Удалить --------------------
+    /*
+    SaveFileAction = new QAction("Save as...", this);
+    OpenFileAction = new QAction("Load", this);
+    MenuFile->addAction(SaveFileAction);
+    MenuFile->addAction(OpenFileAction);
+    */
+    //Удалить --------------------
+
+
+
+
+
+
+
+
+
+    QMenu * MenuMeasure = this->menuBar()->addMenu("Measure");
+    MenuMeasure->addAction("Measure");
+    MenuMeasure->addAction("Measure Current Aspect");
+    MenuMeasure->addSeparator();
+    MenuMeasure->addAction("Single Angle Bkgnd Calibration");
+    MenuMeasure->addAction("Response Calibration");
+    MenuMeasure->addSeparator();
+    MenuMeasure->addSeparator();
+    MenuMeasure->addAction("Abort");
+    MenuMeasure->addSeparator();
+    MenuMeasure->addAction("Bkgnd (Screen Open)");
+    MenuMeasure->addAction("Bkgnd (Screen Closed)");
+    MenuMeasure->addAction("Target (Screen Open)");
+    MenuMeasure->addAction("Target (Screen Closed)");
+    MenuMeasure->addAction("Calculate (Screen)");
+    MenuMeasure->addAction("Use Background Calibration");
+    MenuMeasure->addAction("Use Response Calibration");
+    MenuMeasure->addSeparator();
+    MenuMeasure->addAction("Use Reverse Direction");
+    MenuMeasure->addSeparator();
+    MenuMeasure->addAction("Use Average Bkgnd");
+    MenuMeasure->addSeparator();
+    MenuMeasure->addAction("Reset Bkgnd Cal");
+    MenuMeasure->addAction("Reset Response Cal");
+    //Удалить --------------------
+    /*
+    StartMeasureAction = new QAction("Start",       this);
+    StopMeasureAction  = new QAction("Stop" ,       this);
+    MeasureBackground  = new QAction("Background",  this);
+    MeasureCalibration = new QAction("Calibration", this);
+
+    MenuMeasure->addAction(StartMeasureAction);
+    MenuMeasure->addAction(StopMeasureAction);
+    MenuMeasure->addAction(MeasureBackground);
+    MenuMeasure->addAction(MeasureCalibration);
+    */
+    //Удалить --------------------
+
+
+
+
+    QMenu * MenuProcess = this->menuBar()->addMenu("Process");
+    MenuProcess->addAction("Process");
+    MenuProcess->addSeparator();
+    MenuProcess->addAction("Swap Az/El");
+
+
+
+    QMenu * MenuPost_Process = this->menuBar()->addMenu("Post-Process");
+    MenuPost_Process->addAction("Post-Process");
+    MenuProcess->addSeparator();
+    MenuPost_Process->addAction("Frequency-Azimuth");
+    MenuPost_Process->addAction("Down-Range - Azimuth");
+    MenuPost_Process->addAction("Frequency - Cross-Range");
+    MenuPost_Process->addAction("ISAR");
+    MenuProcess->addSeparator();
+    MenuPost_Process->addAction("Create S-Files");
+    MenuPost_Process->addAction("AutoCreate S-Files");
+    MenuProcess->addSeparator();
+    MenuProcess->addSeparator();
+    MenuPost_Process->addAction("Use Pylon Compensation");
+    MenuProcess->addSeparator();
+    MenuPost_Process->addAction("Create Az-El File");
+
+
+    QMenu * MenuOptions = this->menuBar()->addMenu("Post-Process");
+    MenuOptions->addAction("Show Sketch");
+    MenuProcess->addSeparator();
+    MenuOptions->addAction("Delete Sketch");
+    MenuProcess->addSeparator();
+    MenuOptions->addAction("Auto Close Polygon");
+    MenuProcess->addSeparator();
+    MenuOptions->addAction("Flip Sketch");
+    MenuOptions->addAction("ChangeSketchColourToGreen");
+    MenuOptions->addAction("Rotate Sketch");
+    MenuProcess->addSeparator();
+    MenuOptions->addAction("Image Equal Scaling");
+    MenuOptions->addAction("Reverse Sketch Rotation");
+    MenuProcess->addSeparator();
+    MenuProcess->addSeparator();
+    MenuOptions->addAction("Move El Cut to Az Cut");
+
+
+    this->menuBar()->addMenu("Create Pylon Compensation");
+
+}

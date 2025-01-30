@@ -1,17 +1,16 @@
 #include "tabwidgetfortools.h"
 
 TabWidgetForTools::TabWidgetForTools()
-
 {
+
     //this->adjustSize();
     //this->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding);
-    this->setFixedHeight(190);
-    //this->adjustSize();
 
 
     PatternTab = new QWidget(this);
     MessagesTab = new QWidget(this);
     LegendTab = new QWidget(this);
+    ScriptTab = new QWidget(this);
     File_ManagerTab = new TreeWidgetForFiles(this);
     Debug_MessagesTab = new QTableWidget(this);
 
@@ -20,8 +19,10 @@ TabWidgetForTools::TabWidgetForTools()
     addTab(PatternTab,       "Pattern");
     addTab(MessagesTab,      "Messages");
     addTab(LegendTab,        "Legend");
+    addTab(ScriptTab,        "Script");
     addTab(File_ManagerTab,  "File_Manager");
     addTab(Debug_MessagesTab,"Debug_Messages");
+
 
     /*
     Debug_MessagesTab->setColumnCount(3);
@@ -63,7 +64,7 @@ TabWidgetForTools::TabWidgetForTools()
     ContinuousMeasurementsButton->setCheckable(true);
     Tab1Layout->addWidget(ContinuousMeasurementsButton);
 
-    connect(ContinuousMeasurementsButton,&QPushButton::clicked,this,&TabWidgetForTools::SendContinuousMeasurementsButtonClickedSignal);
+    ////connect(ContinuousMeasurementsButton,&QPushButton::clicked,this,&TabWidgetForTools::SendContinuousMeasurementsButtonClickedSignal);
     */
 
 
@@ -121,6 +122,12 @@ TabWidgetForTools::TabWidgetForTools()
     //resize(800,200);
     //setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
     */
+
+
+
+
+    //this->adjustSize();
+
 }
 
 

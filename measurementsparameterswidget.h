@@ -12,6 +12,9 @@
 #include <QLineEdit>
 #include <QDoubleValidator>
 #include <QButtonGroup>
+#include <QTreeWidget>
+#include <custommeasurementtreewidget.h>>
+
 
 
 class MeasurementsParametersWidget : public QWidget
@@ -42,6 +45,9 @@ public:
     QLabel * FrequencyNumberOfPointsLabel;
     QLineEdit * FrequencyNumberOfPointsEdit;
     QDoubleValidator * DoubleValidator;
+
+
+
 /*
     const std::pair<double, double> FrequencyRanges[7] = {
                                                           {1.0, 2.0},     //L
@@ -64,7 +70,7 @@ public:
 
 
 
-
+    CustomMeasurementTreeWidget * MeasParamTreeWidget;
 
     QHBoxLayout * ButtonGroupLayout;
     QButtonGroup * FrequencyRangesButtonGroup;
@@ -103,6 +109,20 @@ public:
     QPushButton * SetAngleParametersButton;
 
 
+    //Область параметров калибровочного образца // Перенесено сюда из MeasurementsParametersWidget
+    QVBoxLayout * CalibrationSampleMainLayout;
+    void InitiateCalibrationGroupBox();
+
+    QHBoxLayout * CalibrationSampleTypeLayout;
+    QComboBox * CalibrationSampleComboBox;
+    QHBoxLayout * CalibrationSampleParametersLayout;
+
+    QGroupBox * CalibrationGroupBox;
+    QLineEdit * CalibrationLineEdit;
+    QPushButton * CalibrationFindButton;
+    QPushButton * CalibrationSetButton;
+
+
 
 
     double FrequencyStart = 1;
@@ -119,6 +139,9 @@ public:
 
 
 
+
+    double getFrequencyStart() const;
+    void setFrequencyStart(double newFrequencyStart);
 
 public slots:
     void StartStopButtonClicked  (bool StartStopButtonCheckStatus );

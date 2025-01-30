@@ -6,6 +6,7 @@ ResultParametersWidget::ResultParametersWidget(QWidget *parent)
     //IntValidator = new QIntValidator(this);
 
     this->setMaximumWidth(300);
+    this->setFixedSize(300,830);
     OutermostVerticalLayout = new QVBoxLayout(this);
     this->setLayout(OutermostVerticalLayout);
 
@@ -44,8 +45,8 @@ ResultParametersWidget::ResultParametersWidget(QWidget *parent)
     OutermostVerticalLayout->addWidget(BackgroundGroupBox);
 
     // Задаём CalibrationGroupBox -- область задания файла калибровки
-    InitiateCalibrationGroupBox(); // Перенести весь функционал в TabOfTools
-    OutermostVerticalLayout->addWidget(CalibrationGroupBox);
+    //InitiateCalibrationGroupBox(); // Перенести весь функционал в TabOfTools
+    //OutermostVerticalLayout->addWidget(CalibrationGroupBox);
 
 
     //CalculateDistancePortraitButton = new QPushButton( "Дальностный портрет" , this );
@@ -69,8 +70,7 @@ void ResultParametersWidget::FindBackground ()
 }
 
 
-
-
+/*
 void ResultParametersWidget::FindCalibration()
 {
     QString fileName = QFileDialog::getOpenFileName(this, "Открыть файл калибровки", QDir::homePath(), "All Files (*.*)");
@@ -80,9 +80,8 @@ void ResultParametersWidget::FindCalibration()
         QFileInfo FileInfo(fileName);
         CalibrationLineEdit->setToolTip(FileInfo.baseName());
     }
-
 }
-
+*/
 
 
 
@@ -119,54 +118,6 @@ void ResultParametersWidget::HandleFrequencySpinBoxChange()
 
 
 
-void ResultParametersWidget::InitiateCalibrationGroupBox()
-{
-    CalibrationGroupBox = new QGroupBox("Калибровка", this);
-
-    QVBoxLayout * CalibrationGroupBoxLayout = new QVBoxLayout(CalibrationGroupBox);
-    QHBoxLayout * CalibrationButtonsLayout = new QHBoxLayout;
-
-    //QLabel * CalibrationLabel = new QLabel("Калибровка", BackgroundAndCalibrationGroupBox);
-
-    CalibrationLineEdit = new QLineEdit(CalibrationGroupBox);
-    CalibrationFindButton = new QPushButton("Найти", CalibrationGroupBox);
-    connect(CalibrationFindButton, &QPushButton::clicked, this, &ResultParametersWidget::FindCalibration);
-    CalibrationSetButton  = new QPushButton("Откалибровать", CalibrationGroupBox);
-    //connect(CalibrationSetButton, &QPushButton::clicked, this, &ResultParametersWidget::SetCalibration);
-
-    CalibrationGroupBox->setLayout(CalibrationGroupBoxLayout);
-
-    CalibrationGroupBoxLayout->addWidget(CalibrationLineEdit);
-
-    CalibrationButtonsLayout -> addWidget(CalibrationFindButton);
-    CalibrationButtonsLayout -> addWidget(CalibrationSetButton);
-
-    CalibrationGroupBoxLayout->addLayout(CalibrationButtonsLayout);
-
-
-    CalibrationSampleTypeLayout = new QHBoxLayout();
-    CalibrationSampleTypeLayout->addWidget(new QLabel("Вид образца"));
-    CalibrationSampleComboBox = new QComboBox(this);
-    CalibrationSampleComboBox->addItem("Цилиндр");
-    CalibrationSampleComboBox->addItem("Сфера");
-
-    CalibrationSampleTypeLayout->addWidget(CalibrationSampleComboBox);
-    CalibrationGroupBoxLayout->addLayout(CalibrationSampleTypeLayout);
-
-    CalibrationSampleParametersLayout = new QHBoxLayout();
-    CalibrationSampleParametersLayout->addWidget(new QLabel("Параметры",this));
-    CalibrationSampleParametersLayout->addWidget(new QLineEdit("Введите параметр",this));
-
-    CalibrationGroupBoxLayout->addLayout(CalibrationSampleParametersLayout);
-
-
-
-
-
-}
-
-
-
 
 void ResultParametersWidget::InitiateAnglesGroupBox()
 {
@@ -180,7 +131,7 @@ void ResultParametersWidget::InitiateAnglesGroupBox()
     SetCurrentAzimuthDoubleSpinBox->setSingleStep((AzimuthStop - AzimuthStart)/(AzimuthNumber-1));
     SetCurrentAzimuthDoubleSpinBox->setDecimals(3);
 
-    connect(SetCurrentAzimuthDoubleSpinBox, &QDoubleSpinBox::editingFinished, this, &ResultParametersWidget::HandleAzimuthSpinBoxChange);
+    ////connect(SetCurrentAzimuthDoubleSpinBox, &QDoubleSpinBox::editingFinished, this, &ResultParametersWidget::HandleAzimuthSpinBoxChange);
 
 
     SetCurrentElevationLabel = new QLabel("Elevation:", this);
@@ -189,7 +140,7 @@ void ResultParametersWidget::InitiateAnglesGroupBox()
     SetCurrentElevationDoubleSpinBox->setSingleStep((ElevationStop - ElevationStart)/(ElevationNumber-1));
     SetCurrentElevationDoubleSpinBox->setDecimals(3);
 
-    connect(SetCurrentElevationDoubleSpinBox, &QDoubleSpinBox::editingFinished, this, &ResultParametersWidget::HandleElevationSpinBoxChange);
+    //connect(SetCurrentElevationDoubleSpinBox, &QDoubleSpinBox::editingFinished, this, &ResultParametersWidget::HandleElevationSpinBoxChange);
 
     SetCurrentFrequencyLabel = new QLabel("Frequency:", this);
     SetCurrentFrequencyDoubleSpinBox  = new QDoubleSpinBox(this);
@@ -198,7 +149,7 @@ void ResultParametersWidget::InitiateAnglesGroupBox()
     SetCurrentFrequencyDoubleSpinBox->setDecimals(3);
 
 
-    connect(SetCurrentFrequencyDoubleSpinBox, &QDoubleSpinBox::editingFinished, this, &ResultParametersWidget::HandleFrequencySpinBoxChange);
+    //connect(SetCurrentFrequencyDoubleSpinBox, &QDoubleSpinBox::editingFinished, this, &ResultParametersWidget::HandleFrequencySpinBoxChange);
 
 
     //SetCurrentAngleButton= new QPushButton("Применить", this);
@@ -213,6 +164,9 @@ void ResultParametersWidget::InitiateAnglesGroupBox()
 
     AnglesGroupBoxLayout ->addWidget(SetCurrentElevationLabel,  2,0);
     AnglesGroupBoxLayout ->addWidget(SetCurrentElevationDoubleSpinBox,   2,1);
+
+    AnglesGroupBoxLayout ->addWidget(SetCurrentFrequencyLabel,  3,0);
+    AnglesGroupBoxLayout ->addWidget(SetCurrentFrequencyDoubleSpinBox,   3,1);
 
 
     //AnglesGroupBoxLayout ->addWidget(SetCurrentAngleButton,  2,0,1,2);
@@ -229,11 +183,11 @@ void ResultParametersWidget::InitiateBackgroundGroupBox()
 
     BackgroundLineEdit = new QLineEdit(BackgroundGroupBox);
     BackgroundFindButton = new QPushButton("Найти", BackgroundGroupBox);
-    connect(BackgroundFindButton, &QPushButton::clicked, this, &ResultParametersWidget::FindBackground);
+    //connect(BackgroundFindButton, &QPushButton::clicked, this, &ResultParametersWidget::FindBackground);
     BackgroundAddButton  = new QPushButton("Добавить", BackgroundGroupBox);
-    //connect(BackgroundAddButton, &QPushButton::clicked, this, &ResultParametersWidget::AddBackground); //Теперь в MainWindow
+    ////connect(BackgroundAddButton, &QPushButton::clicked, this, &ResultParametersWidget::AddBackground); //Теперь в MainWindow
     BackgroundSubstractButton  = new QPushButton("Вычесть", BackgroundGroupBox);
-    //connect(BackgroundSubstractButton, &QPushButton::clicked, this, &ResultParametersWidget::SubstractBackground); //Теперь в MainWindow
+    ////connect(BackgroundSubstractButton, &QPushButton::clicked, this, &ResultParametersWidget::SubstractBackground); //Теперь в MainWindow
 
 
     BackgroundGroupBox->setLayout(BackgroundGroupBoxLayout);
@@ -263,9 +217,9 @@ void ResultParametersWidget::FileChosenInTreeWidget(int Mode, QString FileName)
         BackgroundLineEdit->setText(FileName);
         break;
 
-    case 2: //Calibration
-        CalibrationLineEdit->setText(FileName);
-        break;
+    //case 2: //Calibration
+        //CalibrationLineEdit->setText(FileName);
+        //break;
 
     default:
         qDebug() << "Invalid mode";

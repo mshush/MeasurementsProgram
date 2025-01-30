@@ -70,18 +70,7 @@ public:
 
 
 
-    //Область параметров калибровочного образца // Перенесено сюда из MeasurementsParametersWidget
-    void InitiateCalibrationGroupBox();
 
-    //QVBoxLayout * CalibrationSampleMainLayout;
-    QHBoxLayout * CalibrationSampleTypeLayout;
-    QComboBox * CalibrationSampleComboBox;
-    QHBoxLayout * CalibrationSampleParametersLayout;
-
-    QGroupBox * CalibrationGroupBox;
-    QLineEdit * CalibrationLineEdit;
-    QPushButton * CalibrationFindButton;
-    QPushButton * CalibrationSetButton;
 
 
 
@@ -102,8 +91,9 @@ public slots:
     //void AddBackground(); // В MainWindow
     //void SubstractBackground(); // В MainWindow
 
-    void FindCalibration();
+    //void FindCalibration();
     //void SetCalibration (); // В MainWindow
+
 
     void HandleAzimuthSpinBoxChange();
     void HandleElevationSpinBoxChange();

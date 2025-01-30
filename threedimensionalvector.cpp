@@ -14,7 +14,6 @@ void ThreeDimensionalVector::Resize(int FNumber, int ANumber, int ENumber)
     ObjectMeasurementResult.resize(FNumber*ANumber*ENumber);
     BackgroundMeasurementResult.resize(FNumber);
     ResponseMeasurementResult.resize(FNumber);
-
 }
 
 std::complex<double> ThreeDimensionalVector::ReadFromObjectResult(int f, int a, int e)
@@ -250,9 +249,8 @@ QVector<double> ThreeDimensionalVector::SubstractBackgroundAndCalibrate()
 
     for (int i=0; i<TempVector.size(); i++)
     {
-        AbsVector[i] = abs(TempVector[i]);
+        AbsVector[i] = 20 * log10(abs(TempVector[i]));
     }
-
 
     return AbsVector;
 }
@@ -437,7 +435,7 @@ QVector <double> ThreeDimensionalVector::AmplitudeVectorAtAngles (int a, int e)
 
     for (int f=0; f<VNAParameters.NumOfPoi; f++)
     {
-        YVector[f] = abs(ReadFromObjectResult(f,a,e));
+        YVector[f] = 20 * log10(abs(ReadFromObjectResult(f,a,e)));
     }
 
     return YVector;
@@ -449,21 +447,17 @@ QVector <double> ThreeDimensionalVector::AmplitudeVectorAtAngles (int a, int e)
 // Далее устаревшие куски программы
 
 
-/*
 QVector <double> ThreeDimensionalVector::AmplitudeVectorAtFrequencyElevation(int f, int e)
 {
-
     QVector <double> YVector(VNAParameters.NumOfPoi);
-
     for (int a=0; a<OPUParameters.AzTrigPoints; a++)
     {
-        YVector[a] = abs(ReadFromObjectResult(f,a,e));
+        YVector[a] = 20 * log10(abs(ReadFromObjectResult(f,a,e)));
     }
-
     return YVector;
 }
-*/
-/*
+
+
 bool ThreeDimensionalVector::CheckBackgroundForSuitability(ThreeDimensionalVector BG)
 {
     bool FreqRangeSuitable      = (VNAParameters.StartFreq == BG.VNAParameters.StartFreq &&  VNAParameters.StopFreq == BG.VNAParameters.StopFreq &&  VNAParameters.StartFreq == BG.VNAParameters.StartFreq);
@@ -474,10 +468,10 @@ bool ThreeDimensionalVector::CheckBackgroundForSuitability(ThreeDimensionalVecto
 
     return Result;
 }
-*/
 
 
-/*
+
+
 void ThreeDimensionalVector::ClearFunction()
 {
     Resize(0,0,0);
@@ -494,10 +488,10 @@ void ThreeDimensionalVector::ClearFunction()
     OPUParameters.stopAzAngl = 0;
     OPUParameters.stopElAngl = 0;
 }
-*/
 
 
-/*
+
+
 void ThreeDimensionalVector::Calibrate(ThreeDimensionalVector C, int SampleType)
 {
     //Добавить проверку размерности
@@ -514,26 +508,27 @@ void ThreeDimensionalVector::Calibrate(ThreeDimensionalVector C, int SampleType)
         }
     }
 }
-*/
 
 
 
-/*
-QVector <double> ThreeDimensionalVector::DistVector ()
+// Должна возвращать массив расстояний -- как его правильно пересчитать пока не знаю сейчас просто индексы выдаёт
+QVector <double> ThreeDimensionalVector::DistVector()
 {
     QVector <double> Result(VNAParameters.NumOfPoi);
     for (int d=0; d<VNAParameters.NumOfPoi; d++)
     {
-        Result[d] = d;
+        Result[d] = d; // Как правильно считать я не знаю пока
     }
     return Result;
 }
 
 
-QVector <double> ThreeDimensionalVector::FourierAmplVectorAtAngles (int r, int t)
+
+
+QVector <double> ThreeDimensionalVector::FourierAmplVectorAtAngles (int a, int e)
 {
 
-    QVector <std::complex<double>> F = GetFrequencyVectorAt(r,t);
+    QVector <std::complex<double>> F = GetFrequencyVectorAt(a,e);
     QVector <std::complex<double>> Transform(VNAParameters.NumOfPoi);
 
 
@@ -551,15 +546,16 @@ QVector <double> ThreeDimensionalVector::FourierAmplVectorAtAngles (int r, int t
 
     for (int d=0; d<VNAParameters.NumOfPoi; d++)
     {
-        y[d] = abs(Transform[d]);
+        y[d] = 20 * log10(abs(Transform[d]));
     }
 
     return y;
 }
-*/
 
+
+
+//Убираю, так как не нужно -- и так простые функции.
 /*
- * Убираю, так как не нужно
 std::complex<double> ThreeDimensionalVector::ReadFromBackgroundResult(int f)
 {
     return ObjectMeasurementResult[f];
@@ -573,23 +569,31 @@ std::complex<double> ThreeDimensionalVector::ReadFromResponseResult(int f)
 
 
 
-/*
+
 
 void ThreeDimensionalVector::SubstractBackground(ThreeDimensionalVector BG)
 {
-    for (int t = 0; t < OPUParameters.ElTrigPoints; t++)
+    for (int e = 0; e < OPUParameters.ElTrigPoints; e++)
     {
-        for (int r = 0; r < OPUParameters.AzTrigPoints; r++)
+        for (int a = 0; a < OPUParameters.AzTrigPoints; a++)
         {
             for (int f=0; f < VNAParameters.NumOfPoi; f++)
             {
-                std::complex<double> ValueAtPoint =ReadFromObjectResult(f,r,t) - BG.ReadFromObjectResult(f,r,t);
-                this->WriteToObjectResult(f,r,t,ValueAtPoint);
+                std::complex<double> ValueAtPoint =ReadFromObjectResult(f,a,e) - BG.ReadFromObjectResult(f,a,e);
+                this->WriteToObjectResult(f,a,e,ValueAtPoint);
             }
         }
     }
     // Добавить вывод ошибки при несовпадении параметров
 }
 
-*/
+
+
+
+
+
+
+
+
+
 

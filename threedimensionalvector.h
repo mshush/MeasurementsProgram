@@ -64,6 +64,7 @@ public:
     QVector <std::complex<double>> ResponseMeasurementResult;   //  Результат измерения образца (отклик) для калибровки
 
 
+    QVector <double> DistVector();
 
     void Resize(int FNum, int ANum, int ENum); // Смена размера массивов -- теперь меняются три массива, а не один
 
@@ -121,15 +122,15 @@ public:
 
 
 
-    //QVector <double> FourierAmplVectorAtAngles (int a, int e); // Получает вектор амплитуд фурье образов из ThreeDimensionalVector при углах с индексами a и e (Не быстрое преобразование Фурье)
+    QVector <double> FourierAmplVectorAtAngles (int a, int e); // Получает вектор амплитуд фурье образов из ThreeDimensionalVector при углах с индексами a и e (Не быстрое преобразование Фурье)
 
     //void AddMeasuredObjectValues(QVector <double> vector); -- устаревшее заполнение
-    // Заменил Всё на функцию на SubstractBackgroundAndCalibrate
-    //  QVector <double> AmplitudeVectorAtFrequencyElevation(int f, int e); // Получает вектор амплитуд из ObjectMeasurementVector на частоте f и угле e
-    //  bool CheckBackgroundForSuitability (ThreeDimensionalVector BG);
-    //  void SubstractBackground (ThreeDimensionalVector BG);
-    //  void Calibrate (ThreeDimensionalVector Calibration, int SampleType);
-    //
+    // Возвращаю эти функции -- всё же нужны
+    QVector <double> AmplitudeVectorAtFrequencyElevation(int f, int e); // Получает вектор амплитуд из ObjectMeasurementVector на частоте f и угле e
+    bool CheckBackgroundForSuitability (ThreeDimensionalVector BG);
+    void SubstractBackground (ThreeDimensionalVector BG); // Пока работает неправильно
+    void Calibrate (ThreeDimensionalVector Calibration, int SampleType); // Пока работает неправильно
+
 
 
     //int FNum; // Заменено на NumOfPoi из VNAParams     // Число точек по частотам
