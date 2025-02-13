@@ -2,7 +2,7 @@
 
 TreeWidgetForFiles::TreeWidgetForFiles (QWidget *parent)  : QWidget(parent)
 {
-    /*
+
     FileTree = new QTreeView(this);
 
 
@@ -44,7 +44,7 @@ TreeWidgetForFiles::TreeWidgetForFiles (QWidget *parent)  : QWidget(parent)
 
 
     //connect(FileTree, &QTreeView::doubleClicked, this, &TreeWidgetForFiles::OpenOnClick);
-    */
+
 }
 
 

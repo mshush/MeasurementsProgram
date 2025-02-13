@@ -4,7 +4,7 @@ WidgetForCustomPlot::WidgetForCustomPlot(QWidget *parent)
     : QWidget{parent}
 {
     //this->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding);
-    this->setFixedSize(1375,560);
+    //this->setFixedSize(1375,560);
     //this->adjustSize();
     HorizontalPlotLayout = new QHBoxLayout(this);
 
@@ -25,17 +25,26 @@ WidgetForCustomPlot::WidgetForCustomPlot(QWidget *parent)
     ControlsWidget->adjustSize();
     ControlsWidget->setSizePolicy(QSizePolicy::Fixed,QSizePolicy::Expanding);
     ControlsWidget ->setLayout(VerticalControlsLayout);
+    ControlsWidget->setFixedWidth(200);
     //qDebug()<<"Размер="<<ControlsWidget->size();
 
+    FillControlsWidget();
 
+
+
+
+
+    //Закомментированная функциональная часть!!!!
     InitiateMovementGroupBox();
-    VerticalControlsLayout->addWidget(MovementGroupBox);
+    //VerticalControlsLayout->addWidget(MovementGroupBox);
 
     InitiateMarkerGroupBox();
-    VerticalControlsLayout->addWidget(MarkerGroupBox);
+    //VerticalControlsLayout->addWidget(MarkerGroupBox);
 
     InitiateSaveLayout();
-    VerticalControlsLayout->addLayout(HorizontalSaveLayout);
+    //VerticalControlsLayout->addLayout(HorizontalSaveLayout);
+
+
 
     //VerticalControlsLayout->addWidget(MarkerTableView);
     /*
@@ -170,21 +179,21 @@ void WidgetForCustomPlot::InitiateMovementGroupBox()
 
     RubberBandButton = new QPushButton("⬚");
     RubberBandButton->setCheckable(true);
-    //connect(RubberBandButton, &QPushButton::clicked,this,&WidgetForCustomPlot::ActivateRubberBand);
+    connect(RubberBandButton, &QPushButton::clicked,this,&WidgetForCustomPlot::ActivateRubberBand);
     RubberBandButton->setToolTip("Масштабирование выделением области");
 
     LockXAxisButton = new QPushButton("⇕");
     LockXAxisButton->setToolTip("Зафиксировать масштаб по оси X");
-    //connect(LockXAxisButton, &QPushButton::clicked,this,&WidgetForCustomPlot::LockXAxis);
+    connect(LockXAxisButton, &QPushButton::clicked,this,&WidgetForCustomPlot::LockXAxis);
     LockXAxisButton->setCheckable(true);
 
     LockYAxisButton = new QPushButton("⇔");
     LockXAxisButton->setToolTip("Зафиксировать масштаб по оси Y");
-    //connect(LockYAxisButton, &QPushButton::clicked,this,&WidgetForCustomPlot::LockYAxis);
+    connect(LockYAxisButton, &QPushButton::clicked,this,&WidgetForCustomPlot::LockYAxis);
     LockYAxisButton->setCheckable(true);
 
     ResetButton = new QPushButton("↻");
-    //connect(ResetButton, &QPushButton::clicked, customPlot, &PlotClass::ResetPlot);
+    connect(ResetButton, &QPushButton::clicked, customPlot, &PlotClass::ResetPlot);
     ResetButton->setToolTip("Подгоняет масштаб под график");
 
     InitiateSetRangeGroupBox();
@@ -218,7 +227,7 @@ void WidgetForCustomPlot::InitiateMarkerGroupBox()
 
     MarkerColourButton = new QPushButton("Цвет");
     //qDebug()<< "Размер кнопки" <<MarkerColourButton->size();
-    //connect(MarkerColourButton, &QPushButton::clicked, this, &WidgetForCustomPlot::OpenMarkerColourDialogue);
+    connect(MarkerColourButton, &QPushButton::clicked, this, &WidgetForCustomPlot::OpenMarkerColourDialogue);
 
     MarkerStyleComboBox = new QComboBox(this);
     MarkerStyleComboBox->addItem("Плюс");
@@ -226,21 +235,21 @@ void WidgetForCustomPlot::InitiateMarkerGroupBox()
     MarkerStyleComboBox->addItem("Круг");
     MarkerStyleComboBox->addItem("Квадрат");
     MarkerStyleComboBox->setCurrentIndex(0);
-    //connect(MarkerStyleComboBox, &QComboBox::currentIndexChanged,this,&WidgetForCustomPlot::ChangeMarkerStyle);
+    connect(MarkerStyleComboBox, &QComboBox::currentIndexChanged,this,&WidgetForCustomPlot::ChangeMarkerStyle);
     MarkerStyleComboBox->setToolTip("Геометрическая форма маркера");
 
     InitiateMarkerPreviewPlot();
 
     MarkerAddButton = new QPushButton("+");
     MarkerAddButton->setCheckable(true); // Подпись к маркеру QCPItemText должна не вылазить за пределы графика.
-    //connect(MarkerAddButton, &QPushButton::clicked, this, &WidgetForCustomPlot::AddMarkerSlot);
+    connect(MarkerAddButton, &QPushButton::clicked, this, &WidgetForCustomPlot::AddMarkerSlot);
     MarkerAddButton->setToolTip("Добавить маркеры на выбранный график");
 
 
     MarkerDeleteButton = new QPushButton("-");
     MarkerDeleteButton->setCheckable(true);
 
-    //connect(MarkerDeleteButton, &QPushButton::clicked, this, &WidgetForCustomPlot::DeleteMarkerSlot);
+    connect(MarkerDeleteButton, &QPushButton::clicked, this, &WidgetForCustomPlot::DeleteMarkerSlot);
     MarkerDeleteButton->setToolTip("Удалить маркер");
 
 
@@ -248,26 +257,26 @@ void WidgetForCustomPlot::InitiateMarkerGroupBox()
 
     SelectLocalMaxButton = new QPushButton("max", this); // Установка маркера в случае если в выделенной области нет точек?
     SelectLocalMaxButton->setCheckable(true);
-    //connect(SelectLocalMaxButton,&QPushButton::clicked, this, &WidgetForCustomPlot::EnterSelectLocalMaxMode);
+    connect(SelectLocalMaxButton,&QPushButton::clicked, this, &WidgetForCustomPlot::EnterSelectLocalMaxMode);
     SelectLocalMaxButton->setToolTip("Установить маркер в максимум на выделенной области");
 
     SelectLocalMinButton = new QPushButton("min", this);
     SelectLocalMinButton->setCheckable(true);
-    //connect(SelectLocalMinButton,&QPushButton::clicked, this, &WidgetForCustomPlot::EnterSelectLocalMinMode);
+    connect(SelectLocalMinButton,&QPushButton::clicked, this, &WidgetForCustomPlot::EnterSelectLocalMinMode);
     SelectLocalMinButton->setToolTip("Установить маркер в минимум на выделенной области");
 
 
     DeleteAllMarkersButton = new QPushButton("✖");
-    //connect(DeleteAllMarkersButton, &QPushButton::clicked, customPlot, &PlotClass::DeleteAllMarkers);
+    connect(DeleteAllMarkersButton, &QPushButton::clicked, customPlot, &PlotClass::DeleteAllMarkers);
     DeleteAllMarkersButton->setToolTip("Удалить все маркеры");
 
 
     QPushButton * MoveSelectedMarkerToNextMaxButton = new QPushButton("🡆∧",this);         //("➡🡆∧",this)
-    //connect(MoveSelectedMarkerToNextMaxButton, &QPushButton::clicked, this, &WidgetForCustomPlot::ToNextMax);
+    connect(MoveSelectedMarkerToNextMaxButton, &QPushButton::clicked, this, &WidgetForCustomPlot::ToNextMax);
     MoveSelectedMarkerToNextMaxButton->setToolTip("Переместить маркер на следующий максимум");
 
     QPushButton * MoveSelectedMarkerToPrevMaxButton = new QPushButton("∧🡄",this);         //("∧🡄⬅",this);
-    //connect(MoveSelectedMarkerToPrevMaxButton, &QPushButton::clicked, this, &WidgetForCustomPlot::ToPrevMax);
+    connect(MoveSelectedMarkerToPrevMaxButton, &QPushButton::clicked, this, &WidgetForCustomPlot::ToPrevMax);
     MoveSelectedMarkerToPrevMaxButton->setToolTip("Переместить маркер на предыдущий максимум");
 
     VerticalMarkerStyleConfigurationLayout = new QVBoxLayout();
@@ -277,7 +286,7 @@ void WidgetForCustomPlot::InitiateMarkerGroupBox()
     GraphChoiceComboBox->addItem("График 1");
     //GraphChoiceComboBox->addItem("График 2"); // Нужно добавление неограниченного числа графиков
 
-    //connect(GraphChoiceComboBox, &QComboBox::currentIndexChanged,customPlot,&PlotClass::ChangeSelectedGraph);
+    connect(GraphChoiceComboBox, &QComboBox::currentIndexChanged,customPlot,&PlotClass::ChangeSelectedGraph);
 
     MarkerStyleLayout->addWidget(MarkerPreviewPlot);
     MarkerStyleLayout->addLayout(VerticalMarkerStyleConfigurationLayout);
@@ -350,7 +359,8 @@ void WidgetForCustomPlot::InitiateMarkerGroupBox()
     }
     */
     MarkerGroupBoxLayout->addWidget(MarkerPositionsTable);
-    //connect(MarkerPositionsTable, &QTableWidget::cellChanged, this, &WidgetForCustomPlot::AdjustContentsOfTableOfDifference);
+
+    connect(MarkerPositionsTable, &QTableWidget::cellChanged, this, &WidgetForCustomPlot::AdjustContentsOfTableOfDifference);
 
 
 
@@ -385,7 +395,7 @@ void WidgetForCustomPlot::InitiateSaveLayout()
     HorizontalSaveLayout = new QHBoxLayout;
 
     SaveButton = new QPushButton("Сохранить",this);
-    //connect(SaveButton, &QPushButton::clicked, customPlot, &PlotClass::SaveAs);
+    connect(SaveButton, &QPushButton::clicked, customPlot, &PlotClass::SaveAs);
 
     //QPushButton * SaveAsDatButton = new QPushButton(".dat", this);
     ////connect(SaveAsDatButton, &QPushButton::clicked, this, &WidgetForCustomPlot::SavePlotAsDat);
@@ -863,7 +873,7 @@ void WidgetForCustomPlot::ToPrevMax()
         MarkerPositionsTable->setItem(SelectedMarkerRow, 2, MaxXItem);
         MarkerPositionsTable->setItem(SelectedMarkerRow, 3, MaxYItem);
 
-        qDebug()<<MarkerPositionsTable->item(0,0)->background();
+        //qDebug()<<MarkerPositionsTable->item(0,0)->background();
 
         MarkerPositionsTable->item(SelectedMarkerRow,2)->setBackground(HighlightColor);
         MarkerPositionsTable->item(SelectedMarkerRow,3)->setBackground(HighlightColor);
@@ -1175,5 +1185,175 @@ void WidgetForCustomPlot::DeleteMarkerSlot()
         msgBox.setStandardButtons(QMessageBox::Ok);
         msgBox.exec();
     }
+
+}
+
+
+
+
+void WidgetForCustomPlot::FillControlsWidget()
+{
+
+    QStringList iconPaths =
+        {
+        "C:/Users/HP/Documents/MeasurementsProgram/Y1.png",
+        "C:/Users/HP/Documents/MeasurementsProgram/Y2.png",
+        "C:/Users/HP/Documents/MeasurementsProgram/Y3.png",
+        "C:/Users/HP/Documents/MeasurementsProgram/Y4.png",
+        "C:/Users/HP/Documents/MeasurementsProgram/Y5.png",
+        "C:/Users/HP/Documents/MeasurementsProgram/X1.png",
+        "C:/Users/HP/Documents/MeasurementsProgram/X1.png",
+        "C:/Users/HP/Documents/MeasurementsProgram/X2.png",
+        "C:/Users/HP/Documents/MeasurementsProgram/X3.png",
+        "C:/Users/HP/Documents/MeasurementsProgram/X4.png",
+        "C:/Users/HP/Documents/MeasurementsProgram/X5.png",
+        "C:/Users/HP/Documents/MeasurementsProgram/X6.png",
+        "C:/Users/HP/Documents/MeasurementsProgram/X7.png",
+        "C:/Users/HP/Documents/MeasurementsProgram/X8.png",
+        "C:/Users/HP/Documents/MeasurementsProgram/X9.png",
+        "C:/Users/HP/Documents/MeasurementsProgram/X10.png",
+        "C:/Users/HP/Documents/MeasurementsProgram/X11.png",
+        "C:/Users/HP/Documents/MeasurementsProgram/X12.png",
+        "C:/Users/HP/Documents/MeasurementsProgram/X13.png",
+        "C:/Users/HP/Documents/MeasurementsProgram/M1.png",
+        "C:/Users/HP/Documents/MeasurementsProgram/M2.png",
+        "C:/Users/HP/Documents/MeasurementsProgram/M3.png",
+        "C:/Users/HP/Documents/MeasurementsProgram/M4.png",
+        "C:/Users/HP/Documents/MeasurementsProgram/M5.png",
+        "C:/Users/HP/Documents/MeasurementsProgram/M6.png",
+        "C:/Users/HP/Documents/MeasurementsProgram/M7.png",
+        "C:/Users/HP/Documents/MeasurementsProgram/M8.png",
+        "C:/Users/HP/Documents/MeasurementsProgram/M9.png",
+        "C:/Users/HP/Documents/MeasurementsProgram/M10.png"
+    };
+
+    QVector <QPushButton *> PlotButtonVector;
+
+    for (int i = 0; i < iconPaths.size(); ++i)
+    {
+        QPushButton *button = new QPushButton(this);
+        button->setIcon(QIcon(QPixmap(iconPaths[i])));
+        //qDebug()<<iconPaths[i];
+        button->setFixedSize(20,20);
+        button->setContentsMargins(0,0,0,0);
+        PlotButtonVector.push_back(button);
+    }
+
+
+
+
+    QWidget * YAxisWidget = new QWidget(ControlsWidget);
+
+    QVBoxLayout * YAxisVertLayout = new QVBoxLayout(YAxisWidget);
+
+    QLabel* YAxisTitleLabel = new QLabel("Y-axis");
+    YAxisVertLayout->addWidget(YAxisTitleLabel);
+
+    QGridLayout * YAxisGridLayout = new QGridLayout();
+
+    QLabel  * YAxisMaxLabel = new QLabel("Max (dB)");
+    QLabel  *YAxisSpanLabel = new QLabel("Span (dB)");
+    QComboBox * YAxisMaxBox = new QComboBox();
+    QComboBox *YAxisSpanBox = new QComboBox();
+    YAxisMaxBox->setEditable(true);
+    YAxisSpanBox->setEditable(true);
+    YAxisMaxBox->addItem("10");
+    YAxisSpanBox->addItem("10");
+    YAxisMaxBox->addItem("20");
+    YAxisSpanBox->addItem("20");
+
+    YAxisGridLayout->addWidget(YAxisMaxLabel, 0, 0);
+    YAxisGridLayout->addWidget(YAxisSpanLabel, 0, 1);
+    YAxisGridLayout->addWidget(YAxisMaxBox, 1, 0);
+    YAxisGridLayout->addWidget(YAxisSpanBox, 1, 1);
+
+    QWidget * YAxisScaleTypeWidget = new QWidget(YAxisWidget);
+    QHBoxLayout * YAxisScaleTypeWidgetHorLayout = new QHBoxLayout();
+    YAxisScaleTypeWidgetHorLayout->addWidget(PlotButtonVector[0]);
+    YAxisScaleTypeWidgetHorLayout->addWidget(PlotButtonVector[1]);
+    YAxisScaleTypeWidget->setLayout(YAxisScaleTypeWidgetHorLayout);
+    YAxisGridLayout->addWidget(YAxisScaleTypeWidget, 2, 0);
+
+    QWidget * YAxisScaleWidget = new QWidget(YAxisWidget);
+    QHBoxLayout * YAxisScaleWidgetHorLayout = new QHBoxLayout();
+    YAxisScaleWidgetHorLayout->addWidget(PlotButtonVector[2]);
+    YAxisScaleWidgetHorLayout->addWidget(PlotButtonVector[3]);
+    YAxisScaleWidgetHorLayout->addWidget(PlotButtonVector[4]);
+    YAxisScaleWidget->setLayout(YAxisScaleWidgetHorLayout);
+    YAxisGridLayout->addWidget(YAxisScaleWidget, 2, 1);
+
+
+    YAxisVertLayout->addWidget(YAxisTitleLabel);
+    YAxisVertLayout->addLayout(YAxisGridLayout);
+
+    YAxisWidget->setLayout(YAxisVertLayout);
+
+    //YAxisWidget->setStyleSheet("border: 2px solid black;");
+    VerticalControlsLayout->addWidget(YAxisWidget);
+
+
+
+    QWidget * XAxisWidget = new QWidget(ControlsWidget);
+    QGridLayout * XAxisGridLayout = new QGridLayout(XAxisWidget);
+    XAxisWidget->setLayout(XAxisGridLayout);
+
+    QLabel * XAxisTitleLabel = new QLabel("X-Axis");
+    XAxisGridLayout->addWidget(XAxisTitleLabel, 0, 0, 1, 2);
+
+
+    XAxisGridLayout->addWidget(PlotButtonVector[5], 0,2);
+    XAxisGridLayout->addWidget(PlotButtonVector[6], 0,3);
+    XAxisGridLayout->addWidget(PlotButtonVector[7], 0,4);
+    XAxisGridLayout->addWidget(PlotButtonVector[8], 0,5);
+
+
+    XAxisGridLayout->addWidget(PlotButtonVector[9], 1,0);
+    XAxisGridLayout->addWidget(PlotButtonVector[10], 1,1);
+    XAxisGridLayout->addWidget(PlotButtonVector[11], 1,2);
+    XAxisGridLayout->addWidget(PlotButtonVector[12], 1,3);
+    XAxisGridLayout->addWidget(PlotButtonVector[13], 1,4);
+    XAxisGridLayout->addWidget(PlotButtonVector[14], 1,5);
+
+
+    XAxisGridLayout->addWidget(PlotButtonVector[15], 2,0);
+    XAxisGridLayout->addWidget(new QComboBox(),       2,1,1,3);
+    XAxisGridLayout->addWidget(PlotButtonVector[16], 2,4);
+    XAxisGridLayout->addWidget(PlotButtonVector[17], 2,5);
+
+
+    VerticalControlsLayout->addWidget(XAxisWidget);
+
+
+
+    QFrame * MarkerFrame = new QFrame(ControlsWidget);
+    QGridLayout * MarkerFrameLayout = new QGridLayout(MarkerFrame);
+    MarkerFrame->setLayout(MarkerFrameLayout);
+
+    MarkerFrameLayout->addWidget(new QLabel("Marker"),0,0,1,2);
+    MarkerFrameLayout->addWidget(PlotButtonVector[18], 0,2);
+    MarkerFrameLayout->addWidget(PlotButtonVector[19], 0,3);
+    MarkerFrameLayout->addWidget(PlotButtonVector[20], 0,4);
+    MarkerFrameLayout->addWidget(PlotButtonVector[21], 0,5);
+
+
+    MarkerFrameLayout->addWidget(PlotButtonVector[22], 1,0);
+    MarkerFrameLayout->addWidget(PlotButtonVector[23], 1,1);
+    MarkerFrameLayout->addWidget(PlotButtonVector[24], 1,2);
+    MarkerFrameLayout->addWidget(PlotButtonVector[25], 1,3);
+    MarkerFrameLayout->addWidget(PlotButtonVector[26], 1,4);
+    MarkerFrameLayout->addWidget(PlotButtonVector[27], 1,5);
+
+
+    QTableWidget * MarkerTable = new QTableWidget(MarkerFrame);
+    MarkerTable->setColumnCount(2);
+    //MarkerTable->setCellWidget(0,0, new QPushButton("m"));
+    //MarkerTable->setCellWidget(0,1, new QPushButton("Val"));
+    MarkerTable->setHorizontalHeaderLabels({"m","Val"});
+    MarkerFrameLayout->addWidget(MarkerTable,2,0,5,6);
+    MarkerTable->setColumnWidth(0,40);
+    MarkerTable->setColumnWidth(1,40);
+    VerticalControlsLayout->addWidget(MarkerFrame);
+
+
 
 }

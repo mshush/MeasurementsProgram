@@ -441,7 +441,7 @@ void CustomProcessingTreeWidget::FillGate()
     Gate->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     Gate->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 
-    //Gate->setFixedHeight(150);
+    Gate->setFixedHeight(150);
     Gate->setColumnWidth(0, 120);
     Gate->setColumnWidth(1, 120);
 
@@ -481,7 +481,7 @@ void CustomProcessingTreeWidget::FillImageSubrange()
     ImageSubrange->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     ImageSubrange->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 
-    //ImageSubrange->setFixedHeight(120);
+    ImageSubrange->setFixedHeight(120);
     ImageSubrange->setColumnWidth(0, 120);
     ImageSubrange->setColumnWidth(1, 120);
 
@@ -489,7 +489,7 @@ void CustomProcessingTreeWidget::FillImageSubrange()
 
 void CustomProcessingTreeWidget::FillISARParameters()
 {
-
+    ISARParameters->setFixedHeight(10);
 };
 
 void CustomProcessingTreeWidget::FillSketch()
@@ -527,7 +527,7 @@ void CustomProcessingTreeWidget::FillSketch()
     Sketch->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     Sketch->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 
-    //Sketch->setFixedHeight(120);
+    Sketch->setMaximumHeight(120);
     Sketch->setColumnWidth(0, 120);
     Sketch->setColumnWidth(1, 120);
 

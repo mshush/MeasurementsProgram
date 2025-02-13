@@ -4,15 +4,22 @@ TabWidgetForTools::TabWidgetForTools()
 {
 
     //this->adjustSize();
-    //this->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding);
+    this->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding);
 
 
-    PatternTab = new QWidget(this);
-    MessagesTab = new QWidget(this);
-    LegendTab = new QWidget(this);
+    PatternTab = new WidgetForCustomPlot(this);
+    PatternTab->setMaximumHeight(200);
+
+    PatternTab->customPlot->xAxis->setLabel("Az (deg)");
+    MessagesTab = new QTreeWidget(this);
+    LegendTab = new QTableWidget(this);
     ScriptTab = new QWidget(this);
     File_ManagerTab = new TreeWidgetForFiles(this);
-    Debug_MessagesTab = new QTableWidget(this);
+    Debug_MessagesTab = new QTreeWidget(this);
+
+
+
+
 
 
 
@@ -23,6 +30,53 @@ TabWidgetForTools::TabWidgetForTools()
     addTab(File_ManagerTab,  "File_Manager");
     addTab(Debug_MessagesTab,"Debug_Messages");
 
+
+    LegendTab->setRowCount(5); // Set the number of rows
+    LegendTab->setColumnCount(10); // Set the number of columns
+
+    // Set the headers for the columns
+    QStringList headers = {
+        "Title", "Data", "Plane", "Freq", "Az",
+        "El", "Channel", "Smooth", "%", "Color"
+    };
+    LegendTab->setHorizontalHeaderLabels(headers);
+
+
+
+
+    MessagesTab->setColumnCount(1); // Set the number of columns
+    MessagesTab->setHeaderLabel("Messages"); // Set the header label
+
+    // Create root item
+    QTreeWidgetItem *rootItem = new QTreeWidgetItem(MessagesTab, QStringList() << "Legend Item");
+
+    // Create child items
+    QTreeWidgetItem *childItem1 = new QTreeWidgetItem(rootItem, QStringList() << "Item 1");
+    QTreeWidgetItem *childItem2 = new QTreeWidgetItem(rootItem, QStringList() << "Item 2");
+
+    // Create sub-child item
+    QTreeWidgetItem *subChildItem = new QTreeWidgetItem(childItem1, QStringList() << "Item3");
+
+    // Expand the root item to show children
+    rootItem->setExpanded(true);
+
+
+
+    Debug_MessagesTab->setColumnCount(1); // Set the number of columns
+    Debug_MessagesTab->setHeaderLabel("Errors"); // Set the header label
+
+    // Create root item
+    QTreeWidgetItem *rootItem1 = new QTreeWidgetItem(MessagesTab, QStringList() << "Legend Item");
+
+    // Create child items
+    QTreeWidgetItem *childItem11 = new QTreeWidgetItem(rootItem1, QStringList() << "Item 1");
+    QTreeWidgetItem *childItem21 = new QTreeWidgetItem(rootItem1, QStringList() << "Item 2");
+
+    // Create sub-child item
+    QTreeWidgetItem *subChildItem1 = new QTreeWidgetItem(childItem11, QStringList() << "Item3");
+
+    // Expand the root item to show children
+    rootItem1->setExpanded(true);
 
     /*
     Debug_MessagesTab->setColumnCount(3);
@@ -154,6 +208,7 @@ TabWidgetForTools::~TabWidgetForTools()
 
 void TabWidgetForTools::DisplayError(QString ErrorText)
 {
+    /*
     int NumberOfRows = Debug_MessagesTab->rowCount();
     Debug_MessagesTab->insertRow(NumberOfRows);
     Debug_MessagesTab->setItem(NumberOfRows, 0, new QTableWidgetItem(QDateTime::currentDateTime().toString("yyyy-MM-dd HH:mm:ss")));
@@ -162,6 +217,7 @@ void TabWidgetForTools::DisplayError(QString ErrorText)
     QString message = ListOf2Items.size() > 1 ? ListOf2Items[1].trimmed() : "Нет сообщения";
     Debug_MessagesTab->setItem(NumberOfRows, 1, new QTableWidgetItem(type));
     Debug_MessagesTab->setItem(NumberOfRows, 2, new QTableWidgetItem(message));
+*/
 }
 
 

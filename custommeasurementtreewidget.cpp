@@ -113,7 +113,7 @@ CustomMeasurementTreeWidget::CustomMeasurementTreeWidget(QWidget * parent) : QTr
     FillPNA();
 
 
-    //connect(ConfigsRangeComboBox, &QComboBox::currentIndexChanged, this, &CustomMeasurementTreeWidget::FrequencyRangeChanged);
+    connect(ConfigsRangeComboBox, &QComboBox::currentIndexChanged, this, &CustomMeasurementTreeWidget::FrequencyRangeChanged);
     this->expandAll();
 
 
@@ -490,7 +490,7 @@ void CustomMeasurementTreeWidget::FillPNA()
     PNA->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     PNA->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 
-    PNA->setMaximumHeight(120);
+    PNA->setMaximumHeight(110);
     PNA->setColumnWidth(0, 140);
     PNA->setColumnWidth(1, 100);
 }

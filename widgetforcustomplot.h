@@ -134,6 +134,7 @@ public slots:
     //void SubstractMarkers();
 
 
+    void FillControlsWidget();
     void AdjustContentsOfTableOfDifference(int row, int column);
 
 signals:

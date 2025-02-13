@@ -86,6 +86,15 @@ public:
 
     void ConnectObjects();
 
+    void ConnectPlot();
+    void ConnectMenu();
+    void ConnectSetup();
+    void ConnectProcessing();
+    void ConnectTabs();
+
+
+
+
     void UploadFile();
 
     // Индикатор выполнения

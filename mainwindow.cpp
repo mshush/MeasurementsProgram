@@ -118,11 +118,11 @@ MainWindow::MainWindow(QWidget *parent)
 
     ConnectObjects();
 
-    this->setWindowState(Qt::WindowMaximized);
+    //this->setWindowState(Qt::WindowMaximized);
     //this->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding);
 
-
-    qDebug()<<this->size();
+    this->setWindowFlags(Qt::Window | Qt::WindowTitleHint | Qt::WindowSystemMenuHint | Qt::WindowCloseButtonHint | Qt::WindowMinMaxButtonsHint);
+    this->setWindowState(Qt::WindowMaximized);
 }
 
 
@@ -442,6 +442,8 @@ void MainWindow::ShowErrorMessage(QString Description, QString Advice)
 
 void MainWindow::ConnectObjects()
 {
+
+
     /*
     //connect(TabOfTools->StartMeasurementsButton, &QPushButton::clicked, Process, &ProcessImitation::Measure);
     //connect(TabOfTools->ContinuousMeasurementsButton, &QPushButton::clicked, ChartTab, &TabWidgetForCharts::ContinuousMeasurementModeChanged);
@@ -704,7 +706,7 @@ void MainWindow::FillMenu()
     MenuPost_Process->addAction("Create Az-El File");
 
 
-    QMenu * MenuOptions = this->menuBar()->addMenu("Post-Process");
+    QMenu * MenuOptions = this->menuBar()->addMenu("Options");
     MenuOptions->addAction("Show Sketch");
     MenuProcess->addSeparator();
     MenuOptions->addAction("Delete Sketch");

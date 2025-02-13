@@ -11,12 +11,14 @@ TabWidgetForCharts::TabWidgetForCharts()
     // Менять ли окно параметров при переключении или сделать для каждого своё рядом
     // Не менять окно параметров -- добавить белую вертикальную полосу, символизирующую отображающийся на другом графике угол или частоту
     //
-    //this->setFixedHeight(600);
+    this->setFixedHeight(560);
+
+
     MeasurementPlotTabFrequency = new WidgetForCustomPlot(this);
     addTab(MeasurementPlotTabFrequency,"Preview");
     PlotTabs.push_back(MeasurementPlotTabFrequency);
 
-/*
+
     MeasurementPlotTabAngle = new WidgetForCustomPlot(this);
     MeasurementPlotTabAngle->customPlot->xAxis->setLabel("Угол поворота, градусы");
     MeasurementPlotTabAngle->XRangeUnitsLabel->setText("град");
@@ -27,7 +29,7 @@ TabWidgetForCharts::TabWidgetForCharts()
     TimeOfFlightPlotTab = new WidgetForCustomPlot(this);
     TimeOfFlightPlotTab->customPlot->xAxis->setLabel("Расстояние, м");
     TimeOfFlightPlotTab->XRangeUnitsLabel->setText("м");
-    addTab(TimeOfFlightPlotTab,"Cross-range");
+    addTab(TimeOfFlightPlotTab,"Down-range");
     PlotTabs.push_back(TimeOfFlightPlotTab);
 
 
@@ -62,7 +64,7 @@ TabWidgetForCharts::TabWidgetForCharts()
     PlotTabs.push_back(PrintPreviewTab);
 
 
-    */
+
 
 
 
