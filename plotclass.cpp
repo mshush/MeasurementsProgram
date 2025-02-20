@@ -57,7 +57,7 @@ PlotClass::PlotClass(QWidget * parent) : QCustomPlot(parent)
 
 
     xAxis->setLabel("Частота, ГГц");
-    yAxis->setLabel("Амплитуда, Дб");
+    yAxis->setLabel("Amplitude (dB)");
 
 
 
@@ -1243,21 +1243,6 @@ h-файл и dll
  * void SetIFFromPanelSlot(); -- IF bandwidth
  * MoveMode
  * Две кнопки -- чтобы не использовать background и response
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
  *
  *
  *

@@ -32,6 +32,14 @@ public:
     WidgetForCustomPlot * PrintPreviewTab;
 
 
+    WidgetForCustomPlot * SweepTab;
+    WidgetForCustomPlot * ProfRangeTab;
+    WidgetForCustomPlot * GatedProfileTab;
+    WidgetForCustomPlot * PatternTab;
+
+
+
+
 public slots:
     //void CreateNewTabFromImportedData();
     //void SendMeasureSignalToFirstTab(); // Теперь процесс имитируется в ProcessImitation

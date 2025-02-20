@@ -332,19 +332,23 @@ void CustomMeasurementTreeWidget::FillAzimuthRange()
 
     AzimuthRange->insertRow(0);
     AzimuthRange->setItem(0, 0, new QTableWidgetItem("Center (m)"));
-    AzimuthRange->setCellWidget(0, 1, new QLineEdit("1.5"));
+    AzimuthRangeCenterEdit = new QLineEdit("1.5");
+    AzimuthRange->setCellWidget(0, 1, AzimuthRangeCenterEdit);
 
     AzimuthRange->insertRow(1);
     AzimuthRange->setItem(1, 0, new QTableWidgetItem("Span (m)"));
-    AzimuthRange->setCellWidget(1, 1, new QLineEdit("0"));
+    AzimuthRangeSpanEdit = new QLineEdit("0");
+    AzimuthRange->setCellWidget(1, 1, AzimuthRangeSpanEdit);
 
     AzimuthRange->insertRow(2);
     AzimuthRange->setItem(2, 0, new QTableWidgetItem("N"));
-    AzimuthRange->setCellWidget(2, 1, new QLineEdit("101"));
+    AzimuthRangeNEdit = new QLineEdit("101");
+    AzimuthRange->setCellWidget(2, 1, AzimuthRangeNEdit);
 
     AzimuthRange->insertRow(3);
     AzimuthRange->setItem(3, 0, new QTableWidgetItem("Default N"));
-    AzimuthRange->setCellWidget(3, 1, new QCheckBox());
+    AzimuthRangeDefaultNCheckBox = new QCheckBox();
+    AzimuthRange->setCellWidget(3, 1, AzimuthRangeDefaultNCheckBox);
 
     //AzimuthRange->insertRow(4);
     //AzimuthRange->setCellWidget(4, 0, new QPushButton("Center-Span"));
@@ -473,15 +477,15 @@ void CustomMeasurementTreeWidget::FillPNA()
     PNA->setCellWidget(1, 1, PNAGeneratorEdit);
 
     PNA->insertRow(2);
-    PNA->setItem(2, 0, new QTableWidgetItem("Stop (m)"));
-    QComboBox * IFBox = new QComboBox(this);
-    IFBox->addItem("0.01 kHz");
-    IFBox->addItem( "0.1 kHz");
-    IFBox->addItem( "1.0 kHz");
-    IFBox->addItem( "3.0 kHz");
-    IFBox->addItem("10.0 kHz");
-    IFBox->addItem("35.0 kHz");
-    PNA->setCellWidget(2, 1, IFBox);
+    PNA->setItem(2, 0, new QTableWidgetItem("IF"));
+    PNAIFBox = new QComboBox(this);
+    PNAIFBox->addItem("0.01 kHz");
+    PNAIFBox->addItem( "0.1 kHz");
+    PNAIFBox->addItem( "1.0 kHz");
+    PNAIFBox->addItem( "3.0 kHz");
+    PNAIFBox->addItem("10.0 kHz");
+    PNAIFBox->addItem("35.0 kHz");
+    PNA->setCellWidget(2, 1, PNAIFBox);
 
     PNA->insertRow(3);
     PNA->setItem(3, 0, new QTableWidgetItem("OptimalValues"));
@@ -490,7 +494,7 @@ void CustomMeasurementTreeWidget::FillPNA()
     PNA->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     PNA->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 
-    PNA->setMaximumHeight(110);
+    PNA->setMaximumHeight(115);
     PNA->setColumnWidth(0, 140);
     PNA->setColumnWidth(1, 100);
 }

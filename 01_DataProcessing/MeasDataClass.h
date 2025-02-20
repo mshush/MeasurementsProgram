@@ -9,6 +9,8 @@
 #include <QDebug>
 #include "referencetarget.h"
 #include "common.h"
+#include "opu.h"
+//#include "MeasData.h"
 
 class MeasDataClass
 {

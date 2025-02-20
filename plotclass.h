@@ -24,7 +24,7 @@ public:
     PlotClass(QWidget *parent = nullptr);
     ~PlotClass();
 
-
+    QVector <double> KeyVector;
     QCPItemTracer * MouseMoveMarker;
     QCPItemText * MouseMoveLabel;
     bool markeraddbuttonactive = false;

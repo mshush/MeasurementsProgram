@@ -137,6 +137,8 @@ public slots:
     void FillControlsWidget();
     void AdjustContentsOfTableOfDifference(int row, int column);
 
+
+
 signals:
     void ErrorOccured(QString ErrorText);
 };

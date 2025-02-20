@@ -116,7 +116,6 @@ MainWindow::MainWindow(QWidget *parent)
     //qreal devicePixelRatio = screen->devicePixelRatio();
 
 
-    ConnectObjects();
 
     //this->setWindowState(Qt::WindowMaximized);
     //this->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding);
@@ -440,11 +439,33 @@ void MainWindow::ShowErrorMessage(QString Description, QString Advice)
 
 
 
+
+
+void MainWindow::ConnectMenu()
+{
+    connect(this->MeasureAction,&QAction::triggered, this, &MainWindow::OnMeasurePressed);
+
+    connect(this->MeasureBackgroundAction,&QAction::triggered, this, &MainWindow::OnMeasureBackgroundPressed);
+
+    connect(this->MeasureTargetAction,&QAction::triggered, this, &MainWindow::OnMeasureTargetPressed);
+}
+
+
+
+
+
+
+
+
+
+
+
+/*
 void MainWindow::ConnectObjects()
 {
 
 
-    /*
+
     //connect(TabOfTools->StartMeasurementsButton, &QPushButton::clicked, Process, &ProcessImitation::Measure);
     //connect(TabOfTools->ContinuousMeasurementsButton, &QPushButton::clicked, ChartTab, &TabWidgetForCharts::ContinuousMeasurementModeChanged);
     //connect(TabOfTools->SaveDataButton  , &QPushButton::clicked, ChartTab, &TabWidgetForCharts::SaveData); // Получше придумать как соединять, чтобы по вкладкам (возможно лучше в QidgetForCustomPlot перенести)
@@ -455,17 +476,16 @@ void MainWindow::ConnectObjects()
     //connect(TabOfTools->FourierTransformButton,        &QPushButton::clicked, ChartTab, &TabWidgetForCharts::PerformFourierTransformOfCurrentPlot);
     //connect(TabOfTools->InverseFourierTransformButton, &QPushButton::clicked, ChartTab, &TabWidgetForCharts::PerformInverseFourierTransformOfCurrentPlot);
     //connect(TabOfParameters->ResultTab->SetCurrentAngleButton, &QPushButton::clicked, ChartTab, &TabWidgetForCharts::ChangeDemonstratedAngles);
-    //connect(Process, &ProcessImitation::ProgressSignal, this->ProgressBar, &QProgressBar::setValue);
     //connect(TabOfParameters->FileTreeTab, &TreeWidgetForFiles::FileWasChosenSignal, TabOfParameters->ResultTab, &ResultParametersWidget::FileChosenInTreeWidget);
     //connect(TabOfTools->GetPlotDataButton, &QPushButton::clicked, this, &MainWindow::GetPlotFromDat);
     //connect(TabOfParameters->ResultTab->CalculateDistancePortraitButton, &QPushButton::clicked, this, &MainWindow::CalculateDistancePortrait);
 
 
 
-    connect(Process, &ProcessImitation::MeasurementFinished, this, &MainWindow::SetThreeDimensionalVector);
+    //connect(Process, &ProcessImitation::MeasurementFinished, this, &MainWindow::SetThreeDimensionalVector);
 
-    connect(TabOfTools, &TabWidgetForTools::ContinuousMeasurementsButtonClickedSignal, Process,                           &ProcessImitation::MeasureContinuously);
-    connect(TabOfTools, &TabWidgetForTools::ContinuousMeasurementsButtonClickedSignal, ChartTab->PlotTabs[0]->customPlot, &PlotClass::ContinuousMeasurementsModeChanged);
+    //connect(TabOfTools, &TabWidgetForTools::ContinuousMeasurementsButtonClickedSignal, Process,                           &ProcessImitation::MeasureContinuously);
+    //connect(TabOfTools, &TabWidgetForTools::ContinuousMeasurementsButtonClickedSignal, ChartTab->PlotTabs[0]->customPlot, &PlotClass::ContinuousMeasurementsModeChanged);
     // Такой же connect для PlotTabs[1]???? Или наоборот только для углов?
 
     //!!!ПЕРЕДЕЛАТЬ!!!
@@ -480,25 +500,25 @@ void MainWindow::ConnectObjects()
     //connect(TabOfParameters->ResultTab->CalibrationSetButton,       &QPushButton::clicked, this, &MainWindow::SetCalibration);
 
 
-    connect(Thread, &QThread::finished, Thread, &QThread::deleteLater); // Можно убрать
+    //connect(Thread, &QThread::finished, Thread, &QThread::deleteLater); // Можно убрать
 
-    connect(Process, &ProcessImitation::IterationOfMeasurementFinished, this, &MainWindow::HandleReceivedMeasuredFreqVector);
+    //connect(Process, &ProcessImitation::IterationOfMeasurementFinished, this, &MainWindow::HandleReceivedMeasuredFreqVector);
 
 
 
 
     //Menu Actions: (Действия в меню сверху)
-    connect(SaveFileAction,     &QAction::triggered, ChartTab->PlotTabs[0]->customPlot, &PlotClass::SaveAs);
-    connect(OpenFileAction,     &QAction::triggered, ChartTab->PlotTabs[0]->customPlot, &PlotClass::OpenFile);
-    connect(StartMeasureAction, &QAction::triggered, Process ,                          &ProcessImitation::Measure);
-    connect(StopMeasureAction,  &QAction::triggered, Process ,                          &ProcessImitation::StopEverything);
+    //connect(SaveFileAction,     &QAction::triggered, ChartTab->PlotTabs[0]->customPlot, &PlotClass::SaveAs);
+    //connect(OpenFileAction,     &QAction::triggered, ChartTab->PlotTabs[0]->customPlot, &PlotClass::OpenFile);
+    //connect(StartMeasureAction, &QAction::triggered, Process ,                          &ProcessImitation::Measure);
+    //connect(StopMeasureAction,  &QAction::triggered, Process ,                          &ProcessImitation::StopEverything);
     // Перенести функцию сохранения в другое место
     // Как осуществлять отдельно сохранение графика от угла?
 
-    */
+
 
     //Ошибки
-    /*
+
     connect(this,                               &MainWindow                     ::ErrorOccured, TabOfTools, &TabWidgetForTools::DisplayError);
     connect(TabOfParameters->MeasurementTab,    &MeasurementsParametersWidget   ::ErrorOccured, TabOfTools, &TabWidgetForTools::DisplayError);
     connect(TabOfParameters->ResultTab,         &ResultParametersWidget         ::ErrorOccured, TabOfTools, &TabWidgetForTools::DisplayError);
@@ -507,9 +527,9 @@ void MainWindow::ConnectObjects()
     connect(this->ChartTab->PlotTabs[2],        &WidgetForCustomPlot            ::ErrorOccured, TabOfTools, &TabWidgetForTools::DisplayError);
     connect(ChartTab->PlotTabs[0]->customPlot,  &PlotClass                      ::ErrorOccured, TabOfTools, &TabWidgetForTools::DisplayError);
     connect(TabOfTools,                         &TabWidgetForTools              ::ErrorOccured, TabOfTools, &TabWidgetForTools::DisplayError);
-    */
-}
 
+}
+*/
 
 
 void MainWindow::HandleReceivedMeasuredFreqVector(QVector <double> ReceivedVector)
@@ -642,11 +662,22 @@ void MainWindow::FillMenu()
 
 
     QMenu * MenuMeasure = this->menuBar()->addMenu("Measure");
+
+    MeasureAction = new QAction("Measure");
+    MenuMeasure->addAction(MeasureAction);
+    MeasureBackgroundAction = new QAction("Single Angle Bkgnd Measure");
+    MenuMeasure->addAction(MeasureBackgroundAction);
+    MeasureTargetAction = new QAction("Measure Target");
+    MenuMeasure->addAction(MeasureTargetAction);
+    MenuMeasure->addSeparator();
+
     MenuMeasure->addAction("Measure");
     MenuMeasure->addAction("Measure Current Aspect");
     MenuMeasure->addSeparator();
-    MenuMeasure->addAction("Single Angle Bkgnd Calibration");
+
+    MenuMeasure->addAction("Single Angle Bkgnd Measure");
     MenuMeasure->addAction("Response Calibration");
+
     MenuMeasure->addSeparator();
     MenuMeasure->addSeparator();
     MenuMeasure->addAction("Abort");
@@ -665,6 +696,9 @@ void MainWindow::FillMenu()
     MenuMeasure->addSeparator();
     MenuMeasure->addAction("Reset Bkgnd Cal");
     MenuMeasure->addAction("Reset Response Cal");
+
+
+
     //Удалить --------------------
     /*
     StartMeasureAction = new QAction("Start",       this);
@@ -726,4 +760,179 @@ void MainWindow::FillMenu()
 
     this->menuBar()->addMenu("Create Pylon Compensation");
 
+    QMenu * MenuLanguage = new QMenu(tr("Language"));
+    QAction * SetRussianLanguageAction = new QAction(tr("Russian"));
+    QAction * SetEnglishLanguageAction = new QAction(tr("English"));
+    menuBar()->addMenu(MenuLanguage);
+    MenuLanguage->addAction(SetRussianLanguageAction);
+    MenuLanguage->addAction(SetEnglishLanguageAction);
+    connect(SetRussianLanguageAction,&QAction::triggered, this, &MainWindow::ChangeLanguageToRussian);
+    connect(SetEnglishLanguageAction,&QAction::triggered, this, &MainWindow::ChangeLanguageToEnglish);
+
+
 }
+
+
+
+void MainWindow::SetAllVNAParamsFromInterface()
+{
+
+    int    Pow       = TabOfParameters->MeasurementTab->PNAGeneratorEdit        ->text().toDouble();
+    double CenterFreq= TabOfParameters->MeasurementTab->FrequencyRangeCenterEdit->text().toDouble();
+    double SpanFreq  = TabOfParameters->MeasurementTab->FrequencyRangeSpanEdit  ->text().toDouble();
+    double StartFreq = CenterFreq - SpanFreq / 2;
+    double StopFreq  = CenterFreq + SpanFreq / 2;
+    int    NumOfPoi  = TabOfParameters->MeasurementTab->FrequencyRangeNEdit     ->text().toDouble();
+    int    IF        = TabOfParameters->MeasurementTab->PNAIFBox                ->currentIndex(); // Спросить Арину, так ли надо?
+    QString Datatype = "double";
+    QString MeasParameter = "S21";
+
+    MeasData.SetAllVNAParamsNoAction(Pow, StartFreq, StopFreq, NumOfPoi, IF, Datatype, MeasParameter);
+
+}
+
+
+void MainWindow::SetAllOPUParamsFromInterface()
+{
+    double centerAzAngl = TabOfParameters->MeasurementTab->AzimuthRangeCenterEdit  ->text().toDouble();
+    double spanAzAngl   = TabOfParameters->MeasurementTab->AzimuthRangeSpanEdit    ->text().toDouble();
+    double startAzAngl  = centerAzAngl - spanAzAngl / 2;
+    double stopAzAngl   = centerAzAngl + spanAzAngl / 2;
+
+    //double centerElAngl= TabOfParameters->MeasurementTab->ElevationRangeCenterEdit->text().toDouble();
+    //double spanElAngl  = TabOfParameters->MeasurementTab->ElevationRangeSpanEdit  ->text().toDouble();
+    //double startElAngl = centerElAngl - spanElAngl / 2;
+    //double stopElAngl  = centerElAngl + spanElAngl / 2;
+
+    double startElAngl  = 0; //Пока без них
+    double stopElAngl   = 0;
+
+    int Speed           = TabOfParameters->MeasurementTab->AzimuthRangeCenterEdit  ->text().toInt();
+    int AzTrigPoints    = 1601;
+    int ElTrigPoints    = 0;
+    QString MoveMode    = "CCW";
+
+    MeasData.SetAllOPUParamsNoAction(startAzAngl, stopAzAngl, startElAngl, stopElAngl, Speed, AzTrigPoints, ElTrigPoints, MoveMode);
+}
+
+
+void MainWindow::OnMeasurePressed()
+{
+    this->SetAllOPUParamsFromInterface();
+    this->SetAllVNAParamsFromInterface();
+    this->MeasControl.MeasureResponseAtSignleAngl(MeasData);
+}
+
+
+void MainWindow::OnMeasureBackgroundPressed()
+{
+    this->SetAllOPUParamsFromInterface();
+    this->SetAllVNAParamsFromInterface();
+    this->MeasControl.MeasureBckgndAtSingleAngl(MeasData);
+}
+
+
+void MainWindow::OnMeasureTargetPressed()
+{
+    this->SetAllOPUParamsFromInterface();
+    this->SetAllVNAParamsFromInterface();
+    this->MeasControl.MeasureAzTarget(MeasData);
+}
+
+
+void MainWindow::SetConnectionMainWinWithMeasCntrl()
+{
+    connect(&(MeasControl.ProcessClass),& PrimaryDataProc::UpdateSweepGraphSignal, this, &MainWindow::UpdateSweepGraphSlot);
+    connect(&(MeasControl.ProcessClass),& PrimaryDataProc::UpdateProfRangeSignal, this, &MainWindow::UpdateProfRangeSlot);
+    connect(&(MeasControl.ProcessClass),& PrimaryDataProc::UpdateGatedProfileRangeSignal, this, &MainWindow::UpdateGatedProfileRangeSlot);
+    connect(&(MeasControl.ProcessClass),& PrimaryDataProc::UpdatePatternSignal, this, &MainWindow::UpdatePatternSlot);
+
+}
+
+
+void MainWindow::UpdateSweepGraphSlot(DoubleVector SweepArrayAmpl) //От частоты
+{
+    //DoubleVector XVector = ChartTab->FrequencyTab->customPlot->KeyVector;
+    int N = SweepArrayAmpl.size();
+    QVector<double> XVector;
+    for (int i=0;i<N;i++)
+    {
+        XVector.append(double(i));
+    }
+    this->ChartTab->SweepTab->customPlot->graph(0)->setData(XVector, SweepArrayAmpl);
+
+    void ResetPlot();
+}
+void MainWindow::UpdateProfRangeSlot(DoubleVector ProfRangeArrayAmpl) // От расстояния
+{
+    //DoubleVector XVector = ChartTab->FrequencyTab->customPlot->KeyVector;
+    int N = ProfRangeArrayAmpl.size();
+    QVector<double> XVector;
+    for (int i=0;i<N;i++)
+    {
+        XVector.append(double(i));
+    }
+    this->ChartTab->ProfRangeTab->customPlot->graph(0)->setData(XVector, ProfRangeArrayAmpl);
+
+    void ResetPlot();
+}
+void MainWindow::UpdateGatedProfileRangeSlot(DoubleVector SweepArrayAmpl)// От расстояния
+{
+    //DoubleVector XVector = ChartTab->FrequencyTab->customPlot->KeyVector;
+    int N = SweepArrayAmpl.size();
+    QVector<double> XVector;
+    for (int i=0;i<N;i++)
+    {
+        XVector.append(double(i));
+    }
+    this->ChartTab->GatedProfileTab->customPlot->graph(0)->setData(XVector, SweepArrayAmpl);
+
+    void ResetPlot();
+}
+void MainWindow::UpdatePatternSlot(DoubleVector DiagAnglArrayAmpl) // От угла
+{
+    //DoubleVector XVector = ChartTab->FrequencyTab->customPlot->KeyVector;
+    int N = DiagAnglArrayAmpl.size();
+    QVector<double> XVector;
+    for (int i=0;i<N;i++)
+    {
+        XVector.append(double(i));
+    }
+    this->ChartTab->PatternTab->customPlot->graph(0)->setData(XVector, DiagAnglArrayAmpl);//Переименовать в Pattern
+
+    void ResetPlot();
+}
+
+
+
+
+void MainWindow::ChangeLanguageToRussian()
+{
+
+
+
+}
+
+
+void MainWindow::ChangeLanguageToEnglish()
+{
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

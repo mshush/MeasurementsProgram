@@ -91,11 +91,23 @@ public:
 
 
     QComboBox * ConfigsRangeComboBox;
+
     QLineEdit * FrequencyRangeCenterEdit;
     QLineEdit * FrequencyRangeSpanEdit;
     QLineEdit * FrequencyRangeNEdit;
 
+    QLineEdit * AzimuthRangeCenterEdit;
+    QLineEdit * AzimuthRangeSpanEdit;
+    QLineEdit * AzimuthRangeNEdit;
+    QCheckBox * AzimuthRangeDefaultNCheckBox;
+
+    QLineEdit * ElevationRangeCenterEdit;
+    QLineEdit * ElevationRangeSpanEdit;
+    QLineEdit * ElevationRangeNEdit;
+    QCheckBox * ElevationRangeDefaultNCheckBox;
+
     QLineEdit * PNAGeneratorEdit;
+    QComboBox * PNAIFBox;
 
     QLineEdit * Pre_ProcessingGateStartEdit;
     QLineEdit * Pre_ProcessingGateStopEdit;

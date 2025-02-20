@@ -25,28 +25,32 @@ WidgetForCustomPlot::WidgetForCustomPlot(QWidget *parent)
     ControlsWidget->adjustSize();
     ControlsWidget->setSizePolicy(QSizePolicy::Fixed,QSizePolicy::Expanding);
     ControlsWidget ->setLayout(VerticalControlsLayout);
-    ControlsWidget->setFixedWidth(200);
+    ControlsWidget->setFixedWidth(280);
     //qDebug()<<"Размер="<<ControlsWidget->size();
 
-    FillControlsWidget();
+    //FillControlsWidget(); // Как в старой проге
 
 
 
 
 
-    //Закомментированная функциональная часть!!!!
+    //Раскомментированная функциональная часть!!!!
+    //------------------------------------------------------
     InitiateMovementGroupBox();
-    //VerticalControlsLayout->addWidget(MovementGroupBox);
+    VerticalControlsLayout->addWidget(MovementGroupBox);
 
     InitiateMarkerGroupBox();
-    //VerticalControlsLayout->addWidget(MarkerGroupBox);
+    VerticalControlsLayout->addWidget(MarkerGroupBox);
 
     InitiateSaveLayout();
-    //VerticalControlsLayout->addLayout(HorizontalSaveLayout);
+    VerticalControlsLayout->addLayout(HorizontalSaveLayout);
+    //------------------------------------------------------
 
 
 
     //VerticalControlsLayout->addWidget(MarkerTableView);
+
+
     /*
     QPushButton * FourierButton = new QPushButton("F");
     ////connect(FourierButton, &QPushButton::clicked, this->customPlot, &PlotClass::FourierTransform);
@@ -63,20 +67,20 @@ WidgetForCustomPlot::WidgetForCustomPlot(QWidget *parent)
     HorizontalPlotLayout->addWidget(ControlsWidget);
 
 
-    ////connect(customPlot->xAxis, &QCPAxis::rangeChanged, this, &WidgetForCustomPlot::XAxisRangeChanged);
-    ////connect(customPlot->yAxis, &QCPAxis::rangeChanged, this, &WidgetForCustomPlot::YAxisRangeChanged);
+    //connect(customPlot->xAxis, &QCPAxis::rangeChanged, this, &WidgetForCustomPlot::XAxisRangeChanged);
+    //connect(customPlot->yAxis, &QCPAxis::rangeChanged, this, &WidgetForCustomPlot::YAxisRangeChanged);
 
-    //connect(customPlot->xAxis, SIGNAL(rangeChanged(QCPRange)), this, SLOT(XAxisRangeChanged(QCPRange)));
-    //connect(customPlot->yAxis, SIGNAL(rangeChanged(QCPRange)), this, SLOT(YAxisRangeChanged(QCPRange)));
+    connect(customPlot->xAxis, SIGNAL(rangeChanged(QCPRange)), this, SLOT(XAxisRangeChanged(QCPRange)));
+    connect(customPlot->yAxis, SIGNAL(rangeChanged(QCPRange)), this, SLOT(YAxisRangeChanged(QCPRange)));
 
-    //connect(customPlot, &PlotClass::MarkerAddedSignal, this, &WidgetForCustomPlot::AddMarkerToTable);
-    //connect(customPlot, &PlotClass::AllMarkersDeletedSignal, this, &WidgetForCustomPlot::ClearTable);
+    connect(customPlot, &PlotClass::MarkerAddedSignal, this, &WidgetForCustomPlot::AddMarkerToTable);
+    connect(customPlot, &PlotClass::AllMarkersDeletedSignal, this, &WidgetForCustomPlot::ClearTable);
 
 
-    //connect(customPlot, &PlotClass::MarkerDeletedSignal, this, &WidgetForCustomPlot::RemoveMarkerFromTable);
+    connect(customPlot, &PlotClass::MarkerDeletedSignal, this, &WidgetForCustomPlot::RemoveMarkerFromTable);
 
-    //connect(customPlot, &PlotClass::MarkerSelectedSignal, this, &WidgetForCustomPlot::HighlightMarkerInTable);
-    //connect(customPlot, &PlotClass::MarkerUnSelectedSignal, this, &WidgetForCustomPlot::UnHighlightMarkerInTable);
+    connect(customPlot, &PlotClass::MarkerSelectedSignal, this, &WidgetForCustomPlot::HighlightMarkerInTable);
+    connect(customPlot, &PlotClass::MarkerUnSelectedSignal, this, &WidgetForCustomPlot::UnHighlightMarkerInTable);
 
 
 
@@ -477,7 +481,7 @@ void WidgetForCustomPlot::InitiateSetRangeGroupBox()
     YRangeLabel2 = new QLabel("-",this);
     YRangeEditTo = new QLineEdit(YUpper,this);
     YRangeEditTo->setAlignment(Qt::AlignLeft);
-    YRangeUnitsLabel = new QLabel("Дб",this);
+    YRangeUnitsLabel = new QLabel("dB",this);
 
     XRangeEditFrom->setValidator(DoubleValidator);
     XRangeEditTo->setValidator(DoubleValidator);
@@ -1195,7 +1199,7 @@ void WidgetForCustomPlot::FillControlsWidget()
 {
 
     QStringList iconPaths =
-        {
+        { // Пере
         "C:/Users/HP/Documents/MeasurementsProgram/Y1.png",
         "C:/Users/HP/Documents/MeasurementsProgram/Y2.png",
         "C:/Users/HP/Documents/MeasurementsProgram/Y3.png",

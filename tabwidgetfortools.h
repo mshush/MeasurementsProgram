@@ -44,6 +44,8 @@ public:
 
 
 
+
+
 signals:
     void ContinuousMeasurementsButtonClickedSignal(bool CheckedStatus);
     void ErrorOccured(QString ErrorText);

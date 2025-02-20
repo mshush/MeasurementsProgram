@@ -26,7 +26,9 @@
 #include <QThread>
 #include <QProgressBar>
 #include <measurement.h>
-
+#include <01_DataProcessing/MeasData.h>
+//#include <01_DataProcessing/primarydaraproc.h>
+#include <measurmentscontrol.h>
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -41,6 +43,22 @@ class MainWindow : public QMainWindow
 public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
+
+
+
+
+    MeasDataClass MeasData;
+    MeasurmentsControl MeasControl;
+
+
+
+
+
+
+
+
+
+
 
     //QMenuBar * MenuBar;
     TabWidgetForParameters * TabOfParameters;
@@ -57,6 +75,8 @@ public:
     ThreeDimensionalVector BackgroundFunction;
 
     QThread * Thread;
+
+
 
     //enum ModeOfMeasurement {Response, Background, Calibration};
 
@@ -84,7 +104,6 @@ public:
 
     void ShowErrorMessage(QString Description, QString Advice);
 
-    void ConnectObjects();
 
     void ConnectPlot();
     void ConnectMenu();
@@ -107,6 +126,12 @@ public:
 
     int CurrentPlotIndex=0;
 
+
+
+    QAction* MeasureAction;
+    QAction* MeasureBackgroundAction;
+    QAction* MeasureTargetAction;
+
 /*
 protected:
     void showEvent(QShowEvent *event) override;
@@ -115,14 +140,33 @@ protected:
 
     void FillMenu();
 
-
+    void SetConnectionMainWinWithMeasCntrl();
 
 public slots:
     //void TellPlotTabsToChangeAngle(QVector <std::complex<double>> NeededRowFromThreeDimensionalVector); //
 
     void HandleReceivedMeasuredFreqVector( QVector <double> ReceivedVector);
 
+    void SetAllVNAParamsFromInterface();
+    void SetAllOPUParamsFromInterface();
+
     void GetPlotFromDat();
+
+
+
+    void OnMeasurePressed();
+    void OnMeasureBackgroundPressed();
+    void OnMeasureTargetPressed();
+
+
+    void UpdateSweepGraphSlot(DoubleVector SweepArrayAmpl);
+    void UpdateProfRangeSlot(DoubleVector ProfRangeArrayAmpl);
+    void UpdateGatedProfileRangeSlot(DoubleVector SweepArrayAmpl);
+    void UpdatePatternSlot(DoubleVector DiagAnglArrayAmpl);
+
+
+    void ChangeLanguageToRussian();
+    void ChangeLanguageToEnglish();
 
 signals:
     void ErrorOccured(QString ErrorText);

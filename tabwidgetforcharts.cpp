@@ -13,7 +13,43 @@ TabWidgetForCharts::TabWidgetForCharts()
     //
     this->setFixedHeight(560);
 
+    WidgetForCustomPlot * SweepTab;
+    WidgetForCustomPlot * ProfRangeTab;
+    WidgetForCustomPlot * GatedProfileTab;
+    WidgetForCustomPlot * PatternTab;
 
+    SweepTab = new WidgetForCustomPlot(this);
+    SweepTab->customPlot->xAxis->setLabel("Frequency (GHz)");
+    SweepTab->XRangeUnitsLabel->setText("GHz");
+    addTab(SweepTab,"Sweep");
+    PlotTabs.push_back(SweepTab);
+
+
+    ProfRangeTab = new WidgetForCustomPlot(this);
+    ProfRangeTab->customPlot->xAxis->setLabel("Delay (m)");
+    ProfRangeTab->XRangeUnitsLabel->setText("m");
+    addTab(ProfRangeTab,"Prof Range");
+    PlotTabs.push_back(ProfRangeTab);
+
+    GatedProfileTab = new WidgetForCustomPlot(this);
+    GatedProfileTab->customPlot->xAxis->setLabel("Delay (m)");
+    GatedProfileTab->XRangeUnitsLabel->setText("m");
+    addTab(GatedProfileTab,"Gated Profile");
+    PlotTabs.push_back(GatedProfileTab);
+
+
+
+    PatternTab = new WidgetForCustomPlot(this);
+    PatternTab->customPlot->xAxis->setLabel("Az (deg)");
+    PatternTab->XRangeUnitsLabel->setText("deg");
+    addTab(PatternTab,"Pattern");
+    PlotTabs.push_back(PatternTab);
+
+
+
+
+
+    /*
     MeasurementPlotTabFrequency = new WidgetForCustomPlot(this);
     addTab(MeasurementPlotTabFrequency,"Preview");
     PlotTabs.push_back(MeasurementPlotTabFrequency);
@@ -62,7 +98,7 @@ TabWidgetForCharts::TabWidgetForCharts()
     PrintPreviewTab = new WidgetForCustomPlot(this);
     addTab(PrintPreviewTab,"Print Preview");
     PlotTabs.push_back(PrintPreviewTab);
-
+    */
 
 
 
