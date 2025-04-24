@@ -13,7 +13,7 @@
 #include <QDoubleValidator>
 #include <QButtonGroup>
 #include <QTreeWidget>
-#include <custommeasurementtreewidget.h>>
+#include <custommeasurementtreewidget.h>
 
 
 

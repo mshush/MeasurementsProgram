@@ -2,23 +2,13 @@
 #include "ui_mainwindow.h"
 
 
-#include <QScreen>
-#include <iostream>
+//#include <QScreen>
+//#include <iostream>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
 {
-
-    //QLocale::setDefault(QLocale(QLocale::Russian, QLocale::Russia));
-
-
-
-    //qputenv("QT_SCALE_FACTOR", "1.5");
-    //QGuiApplication::setAttribute(Qt::AA_Use96Dpi);
-
-    //QGuiApplication::setAttribute(Qt::AA_Use96Dpi); // Разобраться, что делает
-    //qputenv("QT_AUTO_SCREEN_SCALE_FACTOR", "0");
 
     QFont Font("Segoe UI", 12); // Был QFont(Segoe UI,9,-1,5,400,0,0,0,0,0,0,0,0,0,0,1)
     QApplication::setFont(Font);
@@ -27,67 +17,12 @@ MainWindow::MainWindow(QWidget *parent)
 
 
     FillMenu();
-
-
-
-    Process = new ProcessImitation();
-
-    Thread = new QThread(this);
-
-    //Process->moveToThread(Thread);
-    //Thread->start();
-
-
-    //QVBoxLayout *OutermostVerticalLayout = new QVBoxLayout;
+    ConnectMenu();
 
     TabOfTools = new TabWidgetForTools;
-    //TabOfTools->resize(800,200);
-    //TabOfTools->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Fixed);
-    //OutermostVerticalLayout->addWidget(TabOfTools);
-
-    //QHBoxLayout * MiddleHorizontalLayout = new QHBoxLayout;
-
-
-    //QVBoxLayout * InnerVerticalLayout = new QVBoxLayout;
 
     ChartTab = new TabWidgetForCharts;
-    //InnerVerticalLayout->addWidget(ChartTab);
-
     TabOfParameters = new TabWidgetForParameters;
-
-    //QHBoxLayout * BottomHorizontalLayout = new QHBoxLayout;
-
-
-    //MiddleHorizontalLayout->addWidget(TabOfParameters);
-    //MiddleHorizontalLayout->addLayout(InnerVerticalLayout);
-
-    //OutermostVerticalLayout->addLayout(MiddleHorizontalLayout);
-    //OutermostVerticalLayout->addLayout(BottomHorizontalLayout);
-
-    //ProgressBar = new QProgressBar(this);
-    //OutermostVerticalLayout->addWidget(ProgressBar);
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-/*
-    QHBoxLayout * OutermostHorizontalLayout = new QHBoxLayout(this);
-    QVBoxLayout * LeftVerticalLayout = new QVBoxLayout(this);
-    OutermostHorizontalLayout->addLayout(LeftVerticalLayout);
-
-    LeftVerticalLayout->addWidget(ChartTab);
-    LeftVerticalLayout->addWidget(TabOfTools);
-
-    OutermostHorizontalLayout->addWidget(TabOfParameters);
-
-    centralWidget()->setLayout(OutermostHorizontalLayout);
-*/
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
     QLayout * MainLayout = new QVBoxLayout(); // Задавать абстрактным лучше или хуже?
@@ -103,244 +38,665 @@ MainWindow::MainWindow(QWidget *parent)
     ChartTab    ->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Expanding);
     TabOfTools  ->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Expanding);
 
+
     OutermostHorizontalSplitter->addWidget(TabOfParameters);
 
     centralWidget()->setLayout(MainLayout);
 
+    /*
+    Translator = new QTranslator(this);
+
+    if (Translator->load("MeasProg_ru.qm"))
+    {
+        qApp->installTranslator(Translator);
+    }
+    else
+    {
+        //qDebug() << "Failed to load Russian translation file.";
+    }
+    */
+
+    MeasControl = new MeasurmentsControl;
+
+    //MeasThread = new QThread;
+    //MeasControl->moveToThread(MeasThread);
+    //MeasThread->start(QThread::TimeCriticalPriority);
 
 
 
-    //this->resize(2560,1440); Не работает
-    //QScreen *screen = QGuiApplication::primaryScreen();
-    //screen->setProperty("QT_SCREEN_SCALE_FACTOR", "0");
-    //qreal devicePixelRatio = screen->devicePixelRatio();
+    Timer = new QTimer(this);
+    //connect(Timer, &QTimer::timeout, this, &MainWindow::UpdatePlots); // Куда-нибудь в другое место
 
 
 
-    //this->setWindowState(Qt::WindowMaximized);
-    //this->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding);
+
+    for (int i = 0; i < 1601; i++)  {X1601.push_back(i);}
 
     this->setWindowFlags(Qt::Window | Qt::WindowTitleHint | Qt::WindowSystemMenuHint | Qt::WindowCloseButtonHint | Qt::WindowMinMaxButtonsHint);
+
     this->setWindowState(Qt::WindowMaximized);
-}
 
 
+    connect(MeasControl,&MeasurmentsControl::updateGraph,this, &MainWindow::UpdateAzimuthPlot);
 
 
-void MainWindow::SetThreeDimensionalVector(ThreeDimensionalVector F)
-{
-
-    StoredFunction = F;
-    // !!! ПЕРЕДЕЛАТЬ !!!
-    //azim = StoredFunction.FindAzimuthIndex   (TabOfParameters->ResultTab->SetCurrentAzimuthDoubleSpinBox    ->value());
-    //elev = StoredFunction.FindElevationIndex (TabOfParameters->ResultTab->SetCurrentElevationDoubleSpinBox  ->value());
-
-    //QVector <std::complex<double>> FreqVectorAtChosenAngle = F.GetFrequencyVectorAt(azim, elev);
-    //this->ChartTab->UpdateMeasurementPlot(FreqVectorAtChosenAngle);
-
-    auto start0 = std::chrono::system_clock::now();
-
-    PlotClass * PltPtr0 = this->ChartTab->PlotTabs[0]->customPlot;
-    PltPtr0->graph(0)->setData(F.FreqVector(), F.AmplitudeVectorAtAngles(azim,elev));
-    PltPtr0->rescaleAxes();
-    PltPtr0->replot();
-
-
-    PlotClass * PltPtr1 = this->ChartTab->PlotTabs[1]->customPlot;
-    PltPtr1->graph(0)->setData(F.AzimuthVector(), F.AmplitudeVectorAtFrequencyElevation(0,elev));
-    PltPtr1->rescaleAxes();
-    PltPtr1->replot();
-
-    // Сделать ли зависимость от угла наклона?
-
-    PlotClass * PltPtr2 = this->ChartTab->PlotTabs[2]->customPlot;
-    PltPtr2->graph(0)->setData(F.DistVector(), F.FourierAmplVectorAtAngles(azim,elev));
-    PltPtr2->rescaleAxes();
-    PltPtr2->replot();
-
-    auto end0 = std::chrono::system_clock::now();
-    auto elapsed0 =  std::chrono::duration_cast<std::chrono::milliseconds>(end0 - start0);
-    qDebug() << " Время отрисовки всех графиков " << elapsed0.count() << '\n';
-
-}
-
-
-
-void MainWindow::ChangeAngleOfDemonstration()
-{
-    PlotClass * PltPtr = this->ChartTab->PlotTabs[0]->customPlot;
-
-    if (PltPtr->graph(0)->data()->size()>0)
-    {
-        // !!! Переделать !!!
-        //azim = StoredFunction.FindAzimuthIndex(TabOfParameters->ResultTab->SetCurrentAzimuthDoubleSpinBox->value());
-        //elev = StoredFunction.FindElevationIndex(TabOfParameters->ResultTab->SetCurrentElevationDoubleSpinBox->value());
-
-        PltPtr->graph(0)->setData(StoredFunction.FreqVector(), StoredFunction.AmplitudeVectorAtAngles(azim,elev));
-
-
-        //QVector <std::complex<double>> FreqVectorAtChosenAngle = StoredFunction.GetFrequencyVectorAt(r,t);
-        //this->ChartTab->UpdateMeasurementPlot(FreqVectorAtChosenAngle);
-
-        if (PltPtr->graph(1)->data()->size()>0)
-        {
-            //PltPtr->graph(1)->setData(BackgroundFunction.FreqVector(), BackgroundFunction.AmplitudeVectorAtAngles(azim,elev));
-
-            //PlotClass * PltPtr1 = this->ChartTab->PlotTabs[1]->customPlot;
-            //PltPtr1->graph(1)->setData(BackgroundFunction.DistVector(), BackgroundFunction.FourierAmplVectorAtAngles(azim,elev));
-
-        }
-        PltPtr->rescaleAxes();
-        PltPtr->replot();
-
-        PlotClass * PltPtr1 = this->ChartTab->PlotTabs[1]->customPlot;
-        //PltPtr1->graph(0)->setData(StoredFunction.DistVector(), StoredFunction.FourierAmplVectorAtAngles(azim,elev));
-        PltPtr1->rescaleAxes();
-        PltPtr1->replot();
-
-    }
-    else
-    {
-        emit ErrorOccured("mainwindow : Измеренных данных не обнаружено.");
-        //ShowErrorMessage("Измеренных данных не обнаружено!", "Убедитесь, что измерение прошло успешно");
-    }
-
-}
-
-
-
-
-void MainWindow::SaveThreeDimensionalVector()
-{
-    QString DateString = QDate::currentDate().toString("yyyy-MM-dd");
-    QString TimeString = QTime::currentTime().toString("HH-mm");
-
-    QString NameOfSavedFile = "Измерение_" + DateString + "_" + TimeString;
-
-    QString Path = QDir::homePath() + "/" + NameOfSavedFile + ".dat";
-
-    QString FilePath = QFileDialog::getSaveFileName(this, "Save File", Path, "Data Files (*.dat);;All Files (*)");
-
-    QFile File(FilePath);
-    if (!File.open(QIODevice::WriteOnly))
-    {
-        emit ErrorOccured("mainwindow : Не удалось открыть файл для записи.");
-        //ShowErrorMessage("Не удалось открыть файл для записи!",File.errorString());
-        return;
-    }
-
-
-    QDataStream out(&File);
-    out << StoredFunction;
-    File.close();
- }
-
-
-
-
- void MainWindow::SetBackground()
- {
-    // !!! Переделать !!!
-    /*
-    QFile File(TabOfParameters->ResultTab->BackgroundLineEdit->text());
-    if (!File.open(QIODevice::ReadOnly))
-    {
-        emit ErrorOccured("mainwindow : Не удалось открыть файл для чтения");
-        //ShowErrorMessage("Не удалось открыть файл для чтения!",File.errorString());
-        return;
-    }
-
-    QDataStream in(&File);
-    in >> BackgroundFunction;
-    File.close();
-
-
-
-    QVector <double> x = BackgroundFunction.FreqVector();
-
-    // !!! Переделать !!!
-    //azim = BackgroundFunction.FindAzimuthIndex(TabOfParameters->ResultTab->SetCurrentAzimuthDoubleSpinBox->value());
-    //elev = BackgroundFunction.FindElevationIndex    (TabOfParameters->ResultTab->SetCurrentElevationDoubleSpinBox    ->value());
-
-    QVector <std::complex<double>> f = BackgroundFunction.GetFrequencyVectorAt(azim,elev);
-
-    QVector <double> y(BackgroundFunction.VNAParameters.NumOfPoi);
-
-    for (int i=0;i<BackgroundFunction.VNAParameters.NumOfPoi;i++)
-    {
-        y[i] = abs(f[i]);
-    }
-
-    if (ChartTab->PlotTabs[0]->customPlot->graphCount()==1)
-    {
-        ChartTab->PlotTabs[0]->customPlot->AddEmptyGraphToPlot();
-    }
-
-    ChartTab->PlotTabs[0]->customPlot->graph(1)->setData(x,y);
-
-    ChartTab->PlotTabs[0]->customPlot->replot();
-    */
- }
-
-
-void MainWindow::SubstractBackground()
-{
-    // !!! Переделать !!!
-    /*
-    if (BackgroundFunction.ObjectMeasurementResult.size()==0)
-    {
-        QFile File(TabOfParameters->ResultTab->BackgroundLineEdit->text());
-        if (!File.open(QIODevice::ReadOnly))
-        {
-             emit ErrorOccured("mainwindow : Не удалось открыть файл для чтения.");
-            //ShowErrorMessage("Не удалось открыть файл для чтения!",File.errorString());
-            return;
-        }
-
-        QDataStream in(&File);
-        in >> BackgroundFunction;
-        File.close();
-    }
-
-    PlotClass * PltPtr = this->ChartTab->PlotTabs[0]->customPlot;
-
-
-    if (PltPtr->graph(0)->data()->size()>0)
-    {
-        //if (StoredFunction.CheckBackgroundForSuitability(BackgroundFunction) )
-        {
-            //StoredFunction.SubstractBackground(BackgroundFunction);
-            PltPtr->graph(1)->data()->clear();
-            this->SetThreeDimensionalVector(StoredFunction);
-            //this->BackgroundFunction.ClearFunction(); // Не очищать! Ещё потребуется при калибровке
-        }
-        //else
-        {
-            emit ErrorOccured("mainwindow : Данные фона не подходят по формату.");
-            ShowErrorMessage("Данные фона не подходят по формату!", "Убедитесь, что вы выбрали нужный файл");
-            return;
-        }
-    }
-    else
-    {
-        emit ErrorOccured("mainwindow : Нет данных.");
-        //ShowErrorMessage("Нет данных!", "Убедитесь, что измеренные данные были получены");
-        return;
-    }
-    */
+    //VNATest = new TestVNA();
 }
 
 
 MainWindow::~MainWindow()
 {
-
-    Thread->quit();
-    Thread->wait();
-    Thread->deleteLater();
-    Process->deleteLater();
-
+    Timer->stop();
     delete ui;
 }
+
+
+void MainWindow::ShowErrorMessage(QString Description, QString Advice)
+{
+    QMessageBox msgBox;
+    msgBox.setIcon(QMessageBox::Critical);
+    msgBox.setWindowTitle("Ошибка!");
+    msgBox.setText(Description);
+    msgBox.setInformativeText(Advice);
+    msgBox.setStandardButtons(QMessageBox::Ok);
+    msgBox.exec();
+}
+
+
+
+
+
+void MainWindow::ConnectMenu()
+{
+    connect(this->MeasureAzTargetAction,&QAction::triggered, this, &MainWindow::OnMeasureAzTargetActionPressed);
+    connect(this->MeasureResponseAtSignleAnglAction,&QAction::triggered, this, &MainWindow::OnMeasureResponseAtSignleAnglActionPressed);
+    connect(this->MeasureBckgndAtSingleAnglAction,&QAction::triggered, this, &MainWindow::OnMeasureBckgndAtSingleAnglActionPressed);
+    connect(this->MeasureCurrentAspectAction,&QAction::triggered, this, &MainWindow::OnMeasureCurrentAspectActionPressed);
+    connect(this->AbortAction,&QAction::triggered, this, &MainWindow::OnAbortActionPressed);
+
+    connect(this->PaintPlotsAction,&QAction::triggered, this, &MainWindow::PaintAllPlots);
+
+    // Перевод
+    connect(SetRussianLanguageAction,&QAction::triggered, this, &MainWindow::ChangeLanguageToRussian);
+    connect(SetEnglishLanguageAction,&QAction::triggered, this, &MainWindow::ChangeLanguageToEnglish);
+}
+
+
+
+
+void MainWindow::GetPlotFromDat() // Куда его строить?
+{
+    //WidgetForCustomPlot * NewPlotWidget = new WidgetForCustomPlot;
+    //this->ChartTab->addTab(NewPlotWidget,"Загружено");
+    //NewPlotWidget->customPlot=;
+}
+
+
+
+void MainWindow::FillMenu()
+{
+    //File
+    QMenu * MenuFile = this->menuBar()->addMenu("File");
+
+    QMenu * MenuFileWrite = new QMenu("Write", this);
+    MenuFileWrite->addAction("Sketch");
+    MenuFileWrite->addSeparator();
+    MenuFileWrite->addAction("Bkgnd Calibration");
+    MenuFileWrite->addAction("Response Calibration");
+    MenuFileWrite->addSeparator();
+    MenuFile->addMenu(MenuFileWrite);
+
+    QMenu * MenuFileRead = new QMenu("Read", this);
+    MenuFileRead->addAction("Sketch");
+    MenuFileRead->addSeparator();
+    MenuFileRead->addAction("Bkgnd Calibration");
+    MenuFileRead->addAction("Response Calibration");
+    MenuFileRead->addSeparator();
+    MenuFile->addMenu(MenuFileRead);
+    MenuFile->addSeparator();
+    MenuFile->addAction("Change Database Folder");
+    MenuFile->addAction("Print...");
+    MenuFile->addSeparator();
+    MenuFile->addAction("Exit");
+
+
+
+    QMenu * MenuMeasure = this->menuBar()->addMenu("Measure");
+
+    // Аринины функции
+    MeasureAzTargetAction = new QAction("MeasureAzTarget");
+    MeasureResponseAtSignleAnglAction = new QAction("MeasureResponseAtSignleAngl");
+    MeasureBckgndAtSingleAnglAction = new QAction("MeasureBckgndAtSingleAngl");
+    MeasureCurrentAspectAction = new QAction("MeasureCurrentAspect");
+    AbortAction = new QAction("Abort");
+    PaintPlotsAction = new QAction("PaintAllPlots");
+    MenuMeasure->addAction(MeasureAzTargetAction);
+    MenuMeasure->addAction(MeasureResponseAtSignleAnglAction);
+    MenuMeasure->addAction(MeasureBckgndAtSingleAnglAction);
+    MenuMeasure->addAction(MeasureCurrentAspectAction);
+    MenuMeasure->addAction(AbortAction);
+    MenuMeasure->addAction(PaintPlotsAction);
+    MenuMeasure->addSeparator();
+
+
+    // Дальше меню как в старой проге
+    MenuMeasure->addAction("Measure");
+    MenuMeasure->addAction("Single Angle Bkgnd Measure");
+    MenuMeasure->addAction("Measure Target");
+    MenuMeasure->addSeparator();
+    MenuMeasure->addAction("Measure Current Aspect");
+    MenuMeasure->addSeparator();
+    MenuMeasure->addAction("Single Angle Bkgnd Measure");
+    MenuMeasure->addAction("Response Calibration");
+    MenuMeasure->addSeparator();
+    MenuMeasure->addSeparator();
+    MenuMeasure->addAction("Abort");
+    MenuMeasure->addSeparator();
+    MenuMeasure->addAction("Bkgnd (Screen Open)");
+    MenuMeasure->addAction("Bkgnd (Screen Closed)");
+    MenuMeasure->addAction("Target (Screen Open)");
+    MenuMeasure->addAction("Target (Screen Closed)");
+    MenuMeasure->addAction("Calculate (Screen)");
+    MenuMeasure->addAction("Use Background Calibration");
+    MenuMeasure->addAction("Use Response Calibration");
+    MenuMeasure->addSeparator();
+    MenuMeasure->addAction("Use Reverse Direction");
+    MenuMeasure->addSeparator();
+    MenuMeasure->addAction("Use Average Bkgnd");
+    MenuMeasure->addSeparator();
+    MenuMeasure->addAction("Reset Bkgnd Cal");
+    MenuMeasure->addAction("Reset Response Cal");
+
+
+
+    QMenu * MenuProcess = this->menuBar()->addMenu("Process");
+    MenuProcess->addAction("Process");
+    MenuProcess->addSeparator();
+    MenuProcess->addAction("Swap Az/El");
+
+
+
+    QMenu * MenuPost_Process = this->menuBar()->addMenu("Post-Process");
+    MenuPost_Process->addAction("Post-Process");
+    MenuProcess->addSeparator();
+    MenuPost_Process->addAction("Frequency-Azimuth");
+    MenuPost_Process->addAction("Down-Range - Azimuth");
+    MenuPost_Process->addAction("Frequency - Cross-Range");
+    MenuPost_Process->addAction("ISAR");
+    MenuProcess->addSeparator();
+    MenuPost_Process->addAction("Create S-Files");
+    MenuPost_Process->addAction("AutoCreate S-Files");
+    MenuProcess->addSeparator();
+    MenuProcess->addSeparator();
+    MenuPost_Process->addAction("Use Pylon Compensation");
+    MenuProcess->addSeparator();
+    MenuPost_Process->addAction("Create Az-El File");
+
+
+    QMenu * MenuOptions = this->menuBar()->addMenu("Options");
+    MenuOptions->addAction("Show Sketch");
+    MenuProcess->addSeparator();
+    MenuOptions->addAction("Delete Sketch");
+    MenuProcess->addSeparator();
+    MenuOptions->addAction("Auto Close Polygon");
+    MenuProcess->addSeparator();
+    MenuOptions->addAction("Flip Sketch");
+    MenuOptions->addAction("ChangeSketchColourToGreen");
+    MenuOptions->addAction("Rotate Sketch");
+    MenuProcess->addSeparator();
+    MenuOptions->addAction("Image Equal Scaling");
+    MenuOptions->addAction("Reverse Sketch Rotation");
+    MenuProcess->addSeparator();
+    MenuProcess->addSeparator();
+    MenuOptions->addAction("Move El Cut to Az Cut");
+
+
+    this->menuBar()->addMenu("Create Pylon Compensation");
+
+    QMenu * MenuLanguage = new QMenu(tr("Language"));
+    SetRussianLanguageAction = new QAction(tr("Russian"));
+    SetEnglishLanguageAction = new QAction(tr("English"));
+    MenuLanguage->addAction(SetRussianLanguageAction);
+    MenuLanguage->addAction(SetEnglishLanguageAction);
+    menuBar()->addMenu(MenuLanguage);
+}
+
+
+
+void MainWindow::SetAllVNAParamsFromInterface()
+{
+
+    double Pow       = TabOfParameters->MeasurementTab->PNAGeneratorEdit        ->text().toDouble(); // 10 -- слишком много
+    double CenterFreq= TabOfParameters->MeasurementTab->FrequencyRangeCenterEdit->text().toDouble();
+    double SpanFreq  = TabOfParameters->MeasurementTab->FrequencyRangeSpanEdit  ->text().toDouble();
+    double StartFreq = CenterFreq - SpanFreq / 2;
+    double StopFreq  = CenterFreq + SpanFreq / 2;
+    int    NumOfPoi  = TabOfParameters->MeasurementTab->FrequencyRangeNEdit     ->text().toDouble();
+    int    IF        = TabOfParameters->MeasurementTab->IFValues[TabOfParameters->MeasurementTab->PNAIFBox->currentIndex()] ;
+    QString Datatype = "double";
+    QString MeasParameter = "S21";
+
+    qDebug()<< "Input Parameters: " << Pow<< StartFreq<< StopFreq<< NumOfPoi<< IF<< Datatype<< MeasParameter;
+    try
+    {
+        MeasData.SetAllVNAParamsNoAction(Pow, StartFreq, StopFreq, NumOfPoi, IF, Datatype, MeasParameter);
+        //MeasData.SetAllVNAParamsNoAction(0, 2.0, 4.0, 1601, 10000, "double", "S21");
+    }
+    catch(const std::exception& e)
+    {
+        std::cerr << "An error occurred in SetAllVNAParamsNoAction: " << e.what() << std::endl;
+    }
+    catch(...)
+    {
+        std::cerr << "An UNKNOWN error occurred in SetAllVNAParamsNoAction: " << std::endl;
+    }
+}
+
+
+
+
+
+void MainWindow::SetAllOPUParamsFromInterface()
+{
+    double centerAzAngl = TabOfParameters->MeasurementTab->AzimuthRangeCenterEdit  ->text().toDouble();
+    double spanAzAngl   = TabOfParameters->MeasurementTab->AzimuthRangeSpanEdit    ->text().toDouble();
+    double startAzAngl  = centerAzAngl - spanAzAngl / 2;
+    double stopAzAngl   = centerAzAngl + spanAzAngl / 2;
+
+    // У Арины пока нет таких параметров, но в интерфейсе есть:
+    //double centerElAngl= TabOfParameters->MeasurementTab->ElevationRangeCenterEdit->text().toDouble();
+    //double spanElAngl  = TabOfParameters->MeasurementTab->ElevationRangeSpanEdit  ->text().toDouble();
+    //double startElAngl = centerElAngl - spanElAngl / 2;
+    //double stopElAngl  = centerElAngl + spanElAngl / 2;
+
+    double startElAngl  = 0; //Пока без них
+    double stopElAngl   = 0;
+
+    int Speed           = TabOfParameters->MeasurementTab->AzimuthRangeCenterEdit  ->text().toInt();
+    int AzTrigPoints    = 1601;
+    int ElTrigPoints    = 1;
+    QString MoveMode    = "CCW";
+
+
+    try
+    {
+        MeasData.SetAllOPUParamsNoAction(startAzAngl, stopAzAngl, startElAngl, stopElAngl, Speed, AzTrigPoints, ElTrigPoints, MoveMode);
+    }
+    catch(const std::exception& e)
+    {
+        std::cerr << "An error occurred in SetAllVNAParamsNoAction: " << e.what() << std::endl;
+    }
+    catch(...)
+    {
+        std::cerr << "An UNKNOWN error occurred in SetAllVNAParamsNoAction: " << std::endl;
+    }
+
+}
+
+
+
+
+
+void MainWindow::ChangeLanguageToRussian()
+{
+    /*
+    QString translationFile = "MeasProg_ru.qm";
+    if (Translator->load(translationFile))
+    {
+        qApp->installTranslator(Translator);
+        //updateUI();
+    }
+    else
+    {
+        //qDebug() << "Failed to load translation file For Russian";
+    }
+    */
+}
+
+
+
+void MainWindow::ChangeLanguageToEnglish(){}
+
+
+
+
+void MainWindow::OnMeasureAzTargetActionPressed()
+{
+    qDebug()<<"1";
+    SetAllOPUParamsFromInterface();
+    SetAllVNAParamsFromInterface();
+    qDebug()<<"Starting Timer";
+    Timer->start(100);
+    ResetPlotNeeded = true;
+    qDebug()<<"Starting MeasureAzTarget";
+
+    try
+    {
+        MeasControl->MeasureAzTarget(MeasData);
+    }
+    catch(const std::exception& e)
+    {
+        std::cerr << "An error occurred in SetAllVNAParamsNoAction: " << e.what() << std::endl;
+    }
+    catch(...)
+    {
+        std::cerr << "An UNKNOWN error occurred in SetAllVNAParamsNoAction: " << std::endl;
+    }
+
+}
+
+void MainWindow::OnMeasureResponseAtSignleAnglActionPressed()
+{
+    qDebug()<<"2";
+    SetAllOPUParamsFromInterface();
+    SetAllVNAParamsFromInterface();
+
+    try
+    {
+        MeasControl->MeasureResponseAtSignleAngl(MeasData);
+    }
+    catch(const std::exception& e)
+    {
+        std::cerr << "An error occurred in SetAllVNAParamsNoAction: " << e.what() << std::endl;
+    }
+    catch(...)
+    {
+        std::cerr << "An UNKNOWN error occurred in SetAllVNAParamsNoAction: " << std::endl;
+    }
+    PaintAllPlots();
+}
+
+void MainWindow::OnMeasureBckgndAtSingleAnglActionPressed()
+{
+    qDebug()<<"3";
+    this->SetAllOPUParamsFromInterface();
+    this->SetAllVNAParamsFromInterface();
+
+    try
+    {
+        MeasControl->MeasureBckgndAtSingleAngl(MeasData);
+    }
+    catch(const std::exception& e)
+    {
+        std::cerr << "An error occurred in SetAllVNAParamsNoAction: " << e.what() << std::endl;
+    }
+    catch(...)
+    {
+        std::cerr << "An UNKNOWN error occurred in SetAllVNAParamsNoAction: " << std::endl;
+    }
+    PaintAllPlots();
+
+}
+void MainWindow::OnMeasureCurrentAspectActionPressed()
+{
+    qDebug()<<"4";
+    this->SetAllOPUParamsFromInterface();
+    this->SetAllVNAParamsFromInterface();
+    try
+    {
+        MeasControl->MeasureCurrentAspect(MeasData);
+    }
+    catch(const std::exception& e)
+    {
+        std::cerr << "An error occurred in SetAllVNAParamsNoAction: " << e.what() << std::endl;
+    }
+    catch(...)
+    {
+        std::cerr << "An UNKNOWN error occurred in SetAllVNAParamsNoAction: " << std::endl;
+    }
+    PaintAllPlots();
+}
+
+void MainWindow::OnAbortActionPressed()
+{
+    qDebug()<<"5";
+    try
+    {
+        this->MeasControl->Abort();
+    }
+    catch(const std::exception& e)
+    {
+        std::cerr << "An error occurred in SetAllVNAParamsNoAction: " << e.what() << std::endl;
+    }
+    catch(...)
+    {
+        std::cerr << "An UNKNOWN error occurred in SetAllVNAParamsNoAction: " << std::endl;
+    }
+    Timer->stop(); // Почему ломает?
+}
+
+void MainWindow::PaintAllPlots()
+{
+    for (int i=0;i<8;i++)    {ChartTab->PlotTabs[0]->customPlot->addGraph();}
+
+    QComplexVector CASweepVector = MeasData.ReadSweepFrom(MeasDataClass::MeasDataType::CurrentAspect);
+    QDoubleVector CASweepVector_abs(CASweepVector.size());
+    for (int i = 0; i < CASweepVector.size(); i++)  {CASweepVector_abs[i] = std::abs(CASweepVector[i]);}
+    QVector<double> XCA;
+    for (int i = 0; i < CASweepVector.size(); ++i)  {XCA.push_back(i);}
+
+
+    QComplexVector RTSweepVector = MeasData.ReadSweepFrom(MeasDataClass::MeasDataType::RawTarget);
+    QDoubleVector RTSweepVector_abs(RTSweepVector.size());
+    for (int i = 0; i < RTSweepVector.size(); i++)  {RTSweepVector_abs[i] = std::abs(RTSweepVector[i]);}
+    QVector<double> XRT;
+    for (int i = 0; i < RTSweepVector.size(); ++i)  {XRT.push_back(i);}
+
+    QComplexVector RBSweepVector = MeasData.ReadSweepFrom(MeasDataClass::MeasDataType::RawBcknd);
+    QDoubleVector RBSweepVector_abs(RBSweepVector.size());
+    for (int i = 0; i < RBSweepVector.size(); i++)  {RBSweepVector_abs[i] = std::abs(RBSweepVector[i]);}
+    QVector<double> XRB;
+    for (int i = 0; i < RBSweepVector.size(); ++i)  {XRB.push_back(i);}
+
+    QComplexVector RRSweepVector = MeasData.ReadSweepFrom(MeasDataClass::MeasDataType::RawRsp);
+    QDoubleVector RRSweepVector_abs(RRSweepVector.size());
+    for (int i = 0; i < RRSweepVector.size(); i++)  {RRSweepVector_abs[i] = std::abs(RRSweepVector[i]);}
+    QVector<double> XRR;
+    for (int i = 0; i < RRSweepVector.size(); ++i)  {XRR.push_back(i);}
+
+    QComplexVector ClbrSweepVector = MeasData.ReadSweepFrom(MeasDataClass::MeasDataType::CalibrationArr);
+    QDoubleVector ClbrSweepVector_abs(ClbrSweepVector.size());
+    for (int i = 0; i < ClbrSweepVector.size(); i++)  {ClbrSweepVector_abs[i] = std::abs(ClbrSweepVector[i]);}
+    QVector<double> XClbr;
+    for (int i = 0; i < ClbrSweepVector.size(); ++i)  {XClbr.push_back(i);}
+
+    QComplexVector PttrnSweepVector = MeasData.ReadSweepFrom(MeasDataClass::MeasDataType::PatternArr);
+    QDoubleVector PttrnSweepVector_abs(PttrnSweepVector.size());
+    for (int i = 0; i < PttrnSweepVector.size(); i++)  {PttrnSweepVector_abs[i] = std::abs(PttrnSweepVector[i]);}
+    QVector<double> XPttrn;
+    for (int i = 0; i < PttrnSweepVector.size(); ++i)  {XPttrn.push_back(i);}
+
+
+    ChartTab->PlotTabs[0]->customPlot->graph(0)->setData(MeasData.GetFreqVectorGHz(), CASweepVector_abs);
+    ChartTab->PlotTabs[0]->customPlot->graph(0)->setPen(QPen(Qt::red));
+
+    ChartTab->PlotTabs[1]->customPlot->graph(0)->setData(MeasData.GetFreqVectorGHz(), RTSweepVector_abs);
+    ChartTab->PlotTabs[1]->customPlot->graph(0)->setPen(QPen(Qt::yellow));
+
+    ChartTab->PlotTabs[2]->customPlot->graph(0)->setData(MeasData.GetFreqVectorGHz(), RBSweepVector_abs);
+    ChartTab->PlotTabs[2]->customPlot->graph(0)->setPen(QPen(Qt::blue));
+
+    ChartTab->PlotTabs[3]->customPlot->graph(0)->setData(MeasData.GetFreqVectorGHz(), RRSweepVector_abs);
+    ChartTab->PlotTabs[3]->customPlot->graph(0)->setPen(QPen(Qt::cyan));
+
+    ChartTab->PlotTabs[4]->customPlot->graph(0)->setData(MeasData.GetFreqVectorGHz(), ClbrSweepVector_abs);
+    ChartTab->PlotTabs[4]->customPlot->graph(0)->setPen(QPen(Qt::green));
+
+    ChartTab->PlotTabs[5]->customPlot->graph(0)->setData(MeasData.GetFreqVectorGHz(), PttrnSweepVector_abs);
+    ChartTab->PlotTabs[5]->customPlot->graph(0)->setPen(QPen(Qt::magenta));
+
+    UpdatePlots();
+
+    for (int i=0;i<8;i++)
+    {ChartTab->PlotTabs[i]->customPlot->ResetPlot();}
+
+    /*
+    ChartTab->PlotTabs[0]->customPlot->graph(4)->setData(RefTargetArrX, RefTargetArr);
+    ChartTab->PlotTabs[0]->customPlot->graph(4)->setPen(QPen(Qt::cyan));
+    */
+}
+
+
+
+
+
+void MainWindow::UpdatePlots()
+{
+
+    QVector<double> XVect;
+    for (int i = 0; i < 2048; i++)  {XVect.push_back(i);}
+
+    QDoubleVector CurrentAspectVector(MeasData.GetNFreqPoints());
+    MeasData.GetAmplVectordB(MeasDataClass::MeasDataType::CurrentAspect, CurrentAspectVector,0,0);
+    ChartTab->PlotTabs[6]->customPlot->graph(0)->setData(MeasData.GetFreqVectorGHz(), CurrentAspectVector);
+    ChartTab->PlotTabs[6]->customPlot->graph(0)->setPen(QPen(Qt::blue));
+
+    QDoubleVector CurrentProfRangeVector(2048);
+    MeasData.GetAmplVectorSqrt(MeasDataClass::MeasDataType::CurrentProfRange, CurrentProfRangeVector,0,0);
+    ChartTab->PlotTabs[7]->customPlot->graph(0)->setData(XVect, CurrentProfRangeVector);
+    ChartTab->PlotTabs[7]->customPlot->graph(0)->setPen(QPen(Qt::red));
+
+    QDoubleVector CurrentGatedProfRangeVector(2048);
+    MeasData.GetAmplVectorSqrt(MeasDataClass::MeasDataType::CurrentGatedProfRange, CurrentGatedProfRangeVector,0,0);
+    ChartTab->PlotTabs[7]->customPlot->graph(1)->setData(XVect, CurrentGatedProfRangeVector);
+    ChartTab->PlotTabs[7]->customPlot->graph(1)->setPen(QPen(Qt::yellow));
+    ChartTab->PlotTabs[7]->customPlot->yAxis->setScaleType(QCPAxis::stLogarithmic);
+
+    ChartTab->PlotTabs[6]->customPlot->replot();
+    ChartTab->PlotTabs[7]->customPlot->replot();
+
+    if (true)
+    {
+        ChartTab->PlotTabs[6]->customPlot->ResetPlot();
+        ChartTab->PlotTabs[7]->customPlot->ResetPlot();
+        ResetPlotNeeded = false;
+    }
+}
+
+
+void MainWindow::UpdateAzimuthPlot(int iaz, int iel)
+{
+    //Сделать так, чтобы не дёргалось
+    UpdatePlots();
+
+    double CurrentAmpl;
+    int f = 0;
+    CurrentAmpl =std::abs(MeasData.ReadValueFrom(MeasDataClass::MeasDataType::PatternArr,f, iaz,iel));
+
+    ChartTab->PlotTabs[8]->customPlot->xAxis->setRange(0,1601);
+    ChartTab->PlotTabs[8]->customPlot->ResetPlot();
+    //QVector<double> XVect;
+    //for (int i = 0; i < 1601; i++)  {XVect.push_back(i);}
+
+    ChartTab->PlotTabs[8]->customPlot->graph(0)->addData(iaz,CurrentAmpl);
+    //ChartTab->PlotTabs[8]->customPlot->graph(0)->setPen(QPen(Qt::blue));
+
+    //ChartTab->PlotTabs[8]->customPlot->replot();
+    ChartTab->PlotTabs[8]->customPlot->xAxis->setRange(0,1601);
+    ChartTab->PlotTabs[8]->customPlot->yAxis->rescale();
+
+    /*
+    QDoubleVector CurrentAspectVector(MeasData.GetAzTrigPoints());
+    MeasData.GetAmplVectordB(MeasDataClass::MeasDataType::CurrentAspect, CurrentAspectVector,0,0);
+    ChartTab->PlotTabs[8]->customPlot->graph(0)->setData(MeasData.GetAzimuthVector(), CurrentAspectVector);
+    ChartTab->PlotTabs[8]->customPlot->graph(0)->setPen(QPen(Qt::blue));
+
+    ChartTab->PlotTabs[8]->customPlot->replot();
+
+    if (ResetPlotNeeded)
+    {
+        ChartTab->PlotTabs[8]->customPlot->ResetPlot();
+        ResetPlotNeeded = false;
+    }
+    */
+
+
+
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+void MainWindow::addRandomError(QDoubleVector& data, double mean, double sigma)
+{
+
+    std::random_device rd;
+    std::mt19937 eng(rd());
+    std::normal_distribution<> distr(mean, sigma);
+    for (int i = 0; i < data.size(); ++i) {
+        double error = distr(eng);
+        data[i] += i + error;
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// Дальше устаревшие функции
+
 
 
 /*
@@ -426,29 +782,276 @@ void MainWindow::SetCalibration()
 
 
 
-void MainWindow::ShowErrorMessage(QString Description, QString Advice)
+
+
+/*
+void MainWindow::SaveThreeDimensionalVector()
 {
-    QMessageBox msgBox;
-    msgBox.setIcon(QMessageBox::Critical);
-    msgBox.setWindowTitle("Ошибка!");
-    msgBox.setText(Description);
-    msgBox.setInformativeText(Advice);
-    msgBox.setStandardButtons(QMessageBox::Ok);
-    msgBox.exec();
+    QString DateString = QDate::currentDate().toString("yyyy-MM-dd");
+    QString TimeString = QTime::currentTime().toString("HH-mm");
+
+    QString NameOfSavedFile = "Измерение_" + DateString + "_" + TimeString;
+
+    QString Path = QDir::homePath() + "/" + NameOfSavedFile + ".dat";
+
+    QString FilePath = QFileDialog::getSaveFileName(this, "Save File", Path, "Data Files (*.dat);;All Files (*)");
+
+    QFile File(FilePath);
+    if (!File.open(QIODevice::WriteOnly))
+    {
+        emit ErrorOccured("mainwindow : Не удалось открыть файл для записи.");
+        //ShowErrorMessage("Не удалось открыть файл для записи!",File.errorString());
+        return;
+    }
+
+
+    QDataStream out(&File);
+    out << StoredFunction;
+    File.close();
+ }
+*/
+
+
+
+
+
+
+
+
+
+
+
+/*
+void MainWindow::UpdateSweepGraphSlot(QDoubleVector SweepArrayAmpl) //От частоты
+{
+    //DoubleVector XVector = ChartTab->FrequencyTab->customPlot->KeyVector;
+    int N = SweepArrayAmpl.size();
+    QVector<double> XVector;
+    for (int i=0;i<N;i++)
+    {
+        XVector.append(double(i));
+    }
+    this->ChartTab->SweepTab->customPlot->graph(0)->setData(XVector, SweepArrayAmpl);
+
+    void ResetPlot();
+}
+void MainWindow::UpdateProfRangeSlot(QDoubleVector ProfRangeArrayAmpl) // От расстояния
+{
+    //DoubleVector XVector = ChartTab->FrequencyTab->customPlot->KeyVector;
+    int N = ProfRangeArrayAmpl.size();
+    QVector<double> XVector;
+    for (int i=0;i<N;i++)
+    {
+        XVector.append(double(i));
+    }
+    this->ChartTab->ProfRangeTab->customPlot->graph(0)->setData(XVector, ProfRangeArrayAmpl);
+
+    void ResetPlot();
+}
+void MainWindow::UpdateGatedProfileRangeSlot(QDoubleVector SweepArrayAmpl)// От расстояния
+{
+    //DoubleVector XVector = ChartTab->FrequencyTab->customPlot->KeyVector;
+    int N = SweepArrayAmpl.size();
+    QVector<double> XVector;
+    for (int i=0;i<N;i++)
+    {
+        XVector.append(double(i));
+    }
+    this->ChartTab->GatedProfileTab->customPlot->graph(0)->setData(XVector, SweepArrayAmpl);
+
+    void ResetPlot();
 }
 
 
 
 
 
-void MainWindow::ConnectMenu()
+
+
+
+
+
+
+void MainWindow::UpdatePatternSlot(QDoubleVector DiagAnglArrayAmpl) // От угла
 {
-    connect(this->MeasureAction,&QAction::triggered, this, &MainWindow::OnMeasurePressed);
+    //DoubleVector XVector = ChartTab->FrequencyTab->customPlot->KeyVector;
+    int N = DiagAnglArrayAmpl.size();
+    QVector<double> XVector;
+    for (int i=0;i<N;i++)
+    {
+        XVector.append(double(i));
+    }
+    this->ChartTab->PatternTab->customPlot->graph(0)->setData(XVector, DiagAnglArrayAmpl);//Переименовать в Pattern
 
-    connect(this->MeasureBackgroundAction,&QAction::triggered, this, &MainWindow::OnMeasureBackgroundPressed);
-
-    connect(this->MeasureTargetAction,&QAction::triggered, this, &MainWindow::OnMeasureTargetPressed);
+    void ResetPlot();
 }
+*/
+
+
+
+/*
+void MainWindow::SetThreeDimensionalVector(ThreeDimensionalVector F)
+{
+
+    StoredFunction = F;
+    // !!! ПЕРЕДЕЛАТЬ !!!
+    //azim = StoredFunction.FindAzimuthIndex   (TabOfParameters->ResultTab->SetCurrentAzimuthDoubleSpinBox    ->value());
+    //elev = StoredFunction.FindElevationIndex (TabOfParameters->ResultTab->SetCurrentElevationDoubleSpinBox  ->value());
+
+    //QVector <std::complex<double>> FreqVectorAtChosenAngle = F.GetFrequencyVectorAt(azim, elev);
+    //this->ChartTab->UpdateMeasurementPlot(FreqVectorAtChosenAngle);
+
+    auto start0 = std::chrono::system_clock::now();
+
+    PlotClass * PltPtr0 = this->ChartTab->PlotTabs[0]->customPlot;
+    PltPtr0->graph(0)->setData(F.FreqVector(), F.AmplitudeVectorAtAngles(azim,elev));
+    PltPtr0->rescaleAxes();
+    PltPtr0->replot();
+
+
+    PlotClass * PltPtr1 = this->ChartTab->PlotTabs[1]->customPlot;
+    PltPtr1->graph(0)->setData(F.AzimuthVector(), F.AmplitudeVectorAtFrequencyElevation(0,elev));
+    PltPtr1->rescaleAxes();
+    PltPtr1->replot();
+
+    // Сделать ли зависимость от угла наклона?
+
+    PlotClass * PltPtr2 = this->ChartTab->PlotTabs[2]->customPlot;
+    PltPtr2->graph(0)->setData(F.DistVector(), F.FourierAmplVectorAtAngles(azim,elev));
+    PltPtr2->rescaleAxes();
+    PltPtr2->replot();
+
+    auto end0 = std::chrono::system_clock::now();
+    auto elapsed0 =  std::chrono::duration_cast<std::chrono::milliseconds>(end0 - start0);
+    qDebug() << " Время отрисовки всех графиков " << elapsed0.count() << '\n';
+
+}
+*/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*
+ void MainWindow::SetBackground()
+ {
+    // !!! Переделать !!!
+
+    QFile File(TabOfParameters->ResultTab->BackgroundLineEdit->text());
+    if (!File.open(QIODevice::ReadOnly))
+    {
+        emit ErrorOccured("mainwindow : Не удалось открыть файл для чтения");
+        //ShowErrorMessage("Не удалось открыть файл для чтения!",File.errorString());
+        return;
+    }
+
+    QDataStream in(&File);
+    in >> BackgroundFunction;
+    File.close();
+
+
+
+    QVector <double> x = BackgroundFunction.FreqVector();
+
+    // !!! Переделать !!!
+    //azim = BackgroundFunction.FindAzimuthIndex(TabOfParameters->ResultTab->SetCurrentAzimuthDoubleSpinBox->value());
+    //elev = BackgroundFunction.FindElevationIndex    (TabOfParameters->ResultTab->SetCurrentElevationDoubleSpinBox    ->value());
+
+    QVector <std::complex<double>> f = BackgroundFunction.GetFrequencyVectorAt(azim,elev);
+
+    QVector <double> y(BackgroundFunction.VNAParameters.NumOfPoi);
+
+    for (int i=0;i<BackgroundFunction.VNAParameters.NumOfPoi;i++)
+    {
+        y[i] = abs(f[i]);
+    }
+
+    if (ChartTab->PlotTabs[0]->customPlot->graphCount()==1)
+    {
+        ChartTab->PlotTabs[0]->customPlot->AddEmptyGraphToPlot();
+    }
+
+    ChartTab->PlotTabs[0]->customPlot->graph(1)->setData(x,y);
+
+    ChartTab->PlotTabs[0]->customPlot->replot();
+
+ }
+
+
+void MainWindow::SubstractBackground()
+{
+    // !!! Переделать !!!
+
+    if (BackgroundFunction.ObjectMeasurementResult.size()==0)
+    {
+        QFile File(TabOfParameters->ResultTab->BackgroundLineEdit->text());
+        if (!File.open(QIODevice::ReadOnly))
+        {
+             emit ErrorOccured("mainwindow : Не удалось открыть файл для чтения.");
+            //ShowErrorMessage("Не удалось открыть файл для чтения!",File.errorString());
+            return;
+        }
+
+        QDataStream in(&File);
+        in >> BackgroundFunction;
+        File.close();
+    }
+
+    PlotClass * PltPtr = this->ChartTab->PlotTabs[0]->customPlot;
+
+
+    if (PltPtr->graph(0)->data()->size()>0)
+    {
+        //if (StoredFunction.CheckBackgroundForSuitability(BackgroundFunction) )
+        {
+            //StoredFunction.SubstractBackground(BackgroundFunction);
+            PltPtr->graph(1)->data()->clear();
+            this->SetThreeDimensionalVector(StoredFunction);
+            //this->BackgroundFunction.ClearFunction(); // Не очищать! Ещё потребуется при калибровке
+        }
+        //else
+        {
+            emit ErrorOccured("mainwindow : Данные фона не подходят по формату.");
+            ShowErrorMessage("Данные фона не подходят по формату!", "Убедитесь, что вы выбрали нужный файл");
+            return;
+        }
+    }
+    else
+    {
+        emit ErrorOccured("mainwindow : Нет данных.");
+        //ShowErrorMessage("Нет данных!", "Убедитесь, что измеренные данные были получены");
+        return;
+    }
+
+}
+*/
+
+
+
+
+
+
+
+
 
 
 
@@ -532,6 +1135,23 @@ void MainWindow::ConnectObjects()
 */
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*
 void MainWindow::HandleReceivedMeasuredFreqVector(QVector <double> ReceivedVector)
 {
 
@@ -577,36 +1197,8 @@ void MainWindow::HandleReceivedMeasuredFreqVector(QVector <double> ReceivedVecto
 
     qDebug()<<"Was Here!"<<PltPtrAz->graph(0)->data() ->dataRange();
 
-
-
-
-
-
-
-    /*
-    if (r==StoredFunction.RNum-1 and t==StoredFunction.TNum-1) // Через CurrentIndex
-    {
-        //Сохранить, и занулить, чтобы начать следующую
-        SaveThreeDimensionalVector();
-        StoredFunction.ClearFunction();
-    }
-    */
-
-
 }
-
-
-
-
-void MainWindow::GetPlotFromDat()
-{
-    WidgetForCustomPlot * NewPlotWidget = new WidgetForCustomPlot;
-    this->ChartTab->addTab(NewPlotWidget,"Загружено");
-    //NewPlotWidget->customPlot=;
-}
-
-
-
+*/
 
 
 /*
@@ -619,320 +1211,48 @@ void MainWindow::showEvent(QShowEvent *event)
 
 
 
-void MainWindow::FillMenu()
+
+/*
+// Нужно переделать!!!
+void MainWindow::ChangeAngleOfDemonstration()
 {
+    PlotClass * PltPtr = this->ChartTab->PlotTabs[0]->customPlot;
 
-    //File
-    QMenu * MenuFile = this->menuBar()->addMenu("File");
-
-    QMenu * MenuFileWrite = new QMenu("Write", this);
-    MenuFileWrite->addAction("Sketch");
-    MenuFileWrite->addSeparator();
-    MenuFileWrite->addAction("Bkgnd Calibration");
-    MenuFileWrite->addAction("Response Calibration");
-    MenuFileWrite->addSeparator();
-    MenuFile->addMenu(MenuFileWrite);
-    QMenu * MenuFileRead = new QMenu("Read", this);
-    MenuFileRead->addAction("Sketch");
-    MenuFileRead->addSeparator();
-    MenuFileRead->addAction("Bkgnd Calibration");
-    MenuFileRead->addAction("Response Calibration");
-    MenuFileRead->addSeparator();
-    MenuFile->addMenu(MenuFileRead);
-    MenuFile->addSeparator();
-    MenuFile->addAction("Change Database Folder");
-    MenuFile->addAction("Print...");
-    MenuFile->addSeparator();
-    MenuFile->addAction("Exit");
-    //Удалить --------------------
-    /*
-    SaveFileAction = new QAction("Save as...", this);
-    OpenFileAction = new QAction("Load", this);
-    MenuFile->addAction(SaveFileAction);
-    MenuFile->addAction(OpenFileAction);
-    */
-    //Удалить --------------------
-
-
-
-
-
-
-
-
-
-    QMenu * MenuMeasure = this->menuBar()->addMenu("Measure");
-
-    MeasureAction = new QAction("Measure");
-    MenuMeasure->addAction(MeasureAction);
-    MeasureBackgroundAction = new QAction("Single Angle Bkgnd Measure");
-    MenuMeasure->addAction(MeasureBackgroundAction);
-    MeasureTargetAction = new QAction("Measure Target");
-    MenuMeasure->addAction(MeasureTargetAction);
-    MenuMeasure->addSeparator();
-
-    MenuMeasure->addAction("Measure");
-    MenuMeasure->addAction("Measure Current Aspect");
-    MenuMeasure->addSeparator();
-
-    MenuMeasure->addAction("Single Angle Bkgnd Measure");
-    MenuMeasure->addAction("Response Calibration");
-
-    MenuMeasure->addSeparator();
-    MenuMeasure->addSeparator();
-    MenuMeasure->addAction("Abort");
-    MenuMeasure->addSeparator();
-    MenuMeasure->addAction("Bkgnd (Screen Open)");
-    MenuMeasure->addAction("Bkgnd (Screen Closed)");
-    MenuMeasure->addAction("Target (Screen Open)");
-    MenuMeasure->addAction("Target (Screen Closed)");
-    MenuMeasure->addAction("Calculate (Screen)");
-    MenuMeasure->addAction("Use Background Calibration");
-    MenuMeasure->addAction("Use Response Calibration");
-    MenuMeasure->addSeparator();
-    MenuMeasure->addAction("Use Reverse Direction");
-    MenuMeasure->addSeparator();
-    MenuMeasure->addAction("Use Average Bkgnd");
-    MenuMeasure->addSeparator();
-    MenuMeasure->addAction("Reset Bkgnd Cal");
-    MenuMeasure->addAction("Reset Response Cal");
-
-
-
-    //Удалить --------------------
-    /*
-    StartMeasureAction = new QAction("Start",       this);
-    StopMeasureAction  = new QAction("Stop" ,       this);
-    MeasureBackground  = new QAction("Background",  this);
-    MeasureCalibration = new QAction("Calibration", this);
-
-    MenuMeasure->addAction(StartMeasureAction);
-    MenuMeasure->addAction(StopMeasureAction);
-    MenuMeasure->addAction(MeasureBackground);
-    MenuMeasure->addAction(MeasureCalibration);
-    */
-    //Удалить --------------------
-
-
-
-
-    QMenu * MenuProcess = this->menuBar()->addMenu("Process");
-    MenuProcess->addAction("Process");
-    MenuProcess->addSeparator();
-    MenuProcess->addAction("Swap Az/El");
-
-
-
-    QMenu * MenuPost_Process = this->menuBar()->addMenu("Post-Process");
-    MenuPost_Process->addAction("Post-Process");
-    MenuProcess->addSeparator();
-    MenuPost_Process->addAction("Frequency-Azimuth");
-    MenuPost_Process->addAction("Down-Range - Azimuth");
-    MenuPost_Process->addAction("Frequency - Cross-Range");
-    MenuPost_Process->addAction("ISAR");
-    MenuProcess->addSeparator();
-    MenuPost_Process->addAction("Create S-Files");
-    MenuPost_Process->addAction("AutoCreate S-Files");
-    MenuProcess->addSeparator();
-    MenuProcess->addSeparator();
-    MenuPost_Process->addAction("Use Pylon Compensation");
-    MenuProcess->addSeparator();
-    MenuPost_Process->addAction("Create Az-El File");
-
-
-    QMenu * MenuOptions = this->menuBar()->addMenu("Options");
-    MenuOptions->addAction("Show Sketch");
-    MenuProcess->addSeparator();
-    MenuOptions->addAction("Delete Sketch");
-    MenuProcess->addSeparator();
-    MenuOptions->addAction("Auto Close Polygon");
-    MenuProcess->addSeparator();
-    MenuOptions->addAction("Flip Sketch");
-    MenuOptions->addAction("ChangeSketchColourToGreen");
-    MenuOptions->addAction("Rotate Sketch");
-    MenuProcess->addSeparator();
-    MenuOptions->addAction("Image Equal Scaling");
-    MenuOptions->addAction("Reverse Sketch Rotation");
-    MenuProcess->addSeparator();
-    MenuProcess->addSeparator();
-    MenuOptions->addAction("Move El Cut to Az Cut");
-
-
-    this->menuBar()->addMenu("Create Pylon Compensation");
-
-    QMenu * MenuLanguage = new QMenu(tr("Language"));
-    QAction * SetRussianLanguageAction = new QAction(tr("Russian"));
-    QAction * SetEnglishLanguageAction = new QAction(tr("English"));
-    menuBar()->addMenu(MenuLanguage);
-    MenuLanguage->addAction(SetRussianLanguageAction);
-    MenuLanguage->addAction(SetEnglishLanguageAction);
-    connect(SetRussianLanguageAction,&QAction::triggered, this, &MainWindow::ChangeLanguageToRussian);
-    connect(SetEnglishLanguageAction,&QAction::triggered, this, &MainWindow::ChangeLanguageToEnglish);
-
-
-}
-
-
-
-void MainWindow::SetAllVNAParamsFromInterface()
-{
-
-    int    Pow       = TabOfParameters->MeasurementTab->PNAGeneratorEdit        ->text().toDouble();
-    double CenterFreq= TabOfParameters->MeasurementTab->FrequencyRangeCenterEdit->text().toDouble();
-    double SpanFreq  = TabOfParameters->MeasurementTab->FrequencyRangeSpanEdit  ->text().toDouble();
-    double StartFreq = CenterFreq - SpanFreq / 2;
-    double StopFreq  = CenterFreq + SpanFreq / 2;
-    int    NumOfPoi  = TabOfParameters->MeasurementTab->FrequencyRangeNEdit     ->text().toDouble();
-    int    IF        = TabOfParameters->MeasurementTab->PNAIFBox                ->currentIndex(); // Спросить Арину, так ли надо?
-    QString Datatype = "double";
-    QString MeasParameter = "S21";
-
-    MeasData.SetAllVNAParamsNoAction(Pow, StartFreq, StopFreq, NumOfPoi, IF, Datatype, MeasParameter);
-
-}
-
-
-void MainWindow::SetAllOPUParamsFromInterface()
-{
-    double centerAzAngl = TabOfParameters->MeasurementTab->AzimuthRangeCenterEdit  ->text().toDouble();
-    double spanAzAngl   = TabOfParameters->MeasurementTab->AzimuthRangeSpanEdit    ->text().toDouble();
-    double startAzAngl  = centerAzAngl - spanAzAngl / 2;
-    double stopAzAngl   = centerAzAngl + spanAzAngl / 2;
-
-    //double centerElAngl= TabOfParameters->MeasurementTab->ElevationRangeCenterEdit->text().toDouble();
-    //double spanElAngl  = TabOfParameters->MeasurementTab->ElevationRangeSpanEdit  ->text().toDouble();
-    //double startElAngl = centerElAngl - spanElAngl / 2;
-    //double stopElAngl  = centerElAngl + spanElAngl / 2;
-
-    double startElAngl  = 0; //Пока без них
-    double stopElAngl   = 0;
-
-    int Speed           = TabOfParameters->MeasurementTab->AzimuthRangeCenterEdit  ->text().toInt();
-    int AzTrigPoints    = 1601;
-    int ElTrigPoints    = 0;
-    QString MoveMode    = "CCW";
-
-    MeasData.SetAllOPUParamsNoAction(startAzAngl, stopAzAngl, startElAngl, stopElAngl, Speed, AzTrigPoints, ElTrigPoints, MoveMode);
-}
-
-
-void MainWindow::OnMeasurePressed()
-{
-    this->SetAllOPUParamsFromInterface();
-    this->SetAllVNAParamsFromInterface();
-    this->MeasControl.MeasureResponseAtSignleAngl(MeasData);
-}
-
-
-void MainWindow::OnMeasureBackgroundPressed()
-{
-    this->SetAllOPUParamsFromInterface();
-    this->SetAllVNAParamsFromInterface();
-    this->MeasControl.MeasureBckgndAtSingleAngl(MeasData);
-}
-
-
-void MainWindow::OnMeasureTargetPressed()
-{
-    this->SetAllOPUParamsFromInterface();
-    this->SetAllVNAParamsFromInterface();
-    this->MeasControl.MeasureAzTarget(MeasData);
-}
-
-
-void MainWindow::SetConnectionMainWinWithMeasCntrl()
-{
-    connect(&(MeasControl.ProcessClass),& PrimaryDataProc::UpdateSweepGraphSignal, this, &MainWindow::UpdateSweepGraphSlot);
-    connect(&(MeasControl.ProcessClass),& PrimaryDataProc::UpdateProfRangeSignal, this, &MainWindow::UpdateProfRangeSlot);
-    connect(&(MeasControl.ProcessClass),& PrimaryDataProc::UpdateGatedProfileRangeSignal, this, &MainWindow::UpdateGatedProfileRangeSlot);
-    connect(&(MeasControl.ProcessClass),& PrimaryDataProc::UpdatePatternSignal, this, &MainWindow::UpdatePatternSlot);
-
-}
-
-
-void MainWindow::UpdateSweepGraphSlot(DoubleVector SweepArrayAmpl) //От частоты
-{
-    //DoubleVector XVector = ChartTab->FrequencyTab->customPlot->KeyVector;
-    int N = SweepArrayAmpl.size();
-    QVector<double> XVector;
-    for (int i=0;i<N;i++)
+    if (PltPtr->graph(0)->data()->size()>0)
     {
-        XVector.append(double(i));
-    }
-    this->ChartTab->SweepTab->customPlot->graph(0)->setData(XVector, SweepArrayAmpl);
+        // !!! Переделать !!!
+        //azim = StoredFunction.FindAzimuthIndex(TabOfParameters->ResultTab->SetCurrentAzimuthDoubleSpinBox->value());
+        //elev = StoredFunction.FindElevationIndex(TabOfParameters->ResultTab->SetCurrentElevationDoubleSpinBox->value());
 
-    void ResetPlot();
-}
-void MainWindow::UpdateProfRangeSlot(DoubleVector ProfRangeArrayAmpl) // От расстояния
-{
-    //DoubleVector XVector = ChartTab->FrequencyTab->customPlot->KeyVector;
-    int N = ProfRangeArrayAmpl.size();
-    QVector<double> XVector;
-    for (int i=0;i<N;i++)
+        PltPtr->graph(0)->setData(StoredFunction.FreqVector(), StoredFunction.AmplitudeVectorAtAngles(azim,elev));
+
+
+        //QVector <std::complex<double>> FreqVectorAtChosenAngle = StoredFunction.GetFrequencyVectorAt(r,t);
+        //this->ChartTab->UpdateMeasurementPlot(FreqVectorAtChosenAngle);
+
+        if (PltPtr->graph(1)->data()->size()>0)
+        {
+            //PltPtr->graph(1)->setData(BackgroundFunction.FreqVector(), BackgroundFunction.AmplitudeVectorAtAngles(azim,elev));
+
+            //PlotClass * PltPtr1 = this->ChartTab->PlotTabs[1]->customPlot;
+            //PltPtr1->graph(1)->setData(BackgroundFunction.DistVector(), BackgroundFunction.FourierAmplVectorAtAngles(azim,elev));
+
+        }
+        PltPtr->rescaleAxes();
+        PltPtr->replot();
+
+        PlotClass * PltPtr1 = this->ChartTab->PlotTabs[1]->customPlot;
+        //PltPtr1->graph(0)->setData(StoredFunction.DistVector(), StoredFunction.FourierAmplVectorAtAngles(azim,elev));
+        PltPtr1->rescaleAxes();
+        PltPtr1->replot();
+
+    }
+    else
     {
-        XVector.append(double(i));
+        emit ErrorOccured("mainwindow : Измеренных данных не обнаружено.");
+        //ShowErrorMessage("Измеренных данных не обнаружено!", "Убедитесь, что измерение прошло успешно");
     }
-    this->ChartTab->ProfRangeTab->customPlot->graph(0)->setData(XVector, ProfRangeArrayAmpl);
-
-    void ResetPlot();
-}
-void MainWindow::UpdateGatedProfileRangeSlot(DoubleVector SweepArrayAmpl)// От расстояния
-{
-    //DoubleVector XVector = ChartTab->FrequencyTab->customPlot->KeyVector;
-    int N = SweepArrayAmpl.size();
-    QVector<double> XVector;
-    for (int i=0;i<N;i++)
-    {
-        XVector.append(double(i));
-    }
-    this->ChartTab->GatedProfileTab->customPlot->graph(0)->setData(XVector, SweepArrayAmpl);
-
-    void ResetPlot();
-}
-void MainWindow::UpdatePatternSlot(DoubleVector DiagAnglArrayAmpl) // От угла
-{
-    //DoubleVector XVector = ChartTab->FrequencyTab->customPlot->KeyVector;
-    int N = DiagAnglArrayAmpl.size();
-    QVector<double> XVector;
-    for (int i=0;i<N;i++)
-    {
-        XVector.append(double(i));
-    }
-    this->ChartTab->PatternTab->customPlot->graph(0)->setData(XVector, DiagAnglArrayAmpl);//Переименовать в Pattern
-
-    void ResetPlot();
-}
-
-
-
-
-void MainWindow::ChangeLanguageToRussian()
-{
-
-
 
 }
-
-
-void MainWindow::ChangeLanguageToEnglish()
-{
-
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+*/
 

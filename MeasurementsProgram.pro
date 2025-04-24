@@ -1,4 +1,4 @@
-QT       += core gui network printsupport charts
+QT       += core gui network printsupport
 
 
 #MAKEFLAGS=-j%NUMBER_OF_PROCESSORS%
@@ -8,58 +8,43 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets printsupport
 CONFIG += c++17
 
 SOURCES += \
-    01_DataProcessing/MeasData.cpp \
-    01_DataProcessing/primarydaraproc.cpp \
-    02_SpectralTransforms/spectraltransforms.cpp \
-    03_HardwareConnection/opu.cpp \
-    03_HardwareConnection/tcpsocket.cpp \
-    03_HardwareConnection/vna.cpp \
-    common.cpp \
+    measurmentscontrol.cpp \
+    #errorhandler.cpp \
+    printpreview.cpp \
     custommeasurementtreewidget.cpp \
     customprocessingtreewidget.cpp \
-    errorhandler.cpp \
     main.cpp \
     mainwindow.cpp \
-    measurement.cpp \
     measurementsparameterswidget.cpp \
-    measurmentscontrol.cpp \
     plotclass.cpp \
     processimitation.cpp \
     #qcustomplot.cpp \
-    referencetarget.cpp \
     resultparameterswidget.cpp \
     selectionrectclass.cpp \
     tabwidgetforcharts.cpp \
     tabwidgetforparameters.cpp \
     tabwidgetfortools.cpp \
+    #testvna.cpp \
     threedimensionalvector.cpp \
     treewidgetforfiles.cpp \
     widgetforcustomplot.cpp
 
 HEADERS += \
-    01_DataProcessing/MeasData.h \
-    01_DataProcessing/primarydaraproc.h \
-    02_SpectralTransforms/spectraltransforms.h \
-    03_HardwareConnection/opu.h \
-    03_HardwareConnection/tcpsocket.h \
-    03_HardwareConnection/vna.h \
-    common.h \
+    measurmentscontrol.h \
+    printpreview.h \
     custommeasurementtreewidget.h \
     customprocessingtreewidget.h \
-    errorhandler.h \
     mainwindow.h \
-    measurement.h \
     measurementsparameterswidget.h \
-    measurmentscontrol.h \
     plotclass.h \
     processimitation.h \
     #qcustomplot.h \
-    referencetarget.h \
     resultparameterswidget.h \
     selectionrectclass.h \
     tabwidgetforcharts.h \
     tabwidgetforparameters.h \
     tabwidgetfortools.h \
+    #testvna.h \
     threedimensionalvector.h \
     treewidgetforfiles.h \
     widgetforcustomplot.h
@@ -68,8 +53,23 @@ FORMS += \
     mainwindow.ui
 
 
-TRANSLATIONS += MeasProg_en.ts \
-                MeasProg_ru.ts
+FORMS += \
+    mainwindow.ui
+
+
+
+INCLUDEPATH += $$PWD/lib
+INCLUDEPATH += $$PWD/dll
+INCLUDEPATH += $$PWD/include_ 
+
+
+LIBS += -L$$PWD/lib -llibAlgLib
+LIBS += -L$$PWD/dll -lMeasLib
+#LIBS += -luntitled3
+
+#LIBS += -L$$PWD/dll -llibfftw3-3  #Задание Алексея про эту библиотеку
+
+TRANSLATIONS += MeasProg_ru.ts
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
@@ -86,14 +86,15 @@ else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/../QCustomPlot/debug/ -
 INCLUDEPATH += $$PWD/../QCustomPlot
 DEPENDPATH += $$PWD/../QCustomPlot
 
-INCLUDEPATH += $$PWD/lib
-LIBS += -L$$PWD/lib -llibAlgLib
+#INCLUDEPATH += $$PWD/lib
+#LIBS += -L$$PWD/lib -llibAlgLib
 #LIBS += -L$$PWD/lib -llibuntitled3
-LIBS += -L$$PWD/dll -llibfftw3-3
+#LIBS += -L$$PWD/dll -llibfftw3-3
 
 DISTFILES += \
-    dll/libfftw3-3.dll \
-    dll/libfftw3f-3.dll \
-    dll/libfftw3l-3.dll \
-    lib/libAlgLib.a \
+    MeasProg_ru.qm \
+    #dll/libfftw3-3.dll \
+    #dll/libfftw3f-3.dll \
+    #dll/libfftw3l-3.dll \
+    #lib/libAlgLib.a \
     #lib/libuntitled3.a

@@ -1,68 +1,55 @@
 #ifndef MEASURMENTSCONTROL_H
 #define MEASURMENTSCONTROL_H
 
-#include <QObject>
 #include <QWidget>
-
+#include <QObject>
 #include <QApplication>
-
-
-#include <QTimer>
-#include <QTimerEvent>
 
 #include <thread>
 #include <mutex>
 #include <condition_variable>
 #include <atomic>
-#include "common.h"
-#include <errorhandler.h>
-#include <03_HardwareConnection/vna.h>
-#include "03_HardwareConnection/opu.h"
-#include "01_DataProcessing/primarydaraproc.h"
-#include "01_DataProcessing/MeasData.h"
 
+#include "vna.h"
+#include "include_/vectortransforms.h"
+#include "include_/measdata.h"
+#include "include_/opu.h"
 
 class MeasurmentsControl : public QWidget
 {
     Q_OBJECT
 private:
-
-
-    static ComplexVector TempTrgtRawDataArr;
+    SpectralTransformsClass ProcClass;
+    FilterClass Filter;
+    bool bAbort;
+    bool bNoError;
+    static QComplexVector TempTrgtRawDataArr;
     static double* TargetDataTempRe;
     static double* TargetDataTempIm;
-    static double CurrentAz;
-    static double CurrentEl;
 
-    void MeasureCurrentAspect(MeasDataClass::VNAParams params, double * destReal, double * destIm);
-    void MeasureCurrentAspect(MeasDataClass::VNAParams params, ComplexVector &Dest);
-
-    static void MeasureAzTargetThread(MeasDataClass::VNAParams params, MeasDataClass::OPUParams opuParams);
+    void MeasureCurrentAspectInternal(MeasDataClass::VNAParams params, double * destReal, double * destIm);
+    void MeasureCurrentAspectInternal(MeasDataClass::VNAParams params, QComplexVector &Dest);
+    static void MeasureAzTargetThread(MeasDataClass::VNAParams params,MeasDataClass::OPUParams opuParams);
+    void PrimaryProcessSweep(MeasDataClass::MeasDataType RawDataType, QComplexVector RawData, MeasDataClass& MeasData, int iAz = 0, int iEl = 0);
 
     inline bool IsNewDataAvail();
     inline static void SetbNewDataAvail(bool bNewDataAvailable);
+    inline static bool IsbAbort();
     inline void MainThreadEventsUpdate();
     void ResetAbort();
 
-
 public:
+    void TestFunction(MeasDataClass &ms);
     MeasurmentsControl(QWidget *parent = nullptr);
     static QString Debug;
-    PrimaryDataProc ProcessClass;
 
     void MeasureAzTarget(MeasDataClass& MeasData);
     void MeasureResponseAtSignleAngl(MeasDataClass& MeasData);
     void MeasureBckgndAtSingleAngl(MeasDataClass& MeasData);
+    void MeasureCurrentAspect(MeasDataClass& MeasData);
     void Abort();
-
 signals:
-   /* void UpdateFreqSweepAmplGraphSignal(DoubleVector SweepAmplArr);
-    void UpdateFreqProfRangeAmplGraphSignal(DoubleVector ProfrangeAmplArr);
-    void UpdateGatedFreqProfRangeAmplGraphSignal(DoubleVector ProfrangeAmplArr);
-    void UpdateRCSGraphRangeAmplSignal(DoubleVector RCSAmplArray);
-*/
-    void UpdateCurrentAngleSignal(double Angle);
-
+    void updateGraph(int iAz, int iEl);
 };
 
 #endif // MEASURMENTSCONTROL_H

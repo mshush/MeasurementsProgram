@@ -82,8 +82,6 @@ WidgetForCustomPlot::WidgetForCustomPlot(QWidget *parent)
     connect(customPlot, &PlotClass::MarkerSelectedSignal, this, &WidgetForCustomPlot::HighlightMarkerInTable);
     connect(customPlot, &PlotClass::MarkerUnSelectedSignal, this, &WidgetForCustomPlot::UnHighlightMarkerInTable);
 
-
-
 }
 
 
@@ -489,10 +487,10 @@ void WidgetForCustomPlot::InitiateSetRangeGroupBox()
     YRangeEditTo->setValidator(DoubleValidator);
 
 
-    //connect(XRangeEditFrom, &QLineEdit::editingFinished,this, &WidgetForCustomPlot::SetRange);
-    //connect(XRangeEditTo  , &QLineEdit::editingFinished,this, &WidgetForCustomPlot::SetRange);
-    //connect(YRangeEditFrom, &QLineEdit::editingFinished,this, &WidgetForCustomPlot::SetRange);
-    //connect(YRangeEditTo  , &QLineEdit::editingFinished,this, &WidgetForCustomPlot::SetRange);
+    connect(XRangeEditFrom, &QLineEdit::editingFinished,this, &WidgetForCustomPlot::SetRange);
+    connect(XRangeEditTo  , &QLineEdit::editingFinished,this, &WidgetForCustomPlot::SetRange);
+    connect(YRangeEditFrom, &QLineEdit::editingFinished,this, &WidgetForCustomPlot::SetRange);
+    connect(YRangeEditTo  , &QLineEdit::editingFinished,this, &WidgetForCustomPlot::SetRange);
 
 
     /*
@@ -561,8 +559,8 @@ void WidgetForCustomPlot::EnterSelectLocalMaxMode()
             customPlot->setInteractions(QCP::iSelectPlottables| QCP::iRangeDrag | QCP::iRangeZoom | QCP::iSelectItems);
             customPlot->setSelectionRectMode(QCP::srmSelect);
             customPlot->graph(0)->setSelectable(QCP::stDataRange);
-            //connect(customPlot, &QCustomPlot::selectionChangedByUser, this, &WidgetForCustomPlot::PutMarkerAtLocalMax);
-            //disconnect(customPlot, &QCustomPlot::selectionChangedByUser, this, &WidgetForCustomPlot::PutMarkerAtLocalMin);
+            connect(customPlot, &QCustomPlot::selectionChangedByUser, this, &WidgetForCustomPlot::PutMarkerAtLocalMax);
+            disconnect(customPlot, &QCustomPlot::selectionChangedByUser, this, &WidgetForCustomPlot::PutMarkerAtLocalMin);
         }
         else
         {
@@ -573,7 +571,7 @@ void WidgetForCustomPlot::EnterSelectLocalMaxMode()
     {
         customPlot->setSelectionRectMode(QCP::srmNone);
         customPlot->setInteractions(QCP::iRangeZoom | QCP::iRangeDrag | QCP::iSelectItems);
-        //disconnect(customPlot, &QCustomPlot::selectionChangedByUser, this, &WidgetForCustomPlot::PutMarkerAtLocalMax);
+        disconnect(customPlot, &QCustomPlot::selectionChangedByUser, this, &WidgetForCustomPlot::PutMarkerAtLocalMax);
     }
 }
 
@@ -614,7 +612,7 @@ void WidgetForCustomPlot::EnterSelectLocalMinMode()
             customPlot->setInteractions(QCP::iSelectPlottables| QCP::iRangeDrag | QCP::iRangeZoom | QCP::iSelectItems);
             customPlot->setSelectionRectMode(QCP::srmSelect);
             customPlot->graph(0)->setSelectable(QCP::stDataRange);
-            //connect(customPlot, &QCustomPlot::selectionChangedByUser, this, &WidgetForCustomPlot::PutMarkerAtLocalMin);
+            connect(customPlot, &QCustomPlot::selectionChangedByUser, this, &WidgetForCustomPlot::PutMarkerAtLocalMin);
             disconnect(customPlot, &QCustomPlot::selectionChangedByUser, this, &WidgetForCustomPlot::PutMarkerAtLocalMax);
         }
         else
@@ -627,7 +625,7 @@ void WidgetForCustomPlot::EnterSelectLocalMinMode()
     {
         customPlot->setSelectionRectMode(QCP::srmNone);
         customPlot->setInteractions(QCP::iRangeZoom | QCP::iRangeDrag | QCP::iSelectItems);
-        //disconnect(customPlot, &QCustomPlot::selectionChangedByUser, this, &WidgetForCustomPlot::PutMarkerAtLocalMin);
+        disconnect(customPlot, &QCustomPlot::selectionChangedByUser, this, &WidgetForCustomPlot::PutMarkerAtLocalMin);
     }
 }
 

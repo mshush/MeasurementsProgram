@@ -61,6 +61,7 @@ public:
     void FillPNA();
 
 
+
     // Вводимые параметры
 
 
@@ -72,6 +73,16 @@ public:
                                                           {15.2, 5.6},     //Ku
                                                           {15.2, 5.6}      //Ka Почему такое же, как Ku??? Почему можно менять???
                                                           };
+
+
+    const int IFValues[6] = {
+                                10,
+                                100,
+                                1000,
+                                3000,
+                                10000,
+                                35000
+                            };
 
     double FrequencyStart = 1;
     double FrequencyStop = 2;

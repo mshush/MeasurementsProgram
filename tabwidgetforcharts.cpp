@@ -4,25 +4,48 @@ TabWidgetForCharts::TabWidgetForCharts()
 
 {
 
-    //ChartTabBar = new QTabBar(this);
-    //AddMeasuredTabs();
 
-    // Как обеспечить связь между графиками?
-    // Менять ли окно параметров при переключении или сделать для каждого своё рядом
-    // Не менять окно параметров -- добавить белую вертикальную полосу, символизирующую отображающийся на другом графике угол или частоту
-    //
     this->setFixedHeight(560);
 
-    WidgetForCustomPlot * SweepTab;
-    WidgetForCustomPlot * ProfRangeTab;
-    WidgetForCustomPlot * GatedProfileTab;
-    WidgetForCustomPlot * PatternTab;
+    for (int i=0;i<9;i++)
+    {
+        WidgetForCustomPlot * TempTab = new WidgetForCustomPlot(this);
+        TempTab->customPlot->xAxis->setLabel("N");
+        addTab(TempTab,"Tab" + QString::number(i));
+        PlotTabs.push_back(TempTab);
+        TempTab->customPlot->addGraph();
+        TempTab->customPlot->addGraph();
+        TempTab->customPlot->addGraph();
+    }
 
+    this->setTabText(0, "CASweep");
+    this->setTabText(1, "RTSweep");
+    this->setTabText(2, "RBSweep");
+    this->setTabText(3, "RRSweep");
+    this->setTabText(4, "ClbrSweep");
+    this->setTabText(5, "PttrnSweep");
+    this->setTabText(6, "CurrentAspect");
+    this->setTabText(7, "Current(Gated)ProfRangeVector");
+    this->setTabText(8, "От угла");
+
+    PrintPreviewTab = new PrintPreview(this);
+    addTab(PrintPreviewTab,"Print Preview");
+
+
+    connect(this, &TabWidgetForCharts::currentChanged, this, &TabWidgetForCharts::SendImagesIfPrintPreview);
+
+    //connect(PrintPreviewTab->PatternBox, &QCheckBox::toggled, PlotTabs[0], PlotClass::SendPlotImageForPreview);
+
+
+
+
+    /*
     SweepTab = new WidgetForCustomPlot(this);
     SweepTab->customPlot->xAxis->setLabel("Frequency (GHz)");
     SweepTab->XRangeUnitsLabel->setText("GHz");
     addTab(SweepTab,"Sweep");
     PlotTabs.push_back(SweepTab);
+    SweepTab->customPlot->addGraph();
 
 
     ProfRangeTab = new WidgetForCustomPlot(this);
@@ -30,6 +53,8 @@ TabWidgetForCharts::TabWidgetForCharts()
     ProfRangeTab->XRangeUnitsLabel->setText("m");
     addTab(ProfRangeTab,"Prof Range");
     PlotTabs.push_back(ProfRangeTab);
+    ProfRangeTab->customPlot->addGraph();
+    ProfRangeTab->customPlot->addGraph();
 
     GatedProfileTab = new WidgetForCustomPlot(this);
     GatedProfileTab->customPlot->xAxis->setLabel("Delay (m)");
@@ -44,8 +69,11 @@ TabWidgetForCharts::TabWidgetForCharts()
     PatternTab->XRangeUnitsLabel->setText("deg");
     addTab(PatternTab,"Pattern");
     PlotTabs.push_back(PatternTab);
+    */
+    //PrintPreviewTab = new PrintPreview(this);
+    //addTab(PrintPreviewTab, "Print Preview");
 
-
+    //connect(PrintPreviewTab->PreviewButton, &QPushButton::clicked, this, &TabWidgetForCharts::ShowPrintPreview);
 
 
 
@@ -114,7 +142,36 @@ TabWidgetForCharts::TabWidgetForCharts()
     //this->setTabToolTip(0, "Вкладка по умолчанию, на которую влияют кнопки запуска и непрерывного измерения");
 
 
+    SendImagesIfPrintPreview(PlotTabs.size());
 }
+
+
+
+void TabWidgetForCharts::SendImagesIfPrintPreview(int TabIndex)
+{
+
+
+    if (TabIndex == PlotTabs.size())
+    {
+        QVector <QImage> VectorOfPlotImages;
+
+        for (int i=0;i<PlotTabs.size();i++)
+        {
+            PlotClass * customPlot = PlotTabs[i]->customPlot;
+            QPixmap PlotPixmap = customPlot->toPixmap();
+            QImage PlotImage = PlotPixmap.toImage();
+            VectorOfPlotImages.append(PlotImage);
+        }
+        PrintPreviewTab->VectorOfPlotImages = VectorOfPlotImages;
+        qDebug()<<"Sent";
+    }
+
+}
+
+
+
+
+
 
 /*
 void TabWidgetForCharts::CreateNewTabFromImportedData()
@@ -389,5 +446,11 @@ void TabWidgetForCharts::ChangeDemonstratedAngles() // В MainWindow
 }
 */
 
-
-
+/*
+void TabWidgetForCharts::ShowPrintPreview()
+{
+    QPainter Painter(this->PrintPreviewTab->Printer);
+    PlotTabs[0]->customPlot->render(&Painter);
+    PrintPreviewTab->PrintPreviewWidget->setVisible(true);
+}
+*/

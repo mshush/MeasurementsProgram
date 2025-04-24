@@ -5,14 +5,10 @@
 #include <QLayout>
 #include <QHBoxLayout>
 #include <QVBoxLayout>
-//#include <QtCharts/QChartView>
-//#include <QtCharts/QLineSeries>
 #include <QtWidgets>
-//#include <QtCharts>
 #include <QObject>
 #include <tabwidgetforparameters.h>
 #include <tabwidgetfortools.h>
-//#include <widgetforchart.h>
 #include <treewidgetforfiles.h>
 #include <QTreeWidget>
 #include <QTreeWidgetItem>
@@ -22,13 +18,11 @@
 #include <plotclass.h>
 #include <processimitation.h>
 #include <QDataStream>
-//#include <QLocale>
 #include <QThread>
 #include <QProgressBar>
-#include <measurement.h>
-#include <01_DataProcessing/MeasData.h>
-//#include <01_DataProcessing/primarydaraproc.h>
-#include <measurmentscontrol.h>
+#include <QTranslator>
+#include "measurmentscontrol.h"
+#include "testVNA.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -44,21 +38,11 @@ public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
-
-
+    //TestVNA * VNATest;
+    QTranslator * translator;
 
     MeasDataClass MeasData;
-    MeasurmentsControl MeasControl;
-
-
-
-
-
-
-
-
-
-
+    MeasurmentsControl *MeasControl;
 
     //QMenuBar * MenuBar;
     TabWidgetForParameters * TabOfParameters;
@@ -74,7 +58,7 @@ public:
     ThreeDimensionalVector CalibrationFunction;
     ThreeDimensionalVector BackgroundFunction;
 
-    QThread * Thread;
+    //QThread * Thread;
 
 
 
@@ -91,6 +75,8 @@ public:
     QAction * StopMeasureAction;
     QAction * MeasureBackground;
     QAction * MeasureCalibration;
+
+    QTimer * Timer;
 
 
     void SetThreeDimensionalVector(ThreeDimensionalVector F);
@@ -111,7 +97,7 @@ public:
     void ConnectProcessing();
     void ConnectTabs();
 
-
+    void UpdatePlotData();
 
 
     void UploadFile();
@@ -125,12 +111,28 @@ public:
 
 
     int CurrentPlotIndex=0;
-
+    bool ResetPlotNeeded;
 
 
     QAction* MeasureAction;
     QAction* MeasureBackgroundAction;
     QAction* MeasureTargetAction;
+
+
+    QAction* MeasureAzTargetAction;
+    QAction* MeasureResponseAtSignleAnglAction;
+    QAction* MeasureBckgndAtSingleAnglAction;
+    QAction* MeasureCurrentAspectAction;
+    QAction* AbortAction;
+    QAction* PaintPlotsAction;
+
+
+    QAction * SetRussianLanguageAction;
+    QAction * SetEnglishLanguageAction;
+
+
+    QVector<double> X1601;
+    //QThread * MeasThread;
 
 /*
 protected:
@@ -142,10 +144,11 @@ protected:
 
     void SetConnectionMainWinWithMeasCntrl();
 
+
 public slots:
     //void TellPlotTabsToChangeAngle(QVector <std::complex<double>> NeededRowFromThreeDimensionalVector); //
 
-    void HandleReceivedMeasuredFreqVector( QVector <double> ReceivedVector);
+    //void HandleReceivedMeasuredFreqVector( QVector <double> ReceivedVector);
 
     void SetAllVNAParamsFromInterface();
     void SetAllOPUParamsFromInterface();
@@ -153,20 +156,34 @@ public slots:
     void GetPlotFromDat();
 
 
+    void OnMeasureAzTargetActionPressed();
+    void OnMeasureResponseAtSignleAnglActionPressed();
+    void OnMeasureBckgndAtSingleAnglActionPressed();
+    void OnMeasureCurrentAspectActionPressed();
+    void OnAbortActionPressed();
 
-    void OnMeasurePressed();
-    void OnMeasureBackgroundPressed();
-    void OnMeasureTargetPressed();
+
+    void UpdateAzimuthPlot(int iaz, int iel);
+
+    //void OnMeasurePressed();
+    //void OnMeasureBackgroundPressed();
+    //void OnMeasureTargetPressed();
 
 
-    void UpdateSweepGraphSlot(DoubleVector SweepArrayAmpl);
-    void UpdateProfRangeSlot(DoubleVector ProfRangeArrayAmpl);
-    void UpdateGatedProfileRangeSlot(DoubleVector SweepArrayAmpl);
-    void UpdatePatternSlot(DoubleVector DiagAnglArrayAmpl);
+//    void UpdateSweepGraphSlot(QDoubleVector SweepArrayAmpl);
+//    void UpdateProfRangeSlot(QDoubleVector ProfRangeArrayAmpl);
+//    void UpdateGatedProfileRangeSlot(QDoubleVector SweepArrayAmpl);
+//    void UpdatePatternSlot(QDoubleVector DiagAnglArrayAmpl);
 
 
     void ChangeLanguageToRussian();
     void ChangeLanguageToEnglish();
+
+    void PaintAllPlots(); // разбить
+    void UpdatePlots();
+
+
+    void addRandomError(QVector<double>& data, double mean, double stddev);
 
 signals:
     void ErrorOccured(QString ErrorText);

@@ -135,11 +135,23 @@ void CustomMeasurementTreeWidget::FillNavigator()
 
     Navigator->insertRow(0);
     Navigator->setItem(0, 0, new QTableWidgetItem("Az (deg)"));
-    Navigator->setCellWidget(0, 1, new QLineEdit(""));
+    QLineEdit * NavigatorEdit = new QLineEdit("");
+    Navigator->setCellWidget(0, 1, NavigatorEdit);
     Navigator->setCellWidget(0, 2, new QPushButton(""));
     Navigator->setCellWidget(0, 3, new QPushButton(""));
+    QDoubleValidator * NavigatorValidator = new QDoubleValidator(0.0, 100.0, 2, NavigatorEdit);
+    NavigatorValidator->setRange(0,100);
+    NavigatorEdit->setValidator(NavigatorValidator);
 
-
+    //connect (NavigatorEdit,&QLineEdit::editingFinished,this,[this](){qDebug()<<NavigatorValidator->State();})
+    /*
+    connect(NavigatorEdit, &QLineEdit::editingFinished, this, [this, NavigatorValidator, NavigatorEdit]() {
+        QString text = NavigatorEdit->text();
+        int pos = 0; // Position of the text cursor
+        QValidator::State state = NavigatorValidator->validate(text, pos);
+        qDebug() << state; // This will print the validation state
+    });
+    */
 
     Navigator->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     Navigator->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
@@ -149,6 +161,8 @@ void CustomMeasurementTreeWidget::FillNavigator()
     Navigator->setColumnWidth(1, 30);
     Navigator->setColumnWidth(2, 30);
     Navigator->setColumnWidth(3, 30);
+
+
 
 }
 

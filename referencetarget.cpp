@@ -53,8 +53,7 @@ double* ReferenceTarget::CalcRefTarget(double StartFreq, double StopFreq, int NF
 }
 
 
-ReferenceTarget::ReferenceTarget(QObject *parent)
-    : QObject{parent}
+ReferenceTarget::ReferenceTarget()
 {
 
 }

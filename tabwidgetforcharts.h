@@ -8,18 +8,16 @@
 //#include<widgetforchart.h>
 #include <widgetforcustomplot.h>
 //#include <QMdiArea> Можно попробовать наследовать отсюда
-
+#include <printpreview.h>
 
 class TabWidgetForCharts : public QTabWidget
 {
     Q_OBJECT
 public:
 
-    //WidgetForChart * ChartTab;
-    //WidgetForCustomPlot * PlotTab;
     TabWidgetForCharts();
     ~TabWidgetForCharts();
-    QVector <WidgetForCustomPlot*> PlotTabs; // Сделать листом?
+    QVector <WidgetForCustomPlot*> PlotTabs; // Сделать вектором/листом? из QWidget, чтобы разные классы-наследники вносить
 
     WidgetForCustomPlot * MeasurementPlotTabFrequency;
     WidgetForCustomPlot * TimeOfFlightPlotTab;
@@ -29,14 +27,13 @@ public:
     WidgetForCustomPlot * StatisticaTab;
     WidgetForCustomPlot * FrequencyTab;
     WidgetForCustomPlot * ScriptEditorTab;
-    WidgetForCustomPlot * PrintPreviewTab;
 
 
     WidgetForCustomPlot * SweepTab;
     WidgetForCustomPlot * ProfRangeTab;
     WidgetForCustomPlot * GatedProfileTab;
     WidgetForCustomPlot * PatternTab;
-
+    PrintPreview        * PrintPreviewTab;
 
 
 
@@ -50,9 +47,11 @@ public slots:
     //void SaveData();
     void InitiateCloseTabButton();
     void ContinuousMeasurementModeChanged();
+    void SendImagesIfPrintPreview(int TabIndex);
     //void PerformFourierTransformOfCurrentPlot();
     //void PerformInverseFourierTransformOfCurrentPlot();
     //void ChangeDemonstratedAngles();
+    //void ShowPrintPreview();
 
 };
 

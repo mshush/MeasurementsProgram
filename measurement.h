@@ -8,9 +8,9 @@
 
 class Measurement
 {
-    //Q_OBJECT
+    Q_OBJECT
 public:
-    Measurement() = default;
+    Measurement()  = default;
     ~Measurement() = default;
 
     QList <ThreeDimensionalVector*> ListOfVectors;
@@ -24,3 +24,6 @@ public:
 };
 
 #endif // MEASUREMENT_H
+
+
+

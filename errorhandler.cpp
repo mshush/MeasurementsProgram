@@ -1,14 +1,13 @@
 #include "errorhandler.h"
 bool bNoError = true;
 bool bAbort = false;
-QString DebugStr;
 
 ErrorHandler::ErrorHandler(QObject *parent)
     : QObject{parent}
 {
 
 }
-
+/*
 void ErrorHandler::AppendErrorToList(int NumOfError){
     //if (ErrorListSize > 0 && ErrorList[ErrorListSize - 1] == NumOfError) return;
     ErrorList[ErrorListSize] = NumOfError;
@@ -42,7 +41,7 @@ QString reportLastError(){
 void AppendError(int error_){
     ErrorHandler::error().AppendErrorToList(error_);
 }
-
+*/
 //QList<QString> GetAllErrorsList(){
     //QList<QString> List =  ErrorHandler::error().ErrorList ;
     //return List;

@@ -9,11 +9,8 @@
 #include <QClipboard>
 #include <QImage>
 #include <QTimer>
-//#include <random>
 #include <QFile>
 #include <QDataStream>
-//#include <cmath>
-//#include <complex>
 #include <selectionrectclass.h>
 #include <QVector>
 
@@ -36,14 +33,6 @@ public:
     std::list <QCPItemText*> AddedMarkerLabelsList;     //Переименовать
 
     int SelectedGraph = 0;
-
- //   double FreqStart = 1.0;
- //   double FreqStop = 2.0;
- //   int NumberOfPoints = 1601;
-
-    //QVector <double> XVector, YVector;
-    //QVector <std::complex<double>> f; // Убрать вообще
-
     bool ContinuousMeasurementMode = false;
 
     SelectionRectClass * SelectionRectangle;
@@ -72,6 +61,7 @@ public slots:
 
     void ResetPlot();
 
+    void SendPlotImageForPreview();
     void DeleteAllMarkers();
     void CopyPlot();
     void SaveData(); // Устар
