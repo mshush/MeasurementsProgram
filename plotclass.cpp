@@ -1,10 +1,12 @@
 #include "plotclass.h"
 
+
 PlotClass::PlotClass(QWidget * parent) : QCustomPlot(parent)
 {
 
     //this->setMinimumSize(800,600);
     this->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding);
+    this->setMinimumWidth(1000);
 
 
     setBackground(QBrush(Qt::black));
@@ -84,6 +86,13 @@ PlotClass::PlotClass(QWidget * parent) : QCustomPlot(parent)
 
     this->layer(0)->setMode(QCPLayer::lmBuffered);
 
+
+
+
+    connect(this, &PlotClass::GraphClickedSignal, this, &PlotClass::ChangeSelectedGraph);
+
+    setContextMenuPolicy(Qt::CustomContextMenu);
+
 }
 
 
@@ -119,6 +128,22 @@ void PlotClass::mousePressEvent(QMouseEvent *event)
         replot();
     }
 
+
+
+}
+void PlotClass::mouseReleaseEvent(QMouseEvent *event)
+{
+    QCustomPlot::mouseReleaseEvent(event);
+
+    for (int i = 0; i < graphCount(); ++i)
+    {
+        if (graph(i)->selected())
+        {
+            qDebug()<<"Selected Graph "<<i;
+            emit GraphClickedSignal(i);
+            break;
+        }
+    }
 }
 
 
@@ -165,7 +190,6 @@ void PlotClass::SaveAs()
 void PlotClass::OpenFile()
 {
     QString filePath = QFileDialog::getOpenFileName(this, "Открыть", "", "DAT File (*.dat);;CSV File (*.csv)");
-
     if (!filePath.isEmpty()) {
         QString fileFormat = QFileInfo(filePath).suffix();
 
@@ -179,6 +203,7 @@ void PlotClass::OpenFile()
         }
     }
 }
+
 
 void PlotClass::CopyPlot()
 {
@@ -214,6 +239,49 @@ void PlotClass::SaveData()
 {
 //Перенесено в TabWidgetForCharts
 }
+
+
+
+void PlotClass::ChangeYAxisMax(QString MaxValue)
+{
+    double Lower = yAxis->range().lower;
+    double Upper = yAxis->range().upper;
+    double Span = Upper - Lower;
+    Lower = MaxValue.toDouble() - Span;
+    Upper = MaxValue.toDouble();
+    yAxis->setRange(Lower,Upper);
+    replot();
+}
+
+
+void PlotClass::ChangeYAxisSpan(QString SpanValue)
+{
+    double Lower = yAxis->range().lower;
+    double Upper = yAxis->range().upper;
+    Lower = Upper-SpanValue.toDouble();
+    yAxis->setRange(Lower,Upper);
+    replot();
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -276,7 +344,6 @@ void PlotClass::InverseFourierTransform()
 
 void PlotClass::AddNewMarker(double Key, int Style, QColor Colour, int GraphNumber)
 {
-
     QCPItemTracer * NewMarker = new QCPItemTracer(this);
     //NewMarker->setGraph(nullptr);//Чтобы открепить от graph
     NewMarker->setPen(QPen(Colour));
@@ -304,15 +371,75 @@ void PlotClass::AddNewMarker(double Key, int Style, QColor Colour, int GraphNumb
 
 
 
-    /*
-    //connect(NewMarker,&QCPItemTracer::selectionChanged,this, [NewMarkerLabel, NewMarker,this]()
+
+    connect(NewMarker, &QCPItemTracer::selectionChanged, this, [NewMarkerLabel, NewMarker,this]() // Убрать отсюда лямбду
             {
                 NewMarkerLabel->setVisible(NewMarker->selected());
 
                 if (markerdeletebuttonactive && NewMarker->selected())
                 {
+                    int DeletedMarkerIndex = 0;
+                    std::list<QCPItemTracer*>::iterator it = AddedMarkersList.begin();
+                    while (it != AddedMarkersList.end())
+                    {
+                        if (*it == NewMarker)
+                        {
+                            break;
+                        }
+                        it++;
+                        DeletedMarkerIndex++;
+                    }
+                    emit MarkerDeletedSignal(DeletedMarkerIndex);
+
+                    removeItem(NewMarker);
+                    removeItem(NewMarkerLabel);
+                    AddedMarkersList.remove(NewMarker);
+                    AddedMarkerLabelsList.remove(NewMarkerLabel);
+
+                }
+                else if (NewMarker->selected())
+                {
+                    int SelectedMarkerIndex = 0;
+                    std::list<QCPItemTracer*>::iterator it = AddedMarkersList.begin();
+                    while (it != AddedMarkersList.end())
+                    {
+                        if (*it == NewMarker)
+                        {
+                            break;
+                        }
+                        it++;
+                        SelectedMarkerIndex++;
+                    }
+                    emit MarkerSelectedSignal(SelectedMarkerIndex);
+                }
+
+                else if (!NewMarker->selected())
+                {
+                    int UnSelectedMarkerIndex = 0;
+                    std::list<QCPItemTracer*>::iterator it = AddedMarkersList.begin();
+                    while (it != AddedMarkersList.end())
+                    {
+                        if (*it == NewMarker)
+                        {
+                            break;
+                        }
+                        it++;
+                        UnSelectedMarkerIndex++;
+                    }
+                    emit MarkerUnSelectedSignal(UnSelectedMarkerIndex);
+                }
+            }
+            );
 
 
+
+    /*
+    connect(NewMarker, SIGNAL(selectionChanged()), this, SLOT([=]()
+            {
+                NewMarkerLabel->setVisible(NewMarker->selected());
+
+                if (markerdeletebuttonactive && NewMarker->selected())
+                {
                     int DeletedMarkerIndex = 0;
                     std::list<QCPItemTracer*>::iterator it = AddedMarkersList.begin();
                     while (it != AddedMarkersList.end())
@@ -363,9 +490,15 @@ void PlotClass::AddNewMarker(double Key, int Style, QColor Colour, int GraphNumb
                     emit MarkerUnSelectedSignal(UnSelectedMarkerIndex);
                 }
 
-            }
+            })
             );
     */
+    //connect(NewMarker,SIGNAL(QCPItemTracer::selectionChanged(bool, QCPItemText*, QCPItemTracer*)),this,SLOT(OnSelectionChangedSlot(bool, QCPItemText*, QCPItemTracer*)));
+
+
+
+    //connect(NewMarker,SIGNAL(selectionChanged),this, SLOT(OnMarkerSelectedSlot));
+
 
     AddedMarkersList.push_back(NewMarker);
     AddedMarkerLabelsList.push_back(NewMarkerLabel);
@@ -750,6 +883,68 @@ void PlotClass::SendPlotImageForPreview()
 
 
 
+/*
+void PlotClass::OnSelectionChangedSlot(bool selected, QCPItemText * NewMarkerLabel, QCPItemTracer * NewMarker)
+{
+
+    NewMarkerLabel->setVisible(NewMarker->selected());
+
+    if (markerdeletebuttonactive && NewMarker->selected())
+    {
+
+
+        int DeletedMarkerIndex = 0;
+        std::list<QCPItemTracer*>::iterator it = AddedMarkersList.begin();
+        while (it != AddedMarkersList.end())
+        {
+            if (*it == NewMarker)
+            {
+                break;
+            }
+            it++;
+            DeletedMarkerIndex++;
+        }
+        emit MarkerDeletedSignal(DeletedMarkerIndex);
+
+        removeItem(NewMarker);
+        removeItem(NewMarkerLabel);
+        AddedMarkersList.remove(NewMarker);
+        AddedMarkerLabelsList.remove(NewMarkerLabel);
+
+    }
+    else if (NewMarker->selected())
+    {
+        int SelectedMarkerIndex = 0;
+        std::list<QCPItemTracer*>::iterator it = AddedMarkersList.begin();
+        while (it != AddedMarkersList.end())
+        {
+            if (*it == NewMarker)
+            {
+                break;
+            }
+            it++;
+            SelectedMarkerIndex++;
+        }
+        emit MarkerSelectedSignal(SelectedMarkerIndex);
+    }
+    else if (!NewMarker->selected())
+    {
+        int UnSelectedMarkerIndex = 0;
+        std::list<QCPItemTracer*>::iterator it = AddedMarkersList.begin();
+        while (it != AddedMarkersList.end())
+        {
+            if (*it == NewMarker)
+            {
+                break;
+            }
+            it++;
+            UnSelectedMarkerIndex++;
+        }
+        emit MarkerUnSelectedSignal(UnSelectedMarkerIndex);
+    }
+
+}
+*/
 
 
 
@@ -1284,7 +1479,7 @@ h-файл и dll
  * Радиоизображение
  *
  *
- * Сделать объект для хранания ошибок
+ *  Сделать объект для хранания ошибок
  *
  *  Всё заключаем в try, throw, catch -- не очень срочная, но обязательно нужная
  *
@@ -1323,7 +1518,7 @@ h-файл и dll
  *
  *
  *
- *
+ * Перемещение маркера в следующую точку,
  *
  *
  *

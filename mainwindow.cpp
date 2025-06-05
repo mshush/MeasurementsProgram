@@ -2,6 +2,7 @@
 #include "ui_mainwindow.h"
 
 
+
 //#include <QScreen>
 //#include <iostream>
 
@@ -10,22 +11,57 @@ MainWindow::MainWindow(QWidget *parent)
     , ui(new Ui::MainWindow)
 {
 
+    //this->setWindowFlags(Qt::Window | Qt::WindowTitleHint | Qt::WindowSystemMenuHint | Qt::WindowCloseButtonHint | Qt::WindowMinMaxButtonsHint);
+
+
+    ui->setupUi(this);
+
     QFont Font("Segoe UI", 12); // Был QFont(Segoe UI,9,-1,5,400,0,0,0,0,0,0,0,0,0,0,1)
     QApplication::setFont(Font);
 
-    ui->setupUi(this);
+    /*
+    setStyleSheet("QWidget {"  // Добавить только где надо
+                  "border-style: outset;"
+                  "border-width: 2px;"
+                  "border-color: gray"
+                  "}");
+    */
+
+
+
+
+    HKL hkl = GetKeyboardLayout(0);
+    DWORD langId = LOWORD(hkl);
+    char langCode[10];
+    GetLocaleInfoA(langId, LOCALE_SISO639LANGNAME, langCode, sizeof(langCode));
+
+
+    if (strcmp(langCode, "ru") == 0)
+    {
+        if (translator.load("C:/Users/HP/Documents/MeasurementsProgram/translation/MeasProg_ru.qm"))
+        {
+            qApp->installTranslator(&translator);
+            QCoreApplication::installTranslator(&translator);
+        }
+        else
+        {
+            qDebug() << "Failed to load translation file For Russian";
+        }
+        ui->retranslateUi(this);
+    }
+
+
 
 
     FillMenu();
     ConnectMenu();
 
     TabOfTools = new TabWidgetForTools;
-
     ChartTab = new TabWidgetForCharts;
     TabOfParameters = new TabWidgetForParameters;
 
 
-    QLayout * MainLayout = new QVBoxLayout(); // Задавать абстрактным лучше или хуже?
+    QLayout * MainLayout = new QVBoxLayout();
     QSplitter * OutermostHorizontalSplitter = new QSplitter(Qt::Horizontal, this);
     MainLayout->addWidget(OutermostHorizontalSplitter);
 
@@ -35,26 +71,14 @@ MainWindow::MainWindow(QWidget *parent)
     LeftVerticalSplitter->addWidget(ChartTab);
     LeftVerticalSplitter->addWidget(TabOfTools);
 
-    ChartTab    ->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Expanding);
-    TabOfTools  ->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Expanding);
+    ChartTab    ->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    TabOfTools  ->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
 
     OutermostHorizontalSplitter->addWidget(TabOfParameters);
 
     centralWidget()->setLayout(MainLayout);
 
-    /*
-    Translator = new QTranslator(this);
-
-    if (Translator->load("MeasProg_ru.qm"))
-    {
-        qApp->installTranslator(Translator);
-    }
-    else
-    {
-        //qDebug() << "Failed to load Russian translation file.";
-    }
-    */
 
     MeasControl = new MeasurmentsControl;
 
@@ -64,7 +88,7 @@ MainWindow::MainWindow(QWidget *parent)
 
 
 
-    Timer = new QTimer(this);
+    //Timer = new QTimer(this);
     //connect(Timer, &QTimer::timeout, this, &MainWindow::UpdatePlots); // Куда-нибудь в другое место
 
 
@@ -72,21 +96,25 @@ MainWindow::MainWindow(QWidget *parent)
 
     for (int i = 0; i < 1601; i++)  {X1601.push_back(i);}
 
-    this->setWindowFlags(Qt::Window | Qt::WindowTitleHint | Qt::WindowSystemMenuHint | Qt::WindowCloseButtonHint | Qt::WindowMinMaxButtonsHint);
-
-    this->setWindowState(Qt::WindowMaximized);
-
 
     connect(MeasControl,&MeasurmentsControl::updateGraph,this, &MainWindow::UpdateAzimuthPlot);
 
 
     //VNATest = new TestVNA();
+
+
+
+    this->setWindowFlags(Qt::Window | Qt::WindowTitleHint | Qt::WindowSystemMenuHint | Qt::WindowCloseButtonHint | Qt::WindowMinMaxButtonsHint);
+    this->setWindowState(Qt::WindowMaximized);
+
+
+
+
 }
 
 
 MainWindow::~MainWindow()
 {
-    Timer->stop();
     delete ui;
 }
 
@@ -108,11 +136,13 @@ void MainWindow::ShowErrorMessage(QString Description, QString Advice)
 
 void MainWindow::ConnectMenu()
 {
-    connect(this->MeasureAzTargetAction,&QAction::triggered, this, &MainWindow::OnMeasureAzTargetActionPressed);
-    connect(this->MeasureResponseAtSignleAnglAction,&QAction::triggered, this, &MainWindow::OnMeasureResponseAtSignleAnglActionPressed);
-    connect(this->MeasureBckgndAtSingleAnglAction,&QAction::triggered, this, &MainWindow::OnMeasureBckgndAtSingleAnglActionPressed);
-    connect(this->MeasureCurrentAspectAction,&QAction::triggered, this, &MainWindow::OnMeasureCurrentAspectActionPressed);
-    connect(this->AbortAction,&QAction::triggered, this, &MainWindow::OnAbortActionPressed);
+    connect(SaveFileAction,&QAction::triggered, this, &MainWindow::OnSaveAsActionPressed); // Что и как должно сохраняться?
+
+    connect(MeasureAzTargetAction,&QAction::triggered, this, &MainWindow::OnMeasureAzTargetActionPressed);
+    connect(MeasureResponseAtSingleAnglAction,&QAction::triggered, this, &MainWindow::OnMeasureResponseAtSingleAnglActionPressed);
+    connect(MeasureBckgndAtSingleAnglAction,&QAction::triggered, this, &MainWindow::OnMeasureBckgndAtSingleAnglActionPressed);
+    connect(MeasureCurrentAspectAction,&QAction::triggered, this, &MainWindow::OnMeasureCurrentAspectActionPressed);
+    connect(AbortAction,&QAction::triggered, this, &MainWindow::OnAbortActionPressed);
 
     connect(this->PaintPlotsAction,&QAction::triggered, this, &MainWindow::PaintAllPlots);
 
@@ -136,50 +166,54 @@ void MainWindow::GetPlotFromDat() // Куда его строить?
 void MainWindow::FillMenu()
 {
     //File
-    QMenu * MenuFile = this->menuBar()->addMenu("File");
+    MenuFile = this->menuBar()->addMenu(tr("File"));
+    SaveFileAction = new QAction(tr("Save as"));
+    MenuFile->addAction(SaveFileAction);
 
-    QMenu * MenuFileWrite = new QMenu("Write", this);
-    MenuFileWrite->addAction("Sketch");
+    MenuFileWrite = new QMenu(tr("Write"), this);
+    MenuFileWrite->addAction(tr("Sketch"));
     MenuFileWrite->addSeparator();
-    MenuFileWrite->addAction("Bkgnd Calibration");
-    MenuFileWrite->addAction("Response Calibration");
+    MenuFileWrite->addAction(tr("Bkgnd Calibration"));
+    MenuFileWrite->addAction(tr("Response Calibration"));
     MenuFileWrite->addSeparator();
     MenuFile->addMenu(MenuFileWrite);
 
-    QMenu * MenuFileRead = new QMenu("Read", this);
-    MenuFileRead->addAction("Sketch");
+    MenuFileRead = new QMenu(tr("Read"), this);
+    MenuFileRead->addAction(tr("Sketch"));
     MenuFileRead->addSeparator();
-    MenuFileRead->addAction("Bkgnd Calibration");
-    MenuFileRead->addAction("Response Calibration");
+    MenuFileRead->addAction(tr("Bkgnd Calibration"));
+    MenuFileRead->addAction(tr("Response Calibration"));
     MenuFileRead->addSeparator();
     MenuFile->addMenu(MenuFileRead);
     MenuFile->addSeparator();
-    MenuFile->addAction("Change Database Folder");
-    MenuFile->addAction("Print...");
+    MenuFile->addAction(tr("Change Database Folder"));
+    MenuFile->addAction(tr("Print..."));
     MenuFile->addSeparator();
-    MenuFile->addAction("Exit");
+    MenuFile->addAction(tr("Exit"));
 
 
 
-    QMenu * MenuMeasure = this->menuBar()->addMenu("Measure");
+    MenuMeasure = new QMenu("Measure");
+    menuBar()->addMenu(MenuMeasure);
 
     // Аринины функции
+
     MeasureAzTargetAction = new QAction("MeasureAzTarget");
-    MeasureResponseAtSignleAnglAction = new QAction("MeasureResponseAtSignleAngl");
+    MeasureResponseAtSingleAnglAction = new QAction("MeasureResponseAtSingleAngl");
     MeasureBckgndAtSingleAnglAction = new QAction("MeasureBckgndAtSingleAngl");
     MeasureCurrentAspectAction = new QAction("MeasureCurrentAspect");
     AbortAction = new QAction("Abort");
     PaintPlotsAction = new QAction("PaintAllPlots");
     MenuMeasure->addAction(MeasureAzTargetAction);
-    MenuMeasure->addAction(MeasureResponseAtSignleAnglAction);
+    MenuMeasure->addAction(MeasureResponseAtSingleAnglAction);
     MenuMeasure->addAction(MeasureBckgndAtSingleAnglAction);
     MenuMeasure->addAction(MeasureCurrentAspectAction);
     MenuMeasure->addAction(AbortAction);
-    MenuMeasure->addAction(PaintPlotsAction);
+    //MenuMeasure->addAction(PaintPlotsAction);
     MenuMeasure->addSeparator();
 
 
-    // Дальше меню как в старой проге
+    //Дальше меню как в старой проге
     MenuMeasure->addAction("Measure");
     MenuMeasure->addAction("Single Angle Bkgnd Measure");
     MenuMeasure->addAction("Measure Target");
@@ -209,14 +243,15 @@ void MainWindow::FillMenu()
 
 
 
-    QMenu * MenuProcess = this->menuBar()->addMenu("Process");
+    MenuProcess = this->menuBar()->addMenu(QObject::tr("Process"));
     MenuProcess->addAction("Process");
     MenuProcess->addSeparator();
     MenuProcess->addAction("Swap Az/El");
 
 
 
-    QMenu * MenuPost_Process = this->menuBar()->addMenu("Post-Process");
+
+    MenuPost_Process = this->menuBar()->addMenu(tr("Post-Process"));
     MenuPost_Process->addAction("Post-Process");
     MenuProcess->addSeparator();
     MenuPost_Process->addAction("Frequency-Azimuth");
@@ -233,7 +268,7 @@ void MainWindow::FillMenu()
     MenuPost_Process->addAction("Create Az-El File");
 
 
-    QMenu * MenuOptions = this->menuBar()->addMenu("Options");
+    MenuOptions = this->menuBar()->addMenu(tr("Options"));
     MenuOptions->addAction("Show Sketch");
     MenuProcess->addSeparator();
     MenuOptions->addAction("Delete Sketch");
@@ -251,9 +286,10 @@ void MainWindow::FillMenu()
     MenuOptions->addAction("Move El Cut to Az Cut");
 
 
-    this->menuBar()->addMenu("Create Pylon Compensation");
+    MenuCreatePylComp = new QMenu(tr("Create Pylon Compensation"));
+    menuBar()->addMenu(MenuCreatePylComp);
 
-    QMenu * MenuLanguage = new QMenu(tr("Language"));
+    MenuLanguage = new QMenu(tr("Language"));
     SetRussianLanguageAction = new QAction(tr("Russian"));
     SetEnglishLanguageAction = new QAction(tr("English"));
     MenuLanguage->addAction(SetRussianLanguageAction);
@@ -339,23 +375,24 @@ void MainWindow::SetAllOPUParamsFromInterface()
 
 void MainWindow::ChangeLanguageToRussian()
 {
-    /*
-    QString translationFile = "MeasProg_ru.qm";
-    if (Translator->load(translationFile))
+    if (translator.load("C:/Users/HP/Documents/MeasurementsProgram/translation/MeasProg_ru"))
     {
-        qApp->installTranslator(Translator);
-        //updateUI();
+        qApp->installTranslator(&translator);
+        QCoreApplication::installTranslator(&translator);
     }
     else
     {
-        //qDebug() << "Failed to load translation file For Russian";
+        qDebug() << "Failed to load translation file For Russian";
     }
-    */
 }
 
 
 
-void MainWindow::ChangeLanguageToEnglish(){}
+void MainWindow::ChangeLanguageToEnglish()
+{
+    qApp->removeTranslator(&translator);
+    ui->retranslateUi(this);
+}
 
 
 
@@ -385,7 +422,7 @@ void MainWindow::OnMeasureAzTargetActionPressed()
 
 }
 
-void MainWindow::OnMeasureResponseAtSignleAnglActionPressed()
+void MainWindow::OnMeasureResponseAtSingleAnglActionPressed()
 {
     qDebug()<<"2";
     SetAllOPUParamsFromInterface();
@@ -393,7 +430,7 @@ void MainWindow::OnMeasureResponseAtSignleAnglActionPressed()
 
     try
     {
-        MeasControl->MeasureResponseAtSignleAngl(MeasData);
+        MeasControl->MeasureResponseAtSignleAngl(MeasData); // Попросить Арину переименовать
     }
     catch(const std::exception& e)
     {
@@ -457,6 +494,7 @@ void MainWindow::OnAbortActionPressed()
     catch(const std::exception& e)
     {
         std::cerr << "An error occurred in SetAllVNAParamsNoAction: " << e.what() << std::endl;
+        //this->TabOfTools->Debug_MessagesTab->
     }
     catch(...)
     {
@@ -552,15 +590,15 @@ void MainWindow::UpdatePlots()
     ChartTab->PlotTabs[6]->customPlot->graph(0)->setPen(QPen(Qt::blue));
 
     QDoubleVector CurrentProfRangeVector(2048);
-    MeasData.GetAmplVectorSqrt(MeasDataClass::MeasDataType::CurrentProfRange, CurrentProfRangeVector,0,0);
+    MeasData.GetAmplVectordB(MeasDataClass::MeasDataType::CurrentProfRange, CurrentProfRangeVector,0,0);
     ChartTab->PlotTabs[7]->customPlot->graph(0)->setData(XVect, CurrentProfRangeVector);
     ChartTab->PlotTabs[7]->customPlot->graph(0)->setPen(QPen(Qt::red));
 
     QDoubleVector CurrentGatedProfRangeVector(2048);
-    MeasData.GetAmplVectorSqrt(MeasDataClass::MeasDataType::CurrentGatedProfRange, CurrentGatedProfRangeVector,0,0);
+    MeasData.GetAmplVectordB(MeasDataClass::MeasDataType::CurrentGatedProfRange, CurrentGatedProfRangeVector,0,0);
     ChartTab->PlotTabs[7]->customPlot->graph(1)->setData(XVect, CurrentGatedProfRangeVector);
     ChartTab->PlotTabs[7]->customPlot->graph(1)->setPen(QPen(Qt::yellow));
-    ChartTab->PlotTabs[7]->customPlot->yAxis->setScaleType(QCPAxis::stLogarithmic);
+    //ChartTab->PlotTabs[7]->customPlot->yAxis->setScaleType(QCPAxis::stLogarithmic);
 
     ChartTab->PlotTabs[6]->customPlot->replot();
     ChartTab->PlotTabs[7]->customPlot->replot();
@@ -583,8 +621,8 @@ void MainWindow::UpdateAzimuthPlot(int iaz, int iel)
     int f = 0;
     CurrentAmpl =std::abs(MeasData.ReadValueFrom(MeasDataClass::MeasDataType::PatternArr,f, iaz,iel));
 
-    ChartTab->PlotTabs[8]->customPlot->xAxis->setRange(0,1601);
-    ChartTab->PlotTabs[8]->customPlot->ResetPlot();
+    //ChartTab->PlotTabs[8]->customPlot->xAxis->setRange(0,1601);
+    //ChartTab->PlotTabs[8]->customPlot->ResetPlot();
     //QVector<double> XVect;
     //for (int i = 0; i < 1601; i++)  {XVect.push_back(i);}
 
@@ -592,7 +630,7 @@ void MainWindow::UpdateAzimuthPlot(int iaz, int iel)
     //ChartTab->PlotTabs[8]->customPlot->graph(0)->setPen(QPen(Qt::blue));
 
     //ChartTab->PlotTabs[8]->customPlot->replot();
-    ChartTab->PlotTabs[8]->customPlot->xAxis->setRange(0,1601);
+    //ChartTab->PlotTabs[8]->customPlot->xAxis->setRange(0,1601);
     ChartTab->PlotTabs[8]->customPlot->yAxis->rescale();
 
     /*
@@ -647,12 +685,40 @@ void MainWindow::addRandomError(QDoubleVector& data, double mean, double sigma)
 
 
 
+void MainWindow::OnSaveAsActionPressed()
+{
+
+    if (ChartTab->currentIndex() < ChartTab->PlotTabs.size())
+    {
+        ChartTab->PlotTabs[ChartTab->currentIndex()]->customPlot->SaveAs();
+    }
+    else
+    {
+        QMessageBox::warning(this, "Сохранение графика недоступно для вкладки предварительного просмотра", "Выберите вкладку с графиком");
+    }
+}
 
 
 
+void MainWindow::changeEvent(QEvent *event)
+{
 
-
-
+    if (event->type() == QEvent::LanguageChange)
+    {
+        ui->retranslateUi(this);
+        MenuFile->setTitle(tr("File"));
+        MenuFileWrite->setTitle(tr("Write"));
+        MenuFileRead->setTitle(tr("Read"));
+        MenuMeasure->setTitle(tr("Measure"));
+        MenuProcess->setTitle(tr("Process"));
+        MenuPost_Process->setTitle(tr("Post-Process"));
+        MenuOptions->setTitle(tr("Options"));
+        MenuCreatePylComp->setTitle(tr("Create Pylon Compensation"));
+        MenuLanguage->setTitle(tr("Language"));
+        //.....
+    }
+    QWidget::changeEvent(event);
+}
 
 
 
@@ -740,7 +806,6 @@ void MainWindow::SetCalibration()
     PltPtr->replot();
 
 
-    """
     QFile File(TabOfParameters->ResultTab->BackgroundLineEdit->text());
     if (!File.open(QIODevice::ReadOnly)) {
         qWarning() << "Не получилось открыть файл для чтения: " << File.errorString();

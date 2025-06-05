@@ -68,8 +68,8 @@ public:
     QVBoxLayout * MarkerGroupBoxLayout;
     QHBoxLayout * MarkerStyleLayout;
     QHBoxLayout * MarkerAddDeleteLayout;
-    QPushButton * MarkerAddButton;
-    QPushButton * MarkerDeleteButton;
+    //QPushButton * MarkerAddButton; Ниже
+    //QPushButton * MarkerDeleteButton;
     QPushButton * DeleteAllMarkersButton;
     QPushButton * MarkerSettingsButton;
     QColor MarkerColourChoise = Qt::black;
@@ -102,15 +102,83 @@ public:
     //QVBoxLayout * MarkerSettingsDialogueLayout;
     //int MarkerStyleChoice;
 
+    QFrame * MarkerFrame;
 
+    QLabel      * YAxisMaxLabel;
+    QLabel      * YAxisSpanLabel;
+    QComboBox   * YAxisMaxBox;
+    QComboBox   * YAxisSpanBox;
+
+    void ConnectControlsWidget();
+    void InitiateButtons();
+
+    QPushButton * YLinScaleButton;
+    QPushButton * YLogScaleButton;
+    QPushButton * YFitMaxSpanButton   ;
+    QPushButton * YFitMaxButton       ;
+    QPushButton * YManualScaleButton  ;
+    QPushButton * XScaleRectButton    ;
+    QPushButton * XFitScaleButton     ;
+    QPushButton * XUserScaleButton    ;
+    QPushButton * XHighlightButton    ;
+    QPushButton * MarkerMoveLeftButton    ;
+    QPushButton * MarkerMoveRightButton   ;
+    QPushButton * MarkerRightMaxButton    ;
+    QPushButton * MarkerLeftMaxButton     ;
+    QPushButton * MarkerRightMinButton    ;
+    QPushButton * MarkerLeftMinButton     ;
+    QPushButton * MarkerLocalMaxButton    ;
+    QPushButton * MinusRightButton        ;
+    QPushButton * MinusLeftButton         ;
+    QPushButton * MarkerAddButton         ;
+    QPushButton * MarkerGraphButton       ;
+    QPushButton * MarkerIncreaseNButton   ;
+    QPushButton * MarkerPrintButton       ;
+    QPushButton * MarkerIncreaseButton    ;
+    QPushButton * MarkerUnlockYButton     ;
+    QPushButton * MarkerUnlockXButton     ;
+    QPushButton * MarkerDeleteButton      ;
+    QPushButton * MarkerUpButton          ;
+    QPushButton * MarkerDownButton        ;
+
+    QButtonGroup * YLinLogScaleButtonGroup;
+    QButtonGroup * YFitMaxSpanOrManualButtonGroup;
+
+
+
+    QVector <QPushButton *> PlotButtonVector;
+
+    double SelectedRangeXMin = 0;
+    double SelectedRangeXMax = 0;
+
+
+
+    QMenu * contextMenu;
+    QAction * DisableScalePanelAction;
+    QAction * PolarFormatAction;
+    QAction * AmplitudeAction;
+    QAction * PhaseAction;
+    QAction * RealPartAction;
+    QAction * ImagPartAction;
+    QAction * LegendInsideAction;
+    QAction * DisableLegendAction;
+
+
+    void SetupContextMenu();
 
 public slots:
     void EnterSelectLocalMinMode();
     void PutMarkerAtLocalMin();
     void EnterSelectLocalMaxMode();
     void PutMarkerAtLocalMax();
+
     void ToNextMax();
     void ToPrevMax();
+    //void ToNextMin(); // Перенесены в OnMarkerNextMinClicked
+    //void ToPrevMin(); // ...
+
+    void ToNextKey();
+    void ToPrevKey();
 
     void SetRange();
 
@@ -136,6 +204,52 @@ public slots:
 
     void FillControlsWidget();
     void AdjustContentsOfTableOfDifference(int row, int column);
+
+    void OnYLinScaleClicked();
+    void OnYLogScaleClicked();
+    void OnYFitMaxSpanClicked();
+    void OnYFitMaxClicked();
+    void OnYManualScaleClicked();
+    void OnXScaleRectClicked();
+    void OnXFitScaleClicked();
+    void OnXUserScaleClicked();
+    void OnXHighlightClicked();
+    void OnMarkerMoveLeftClicked();
+    void OnMarkerMoveRightClicked();
+    void OnMarkerRightMaxClicked();
+    void OnMarkerLeftMaxClicked();
+    void OnMarkerRightMinClicked();
+    void OnMarkerLeftMinClicked();
+    void OnMarkerLocalMaxClicked();
+    void OnMinusRightClicked();
+    void OnMinusLeftClicked();
+    void OnMarkerAddClicked();
+    void OnMarkerGraphClicked();
+    void OnMarkerIncreaseNClicked();
+    void OnMarkerPrintClicked();
+    void OnMarkerIncreaseClicked();
+    void OnMarkerUnlockYClicked();
+    void OnMarkerUnlockXClicked();
+    void OnMarkerDeleteClicked();
+    void OnMarkerUpClicked();
+    void OnMarkerDownClicked();
+
+
+
+    void ShowContextMenu(const QPoint &pos);
+
+    void OnDisableScalePanel();
+    void OnPolarFormat();
+    void OnAmplitude();
+    void OnPhase();
+    void OnRealPart();
+    void OnImagPart();
+    void OnLegendInside();
+    void OnDisableLegend();
+
+
+
+
 
 
 

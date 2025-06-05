@@ -4,7 +4,7 @@ TabWidgetForParameters::TabWidgetForParameters(QWidget *parent) : QTabWidget(par
 {
     //this->setMaximumWidth(300);
     //this->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Expanding);
-    this->setFixedWidth(300);
+    this->setMaximumWidth(300);
     MeasurementTab = new CustomMeasurementTreeWidget();
     ProcessingTab  = new CustomProcessingTreeWidget();
     //FileTreeTab = new TreeWidgetForFiles();

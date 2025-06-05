@@ -26,7 +26,7 @@ public:
     QTableWidget * LegendTab;
     QWidget * ScriptTab;
     TreeWidgetForFiles * File_ManagerTab;
-    QTreeWidget * Debug_MessagesTab;
+    QTreeWidget * DebugMessagesTab;
 
 
     QPushButton * StartMeasurementsButton;
@@ -42,8 +42,9 @@ public:
     QPushButton * SaveThreeDimensionalVectorButton;
     QPushButton * GetPlotDataButton;
 
+    void FillDebugMessagesTab();
 
-
+    void setContentsMarginsToZero(QWidget *widget);
 
 
 signals:

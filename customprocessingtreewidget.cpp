@@ -10,7 +10,8 @@
 CustomProcessingTreeWidget::CustomProcessingTreeWidget()
 {
 
-    QBrush brush = QBrush(QColor(200,200,255));
+    //QBrush brush = QBrush(QColor(200,200,255));
+    QBrush brush(QColor(191, 205, 219));
 
     this->setFixedWidth(280);
     //this->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
@@ -20,7 +21,7 @@ CustomProcessingTreeWidget::CustomProcessingTreeWidget()
     setIndentation(0);
     //setHeaderLabels(QStringList() << "Parameter Groups");
 
-    this->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     //this->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 
     // Добавляем 12 элементов:
@@ -335,6 +336,11 @@ void CustomProcessingTreeWidget::FillStatisticaSubrange()
     StatisticaSubrangeInsideTable->setItem(3,0, new QTableWidgetItem("Pcnt90"));
     StatisticaSubrangeInsideTable->setItem(4,0, new QTableWidgetItem("Pcnt10"));
 
+    StatisticaSubrangeInsideTable->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    StatisticaSubrangeInsideTable->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    StatisticaSubrangeInsideTable->setColumnWidth(0, 80);
+    StatisticaSubrangeInsideTable->setColumnWidth(1, 80);
+    StatisticaSubrangeInsideTable->setColumnWidth(3, 80);
     //StatisticaSubrangeInsideTable->setFixedSize(280,150);
 
     StatisticaSubrange->setCellWidget(4, 0, StatisticaSubrangeInsideTable);
@@ -344,7 +350,7 @@ void CustomProcessingTreeWidget::FillStatisticaSubrange()
     StatisticaSubrange->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     StatisticaSubrange->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 
-    //StatisticaSubrange->setFixedHeight(280);
+    StatisticaSubrange->setFixedHeight(270);
     StatisticaSubrange->setColumnWidth(0, 120);
     StatisticaSubrange->setColumnWidth(1, 120);
 
@@ -489,7 +495,69 @@ void CustomProcessingTreeWidget::FillImageSubrange()
 
 void CustomProcessingTreeWidget::FillISARParameters()
 {
-    ISARParameters->setFixedHeight(10);
+    //ISARParameters->setFixedHeight(100);
+
+    ISARParameters->verticalHeader()->setVisible(false);
+    ISARParameters->horizontalHeader()->setVisible(false);
+    ISARParameters->horizontalHeader()->setStretchLastSection(true);
+    ISARParameters->setEditTriggers(QAbstractItemView::SelectedClicked);
+
+
+
+    ISARParameters->setColumnCount(2);
+
+    ISARParameters->insertRow(0);
+    ISARParameters->setItem(0, 0, new QTableWidgetItem("Window DR"));
+    QComboBox * WindowDRBox = new QComboBox(ISARParameters);
+    WindowDRBox->addItem("Normal");
+    ISARParameters->setCellWidget(0, 1, WindowDRBox);
+
+    ISARParameters->insertRow(1);
+    ISARParameters->setItem(1, 0, new QTableWidgetItem("Window CR"));
+    QComboBox * WindowCRBox = new QComboBox(ISARParameters);
+    WindowCRBox->addItem("Normal");
+    ISARParameters->setCellWidget(1, 1, WindowCRBox);
+
+    ISARParameters->insertRow(2);
+    ISARParameters->setItem(2, 0, new QTableWidgetItem("N DR"));
+    QComboBox * NDRBox = new QComboBox(ISARParameters);
+    NDRBox->addItem("128");
+    ISARParameters->setCellWidget(2, 1, NDRBox);
+
+    ISARParameters->insertRow(3);
+    ISARParameters->setItem(3, 0, new QTableWidgetItem("N CR"));
+    QComboBox * NCRBox = new QComboBox(ISARParameters);
+    NCRBox->addItem("128");
+    ISARParameters->setCellWidget(3, 1, NCRBox);
+
+
+
+    ISARParameters->insertRow(4);
+    ISARParameters->setItem(4, 0, new QTableWidgetItem("Sizes (m)"));
+    ISARParameters->setCellWidget(4, 1, new QLineEdit("1.000 x 1.000"));
+
+    ISARParameters->insertRow(5);
+    ISARParameters->setItem(5, 0, new QTableWidgetItem("Accuracy (dB)"));
+    ISARParameters->setCellWidget(5, 1, new QLineEdit("0.008 x 0.008"));
+
+    ISARParameters->insertRow(6);
+    ISARParameters->setItem(6, 0, new QTableWidgetItem("Resolution (m)"));
+    ISARParameters->setCellWidget(6, 1, new QLineEdit("2.000 x 2.000"));
+
+    ISARParameters->insertRow(7);
+    ISARParameters->setItem(7, 0, new QTableWidgetItem("Default shape"));
+    ISARParameters->setCellWidget(7, 1, new QCheckBox(ISARParameters));
+
+    ISARParameters->insertRow(8);
+    ISARParameters->setItem(8, 0, new QTableWidgetItem("Default N"));
+    ISARParameters->setCellWidget(8, 1, new QCheckBox(ISARParameters));
+
+    ISARParameters->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    ISARParameters->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+
+    ISARParameters->setFixedHeight(270);
+    ISARParameters->setColumnWidth(0, 120);
+    ISARParameters->setColumnWidth(1, 120);
 };
 
 void CustomProcessingTreeWidget::FillSketch()
@@ -527,7 +595,7 @@ void CustomProcessingTreeWidget::FillSketch()
     Sketch->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     Sketch->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 
-    Sketch->setMaximumHeight(120);
+    Sketch->setMaximumHeight(150);
     Sketch->setColumnWidth(0, 120);
     Sketch->setColumnWidth(1, 120);
 

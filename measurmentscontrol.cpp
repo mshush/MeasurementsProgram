@@ -2,8 +2,8 @@
 #include <math.h>
 #include <QDir>
 
-//#define OPU_VNA_SIMULATION;
-#define OPU_SIMULATION;
+#define OPU_VNA_SIMULATION;
+//#define OPU_SIMULATION;
 
 QComplexVector MeasurmentsControl::TempTrgtRawDataArr;
 double* MeasurmentsControl::TargetDataTempIm;
@@ -17,6 +17,8 @@ std::atomic<bool> boolAbort(false);
 MeasurmentsControl::MeasurmentsControl(QWidget *parent)
     : QWidget{parent}
 {
+
+
 }
 
 bool readFileAndStoreData1(const QString& filePath, QVector<double>& column1, QVector<std::complex<double>>& column2and3)
@@ -193,7 +195,7 @@ void MeasurmentsControl::MeasureAzTargetThread(MeasDataClass::VNAParams params, 
                                                  params.MeasParameter,\
                                                  params.Datatype,\
                                                  params.IF);
-
+    VNA_.SetTriggerMode(true);
     qDebug() << "params";
       /*
     if (opuParams.MoveMode == "CCW") {
@@ -217,7 +219,7 @@ void MeasurmentsControl::MeasureAzTargetThread(MeasDataClass::VNAParams params, 
                 if(IsbAbort()) break;
 
                VNA_.MeasureSingleSweep();
-                _sleep(500);
+                //_sleep(500);
                 {
                 std::lock_guard<std::mutex> lock(measMutex);
                 VNA_.ReadSingleSweep(TargetDataTempRe, TargetDataTempIm);
@@ -329,8 +331,8 @@ void MeasurmentsControl::PrimaryProcessSweep(MeasDataClass::MeasDataType RawData
             double l = MeasData.GetDistVector()[s-1];
 
             QComplexVector Filter_coeffs = Filter.FirWin(MeasData.GetFilterNumTaps(),\
-            MeasData.GetXinitQuietZone() - l*0.5, MeasData.GetXfinQuietZone() - l*0.5,\
-             l*0.5, MeasData.GetFilterType());
+            -0.5*l + MeasData.GetXinitQuietZone(),-0.5*l + MeasData.GetXfinQuietZone() ,\
+             l, MeasData.GetFilterType());
             FilteredData = Filter.FilterSignalFIR(Filter_coeffs, RawData);
             //MeasData.WriteSweepAt(    DataType::CalibrationArr, FilteredData);
             if (RawDataType == DataType::RawRsp)

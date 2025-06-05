@@ -114,9 +114,10 @@ CustomMeasurementTreeWidget::CustomMeasurementTreeWidget(QWidget * parent) : QTr
 
 
     connect(ConfigsRangeComboBox, &QComboBox::currentIndexChanged, this, &CustomMeasurementTreeWidget::FrequencyRangeChanged);
+
+    this->ConfigsRangeComboBox->setCurrentIndex(1);
+
     this->expandAll();
-
-
 }
 
 

@@ -4,6 +4,7 @@
 
 PrintPreview::PrintPreview(QWidget *parent) : QWidget{parent}
 {
+    this->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding);
     Printer = new QPrinter(QPrinter::HighResolution);
     Printer->setOutputFormat(QPrinter::PdfFormat);
     Printer->setOutputFileName("C:/Users/HP/Desktop/Напечатанные графики.pdf");
@@ -44,7 +45,7 @@ PrintPreview::PrintPreview(QWidget *parent) : QWidget{parent}
 
 
 
-        this->DrawPreset(VectorOfPlotImages[0], Painter);
+        this->DrawPreset(VectorOfPlotImages[7], Painter);
         qDebug()<<"Works here";
 
         //PrintPreviewWidget->updatePreview();
@@ -85,6 +86,7 @@ PrintPreview::PrintPreview(QWidget *parent) : QWidget{parent}
     CompositeBox    = new QCheckBox();
 
 
+
     QButtonGroup *CheckboxGroup = new QButtonGroup(this);
     CheckboxGroup->setExclusive(true);
     CheckboxGroup->addButton(PreviewBox);
@@ -96,8 +98,18 @@ PrintPreview::PrintPreview(QWidget *parent) : QWidget{parent}
     CheckboxGroup->addButton(Frequency_DRBox);
     CheckboxGroup->addButton(CompositeBox);
 
+    PreviewLabel        = new QLabel("CASweep");
+    FrequencyLabel      = new QLabel("RTSweep");
+    PatternLabel        = new QLabel("RBSweep");
+    DownRangeLabel      = new QLabel("RRSweep");
+    CrossRangeLabel     = new QLabel("ClbrSweep");
+    StatisticaLabel     = new QLabel("PttrnSweep");
+    Frequency_DRLabel   = new QLabel("CurrentAspect");
+    CompositeLabel      = new QLabel("Current(Gated)ProfRangeVector");
 
-    // Подписи к окошкам
+    //connect(CompositeBox,&QCheckBox::stateChanged,this,ChangePlot)
+    /*
+    // Подписи к окошкам Сделать такими же, как подписи к вкладкам зачем все называть? Надо зделать просто номера
     PreviewLabel        = new QLabel("Preview");
     FrequencyLabel      = new QLabel("Frequency");
     PatternLabel        = new QLabel("Pattern");
@@ -106,6 +118,7 @@ PrintPreview::PrintPreview(QWidget *parent) : QWidget{parent}
     StatisticaLabel     = new QLabel("Statistica");
     Frequency_DRLabel   = new QLabel("Frequency/DR");
     CompositeLabel      = new QLabel("Composite");
+    */
 
     // Кнопки изменения размеров
     UserSize            = new QPushButton("User Size");

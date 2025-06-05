@@ -5,12 +5,13 @@ TabWidgetForCharts::TabWidgetForCharts()
 {
 
 
-    this->setFixedHeight(560);
+    this->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding);
+
 
     for (int i=0;i<9;i++)
     {
         WidgetForCustomPlot * TempTab = new WidgetForCustomPlot(this);
-        TempTab->customPlot->xAxis->setLabel("N");
+        TempTab->customPlot->xAxis->setLabel("Frequency, GHz");
         addTab(TempTab,"Tab" + QString::number(i));
         PlotTabs.push_back(TempTab);
         TempTab->customPlot->addGraph();
@@ -18,15 +19,17 @@ TabWidgetForCharts::TabWidgetForCharts()
         TempTab->customPlot->addGraph();
     }
 
-    this->setTabText(0, "CASweep");
-    this->setTabText(1, "RTSweep");
-    this->setTabText(2, "RBSweep");
-    this->setTabText(3, "RRSweep");
-    this->setTabText(4, "ClbrSweep");
-    this->setTabText(5, "PttrnSweep");
-    this->setTabText(6, "CurrentAspect");
-    this->setTabText(7, "Current(Gated)ProfRangeVector");
-    this->setTabText(8, "От угла");
+    setTabText(0, "CASweep");
+    setTabText(1, "RTSweep");
+    setTabText(2, "RBSweep");
+    setTabText(3, "RRSweep");
+    setTabText(4, "ClbrSweep");
+    setTabText(5, "PttrnSweep");
+    setTabText(6, "CurrentAspect");
+    setTabText(7, "Current(Gated)ProfRangeVector");
+    setTabText(8, "Azimuth");
+
+    PlotTabs[7]->GraphChoiceComboBox->addItem("График 2"); // Переменовать в Gated...
 
     PrintPreviewTab = new PrintPreview(this);
     addTab(PrintPreviewTab,"Print Preview");

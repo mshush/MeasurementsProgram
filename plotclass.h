@@ -14,6 +14,9 @@
 #include <selectionrectclass.h>
 #include <QVector>
 
+
+
+
 class PlotClass : public QCustomPlot
 {
     Q_OBJECT
@@ -55,6 +58,7 @@ public:
     QVector <QCPGraph *> GraphVector;
     void AddEmptyGraphToPlot();
 
+
 public slots:
     //void UpdateMeasuredData  (QVector <std::complex<double>> MeasuredData);
     //void UpdateBackgroundPlot(QVector <std::complex<double>> BackgroundData);
@@ -88,11 +92,18 @@ public slots:
     void ToNextMax(); // Переместить маркер на следующий максимум справа от текущего положения
     void ToPrevMax();
 
+    //void OnSelectionChangedSlot(bool selected, QCPItemText * NewMarkerLabel, QCPItemTracer * NewMarker);
+
+    void ChangeYAxisMax (QString  MaxValue);
+    void ChangeYAxisSpan(QString SpanValue);
+
+
+
 
 protected:
-    void mouseMoveEvent(QMouseEvent *event) override;
-    void mousePressEvent(QMouseEvent *event) override;
-
+    void mouseMoveEvent     (QMouseEvent *event) override;
+    void mousePressEvent    (QMouseEvent *event) override;
+    void mouseReleaseEvent  (QMouseEvent *event) override;
 public:
 signals:
     void ErrorOccured(QString ErrorText);
@@ -101,6 +112,8 @@ signals:
     void MarkerDeletedSignal(int Index);
     void MarkerSelectedSignal(int Index);
     void MarkerUnSelectedSignal(int Index);
+    void GraphClickedSignal(int Index);
+    //void selectionChangedByUser() override; Так не работает
 };
 
 #endif // PLOTCLASS_H

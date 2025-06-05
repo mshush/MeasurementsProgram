@@ -8,14 +8,19 @@ TabWidgetForTools::TabWidgetForTools()
 
 
     PatternTab = new WidgetForCustomPlot(this);
-    PatternTab->setMaximumHeight(200);
-
-    PatternTab->customPlot->xAxis->setLabel("Az (deg)");
+    PatternTab->setMaximumHeight(300);
+    PatternTab->setSizePolicy(QSizePolicy::Minimum,QSizePolicy::Minimum);
+    //setContentsMarginsToZero(PatternTab);
+    //PatternTab->ControlsWidget->setContentsMargins(QMargins(0,0,0,0));
+    //PatternTab->VerticalControlsLayout->setContentsMargins(QMargins(0,0,0,0));
+    //PatternTab->SetRangeVerticalLayout->setContentsMargins(QMargins(0,0,0,0));
+    PatternTab->customPlot->xAxis->setLabel("Az, deg");
+    PatternTab->MarkerFrame->setVisible(false);
     MessagesTab = new QTreeWidget(this);
     LegendTab = new QTableWidget(this);
     ScriptTab = new QWidget(this);
     File_ManagerTab = new TreeWidgetForFiles(this);
-    Debug_MessagesTab = new QTreeWidget(this);
+    DebugMessagesTab = new QTreeWidget(this);
 
 
 
@@ -28,7 +33,7 @@ TabWidgetForTools::TabWidgetForTools()
     addTab(LegendTab,        "Legend");
     addTab(ScriptTab,        "Script");
     addTab(File_ManagerTab,  "File_Manager");
-    addTab(Debug_MessagesTab,"Debug_Messages");
+    addTab(DebugMessagesTab, "Debug_Messages");
 
 
     LegendTab->setRowCount(5); // Set the number of rows
@@ -61,9 +66,9 @@ TabWidgetForTools::TabWidgetForTools()
     rootItem->setExpanded(true);
 
 
+    FillDebugMessagesTab();
 
-    Debug_MessagesTab->setColumnCount(1); // Set the number of columns
-    Debug_MessagesTab->setHeaderLabel("Errors"); // Set the header label
+
 
     // Create root item
     QTreeWidgetItem *rootItem1 = new QTreeWidgetItem(MessagesTab, QStringList() << "Legend Item");
@@ -79,9 +84,9 @@ TabWidgetForTools::TabWidgetForTools()
     rootItem1->setExpanded(true);
 
     /*
-    Debug_MessagesTab->setColumnCount(3);
-    Debug_MessagesTab->setHorizontalHeaderLabels({"Время", "Отправитель", "Сообшение"});
-    Debug_MessagesTab->horizontalHeader()->setStretchLastSection(true);
+    DebugMessagesTab->setColumnCount(3);
+    DebugMessagesTab->setHorizontalHeaderLabels({"Время", "Отправитель", "Сообшение"});
+    DebugMessagesTab->horizontalHeader()->setStretchLastSection(true);
 
     */
 
@@ -209,17 +214,46 @@ TabWidgetForTools::~TabWidgetForTools()
 void TabWidgetForTools::DisplayError(QString ErrorText)
 {
     /*
-    int NumberOfRows = Debug_MessagesTab->rowCount();
-    Debug_MessagesTab->insertRow(NumberOfRows);
-    Debug_MessagesTab->setItem(NumberOfRows, 0, new QTableWidgetItem(QDateTime::currentDateTime().toString("yyyy-MM-dd HH:mm:ss")));
+    int NumberOfRows = DebugMessagesTab->rowCount();
+    DebugMessagesTab->insertRow(NumberOfRows);
+    DebugMessagesTab->setItem(NumberOfRows, 0, new QTableWidgetItem(QDateTime::currentDateTime().toString("yyyy-MM-dd HH:mm:ss")));
     QStringList ListOf2Items = ErrorText.split(":", Qt::SkipEmptyParts);
     QString type = ListOf2Items.size() > 0 ? ListOf2Items[0].trimmed() : "Не известен";
     QString message = ListOf2Items.size() > 1 ? ListOf2Items[1].trimmed() : "Нет сообщения";
-    Debug_MessagesTab->setItem(NumberOfRows, 1, new QTableWidgetItem(type));
-    Debug_MessagesTab->setItem(NumberOfRows, 2, new QTableWidgetItem(message));
+    DebugMessagesTab->setItem(NumberOfRows, 1, new QTableWidgetItem(type));
+    DebugMessagesTab->setItem(NumberOfRows, 2, new QTableWidgetItem(message));
 */
 }
 
+void TabWidgetForTools::setContentsMarginsToZero(QWidget *widget)
+{
+    /*
+    widget->setContentsMargins(0, 0, 0, 0);
+    widget->layout()->setContentsMargins(0, 0, 0, 0);
 
+    for (QObject *child : widget->children())
+    {
+        if (QWidget *childWidget = qobject_cast<QWidget *>(child))
+        {
+            setContentsMarginsToZero(childWidget);
+            qDebug()<<child;
+        }
+    }
+    */
+}
+
+void TabWidgetForTools :: FillDebugMessagesTab()
+{
+
+    DebugMessagesTab->setColumnCount(1);
+    QTreeWidgetItem * Error1 = new QTreeWidgetItem(DebugMessagesTab);
+    Error1->setText(0,"Error1");
+    DebugMessagesTab->addTopLevelItem(Error1);
+
+    DebugMessagesTab->setHeaderLabel("Errors");
+
+
+
+}
 
 

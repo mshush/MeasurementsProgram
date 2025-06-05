@@ -23,9 +23,11 @@
 #include <QTranslator>
 #include "measurmentscontrol.h"
 #include "testVNA.h"
+#include "ui_mainwindow.h"
 
 QT_BEGIN_NAMESPACE
-namespace Ui {
+namespace Ui
+{
 class MainWindow;
 }
 QT_END_NAMESPACE
@@ -39,7 +41,7 @@ public:
     ~MainWindow();
 
     //TestVNA * VNATest;
-    QTranslator * translator;
+    QTranslator translator;
 
     MeasDataClass MeasData;
     MeasurmentsControl *MeasControl;
@@ -69,13 +71,13 @@ public:
     //QProgressBar * ProgressBar;
 
 
+
     QAction * SaveFileAction;
     QAction * OpenFileAction;
     QAction * StartMeasureAction;
     QAction * StopMeasureAction;
     QAction * MeasureBackground;
     QAction * MeasureCalibration;
-
     QTimer * Timer;
 
 
@@ -106,6 +108,7 @@ public:
     //QProgressBar * ProgressBar;
 
 
+
     int azim=0;
     int elev=0;
 
@@ -120,11 +123,24 @@ public:
 
 
     QAction* MeasureAzTargetAction;
-    QAction* MeasureResponseAtSignleAnglAction;
+    QAction* MeasureResponseAtSingleAnglAction;
     QAction* MeasureBckgndAtSingleAnglAction;
     QAction* MeasureCurrentAspectAction;
     QAction* AbortAction;
     QAction* PaintPlotsAction;
+
+
+
+
+    QMenu * MenuFile;
+    QMenu * MenuFileWrite;
+    QMenu * MenuFileRead;
+    QMenu * MenuMeasure;
+    QMenu * MenuProcess;
+    QMenu * MenuPost_Process;
+    QMenu * MenuOptions;
+    QMenu * MenuCreatePylComp;
+    QMenu * MenuLanguage;
 
 
     QAction * SetRussianLanguageAction;
@@ -144,6 +160,18 @@ protected:
 
     void SetConnectionMainWinWithMeasCntrl();
 
+/*
+    void showEvent(QShowEvent *event) override
+    {
+        QMainWindow::showEvent(event);
+        this->setWindowState(Qt::WindowMaximized);
+    };
+*/
+
+
+    void changeEvent(QEvent *event) override;
+
+
 
 public slots:
     //void TellPlotTabsToChangeAngle(QVector <std::complex<double>> NeededRowFromThreeDimensionalVector); //
@@ -156,12 +184,12 @@ public slots:
     void GetPlotFromDat();
 
 
-    void OnMeasureAzTargetActionPressed();
-    void OnMeasureResponseAtSignleAnglActionPressed();
+    void OnMeasureAzTargetActionPressed(); // Переименовать в clicked
+    void OnMeasureResponseAtSingleAnglActionPressed();
     void OnMeasureBckgndAtSingleAnglActionPressed();
     void OnMeasureCurrentAspectActionPressed();
     void OnAbortActionPressed();
-
+    void OnSaveAsActionPressed();
 
     void UpdateAzimuthPlot(int iaz, int iel);
 
@@ -184,6 +212,8 @@ public slots:
 
 
     void addRandomError(QVector<double>& data, double mean, double stddev);
+
+
 
 signals:
     void ErrorOccured(QString ErrorText);

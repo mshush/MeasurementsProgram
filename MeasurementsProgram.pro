@@ -69,7 +69,7 @@ LIBS += -L$$PWD/dll -lMeasLib
 
 #LIBS += -L$$PWD/dll -llibfftw3-3  #Задание Алексея про эту библиотеку
 
-TRANSLATIONS += MeasProg_ru.ts
+TRANSLATIONS += translation/MeasProg_ru.ts
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
@@ -92,9 +92,11 @@ DEPENDPATH += $$PWD/../QCustomPlot
 #LIBS += -L$$PWD/dll -llibfftw3-3
 
 DISTFILES += \
-    MeasProg_ru.qm \
     #dll/libfftw3-3.dll \
     #dll/libfftw3f-3.dll \
     #dll/libfftw3l-3.dll \
     #lib/libAlgLib.a \
-    #lib/libuntitled3.a
+    #lib/libuntitled3.a \
+    translation/MeasProg_ru.qm \
+    translation/MeasProg_ru.ts
+
