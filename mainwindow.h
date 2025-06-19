@@ -46,29 +46,14 @@ public:
     MeasDataClass MeasData;
     MeasurmentsControl *MeasControl;
 
-    //QMenuBar * MenuBar;
     TabWidgetForParameters * TabOfParameters;
     TabWidgetForTools * TabOfTools;
-    //WidgetForChart * ChartWidget;
     TabWidgetForCharts * ChartTab;
-    //TreeWidgetForFiles * FileTreeWidget;
     WidgetForCustomPlot * CustomPlotWidget;
     ProcessImitation * Process;
-    //void addItems(const QDir &directory, QTreeWidgetItem *parent); // Перенести в отдельный класс для дерева
-
     ThreeDimensionalVector StoredFunction; // Хранить в WidgetForCustomPlot чтобы открывать старое?
     ThreeDimensionalVector CalibrationFunction;
     ThreeDimensionalVector BackgroundFunction;
-
-    //QThread * Thread;
-
-
-
-    //enum ModeOfMeasurement {Response, Background, Calibration};
-
-
-    // Индикатор выполнения
-    //QProgressBar * ProgressBar;
 
 
 
@@ -104,11 +89,6 @@ public:
 
     void UploadFile();
 
-    // Индикатор выполнения
-    //QProgressBar * ProgressBar;
-
-
-
     int azim=0;
     int elev=0;
 
@@ -129,9 +109,6 @@ public:
     QAction* AbortAction;
     QAction* PaintPlotsAction;
 
-
-
-
     QMenu * MenuFile;
     QMenu * MenuFileWrite;
     QMenu * MenuFileRead;
@@ -148,39 +125,18 @@ public:
 
 
     QVector<double> X1601;
-    //QThread * MeasThread;
-
-/*
-protected:
-    void showEvent(QShowEvent *event) override;
-    //void CalculateDistancePortrait();
-*/
 
     void FillMenu();
 
     void SetConnectionMainWinWithMeasCntrl();
-
-/*
-    void showEvent(QShowEvent *event) override
-    {
-        QMainWindow::showEvent(event);
-        this->setWindowState(Qt::WindowMaximized);
-    };
-*/
-
 
     void changeEvent(QEvent *event) override;
 
 
 
 public slots:
-    //void TellPlotTabsToChangeAngle(QVector <std::complex<double>> NeededRowFromThreeDimensionalVector); //
-
-    //void HandleReceivedMeasuredFreqVector( QVector <double> ReceivedVector);
-
     void SetAllVNAParamsFromInterface();
     void SetAllOPUParamsFromInterface();
-
     void GetPlotFromDat();
 
 
@@ -192,17 +148,6 @@ public slots:
     void OnSaveAsActionPressed();
 
     void UpdateAzimuthPlot(int iaz, int iel);
-
-    //void OnMeasurePressed();
-    //void OnMeasureBackgroundPressed();
-    //void OnMeasureTargetPressed();
-
-
-//    void UpdateSweepGraphSlot(QDoubleVector SweepArrayAmpl);
-//    void UpdateProfRangeSlot(QDoubleVector ProfRangeArrayAmpl);
-//    void UpdateGatedProfileRangeSlot(QDoubleVector SweepArrayAmpl);
-//    void UpdatePatternSlot(QDoubleVector DiagAnglArrayAmpl);
-
 
     void ChangeLanguageToRussian();
     void ChangeLanguageToEnglish();

@@ -478,20 +478,7 @@ void PrintPreview::DrawPreset(QImage image, QPainter & painter)
     }
 
     painter.drawImage(targetRect, image);
-    qDebug()<<"painted in " << targetRect;
 }
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

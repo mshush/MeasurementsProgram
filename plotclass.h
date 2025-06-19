@@ -15,8 +15,6 @@
 #include <QVector>
 
 
-
-
 class PlotClass : public QCustomPlot
 {
     Q_OBJECT
@@ -58,6 +56,12 @@ public:
     QVector <QCPGraph *> GraphVector;
     void AddEmptyGraphToPlot();
 
+    QCPPolarAxisAngular * AngularAxis;
+    QCPPolarAxisRadial * RadialAxis;
+    QCPPolarGraph * PolarGraph;
+
+
+
 
 public slots:
     //void UpdateMeasuredData  (QVector <std::complex<double>> MeasuredData);
@@ -96,7 +100,6 @@ public slots:
 
     void ChangeYAxisMax (QString  MaxValue);
     void ChangeYAxisSpan(QString SpanValue);
-
 
 
 

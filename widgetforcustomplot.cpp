@@ -4,22 +4,13 @@ WidgetForCustomPlot::WidgetForCustomPlot(QWidget *parent)
     : QWidget{parent}
 {
     this->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding);
-    //this->setFixedSize(1375,560);
-    //this->adjustSize();
+
     HorizontalPlotLayout = new QHBoxLayout(this);
 
     VerticalControlsLayout = new QVBoxLayout;
-    //VerticalControlsLayout->setAlignment(Qt::AlignLeft);
 
-    //PlotThread = new QThread(this);
     customPlot = new PlotClass();
     customPlot->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding);
-    //customPlot->moveToThread(PlotThread);
-    //PlotThread->start();
-
-
-    //customPlot->resize(600,400);
-    //customPlot->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding);
 
 
     ControlsWidget = new QWidget(this);
@@ -28,14 +19,7 @@ WidgetForCustomPlot::WidgetForCustomPlot(QWidget *parent)
     ControlsWidget ->setLayout(VerticalControlsLayout);
     ControlsWidget->setMaximumWidth(280);
 
-    //qDebug()<<"Размер="<<ControlsWidget->size();
-
-
-
-
-
-    //Раскомментированная функциональная часть!!!!
-    //------------------------------------------------------
+    // Не используется больше (теперь как в старой программе)
     InitiateMovementGroupBox();
     //VerticalControlsLayout->addWidget(MovementGroupBox);
 
@@ -53,28 +37,8 @@ WidgetForCustomPlot::WidgetForCustomPlot(QWidget *parent)
     SetupContextMenu();
 
 
-    //VerticalControlsLayout->addWidget(MarkerTableView);
-
-
-    /*
-    QPushButton * FourierButton = new QPushButton("F");
-    ////connect(FourierButton, &QPushButton::clicked, this->customPlot, &PlotClass::FourierTransform);
-    VerticalControlsLayout->addWidget(FourierButton);
-
-    QPushButton * InverseFourierButton = new QPushButton("InvF");
-    //connect(InverseFourierButton, &QPushButton::clicked, this->customPlot, &PlotClass::InverseFourierTransform);
-    VerticalControlsLayout->addWidget(InverseFourierButton);
-    */
-
-
-
     HorizontalPlotLayout->addWidget(customPlot);
     HorizontalPlotLayout->addWidget(ControlsWidget);
-
-
-    //connect(customPlot->xAxis, &QCPAxis::rangeChanged, this, &WidgetForCustomPlot::XAxisRangeChanged);
-    //connect(customPlot->yAxis, &QCPAxis::rangeChanged, this, &WidgetForCustomPlot::YAxisRangeChanged);
-
 
     connect(customPlot->xAxis, SIGNAL(rangeChanged(QCPRange)), this, SLOT(XAxisRangeChanged(QCPRange)));
     connect(customPlot->yAxis, SIGNAL(rangeChanged(QCPRange)), this, SLOT(YAxisRangeChanged(QCPRange)));
@@ -555,12 +519,6 @@ void WidgetForCustomPlot::XAxisRangeChanged(const QCPRange &range)
 
 void WidgetForCustomPlot::YAxisRangeChanged(const QCPRange &range)
 {
-    //double YMin = customPlot->xAxis->range().lower;
-    //double YMax = customPlot->xAxis->range().upper;
-
-    //this->YRangeEditFrom->setText(QString::number(range.lower));
-    //this->YRangeEditTo  ->setText(QString::number(range.upper));
-
     this->YAxisMaxBox   ->setEditable(true);
     this->YAxisSpanBox  ->setEditable(true);
     this->YAxisMaxBox   ->setEnabled(true);
@@ -568,17 +526,12 @@ void WidgetForCustomPlot::YAxisRangeChanged(const QCPRange &range)
 
     YAxisMaxBox ->setEditText(QString::number(range.upper));
     YAxisSpanBox->setEditText(QString::number(range.upper-range.lower));
-
-
-
 }
 
 
 void WidgetForCustomPlot::EnterSelectLocalMaxMode()
 {
-
-    //int GraphID = GraphChoiceComboBox->currentIndex();
-    int GraphID = 0; // Как-то нужно менять график
+    int GraphID = 0;
     if (MarkerLocalMaxButton->isChecked())
     {
         if (!customPlot->graph(GraphID)->data()->isEmpty())
@@ -2365,15 +2318,8 @@ void WidgetForCustomPlot::SetupContextMenu()
     LegendInsideAction        = new QAction(tr("Legend Inside"),          this);
     DisableLegendAction       = new QAction(tr("Disable Legend"),         this);
 
-QAction * EmptyAction1 = new QAction("", this);
-QAction * EmptyAction2 = new QAction("", this);
-
-/*
-    QActionGroup * DSPPFActionGroup = new QActionGroup(this);
-    DSPPFActionGroup->addAction(DisableScalePanelAction);
-    DSPPFActionGroup->addAction(PolarFormatAction);
-    DSPPFActionGroup->setExclusive(true);
-*/
+    QAction * EmptyAction1 = new QAction("", this);
+    QAction * EmptyAction2 = new QAction("", this);
 
     QActionGroup * APRIActionGroup = new QActionGroup(this);
     APRIActionGroup->addAction(AmplitudeAction);
@@ -2435,7 +2381,26 @@ void WidgetForCustomPlot::OnDisableScalePanel()
     }
 }
 
-void WidgetForCustomPlot::OnPolarFormat(){}
+void WidgetForCustomPlot::OnPolarFormat()
+{
+    if (PolarFormatAction->isChecked())
+    {
+        customPlot->PolarGraph->setVisible(true);
+        customPlot->PolarGraph->setData(customPlot->graph(0)->data());
+        customPlot->addLayer("Polar");
+
+        qDebug()<< "Polar format initiated";
+    }
+    else
+    {
+        customPlot->PolarGraph->setVisible(false);
+       //customPlot->PolarFormat(false);
+        qDebug()<< "Polar format disabled";
+    }
+}
+
+
+
 void WidgetForCustomPlot::OnAmplitude(){}
 void WidgetForCustomPlot::OnPhase(){}
 void WidgetForCustomPlot::OnRealPart(){}

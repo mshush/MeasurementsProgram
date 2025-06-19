@@ -8,6 +8,7 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets printsupport
 CONFIG += c++17
 
 SOURCES += \
+    legendwidget.cpp \
     measurmentscontrol.cpp \
     #errorhandler.cpp \
     printpreview.cpp \
@@ -30,6 +31,7 @@ SOURCES += \
     widgetforcustomplot.cpp
 
 HEADERS += \
+    legendwidget.h \
     measurmentscontrol.h \
     printpreview.h \
     custommeasurementtreewidget.h \

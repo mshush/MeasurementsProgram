@@ -5,8 +5,8 @@ PlotClass::PlotClass(QWidget * parent) : QCustomPlot(parent)
 {
 
     //this->setMinimumSize(800,600);
-    this->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding);
-    this->setMinimumWidth(1000);
+    setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding);
+    setMinimumWidth(1000);
 
 
     setBackground(QBrush(Qt::black));
@@ -43,17 +43,6 @@ PlotClass::PlotClass(QWidget * parent) : QCustomPlot(parent)
     MouseMoveMarker->setSelectable(false);
     MouseMoveLabel->setSelectable(false);
 
-    //MouseMoveMarker->setGraph(graph(SelectedGraph));
-
-    /*
-    x = QVector <double> (NumberOfPoints);
-    for (int i=0;i<NumberOfPoints;i++)
-    {
-        x[i] = FreqStart + i* (FreqStop-FreqStart)/(NumberOfPoints-1);
-    }
-    y = QVector <double> (NumberOfPoints);
-    f = QVector <std::complex<double>> (NumberOfPoints);
-    */
 
     AddEmptyGraphToPlot();
 
@@ -73,25 +62,46 @@ PlotClass::PlotClass(QWidget * parent) : QCustomPlot(parent)
     PlotLabel->setPen(QPen(Qt::white));
     PlotLabel->setClipToAxisRect(false);
 
-
-
     setInteractions(QCP::iRangeZoom | QCP::iRangeDrag | QCP::iSelectItems);
 
 
     SelectionRectClass * SelectionRectangle = new SelectionRectClass(this);
     this->setSelectionRect(SelectionRectangle);
 
-
     Timer = new QTimer(this);
 
-    this->layer(0)->setMode(QCPLayer::lmBuffered);
-
-
-
-
+    layer(0)->setMode(QCPLayer::lmBuffered);
     connect(this, &PlotClass::GraphClickedSignal, this, &PlotClass::ChangeSelectedGraph);
 
     setContextMenuPolicy(Qt::CustomContextMenu);
+
+    /*
+    AngularAxis = new QCPPolarAxisAngular(this);
+
+    plotLayout()->addElement(0,1,AngularAxis);
+
+    RadialAxis = new QCPPolarAxisRadial(AngularAxis);
+
+    AngularAxis->setRange(0, 360);
+    RadialAxis->setRange(0, 10);
+    AngularAxis->grid()->setAngularSubGridPen(QPen(Qt::lightGray));
+    AngularAxis->grid()->setRadialSubGridPen(QPen(Qt::lightGray));
+
+        PolarGraph = new QCPPolarGraph(AngularAxis,RadialAxis);
+
+    QVector<double> angles, radii;
+    for (int i = 0; i <= 360; ++i) {
+        angles.append(i);
+        radii.append(5 + 2 * qSin(qDegreesToRadians(i * 2.0)));
+    }
+    PolarGraph->setData(angles, radii);
+    AngularAxis->addRadialAxis(RadialAxis);
+
+    AngularAxis->setVisible(true);
+
+    AngularAxis->setLayer(this->layer(1));
+    */
+
 
 }
 
@@ -869,7 +879,6 @@ void PlotClass::AddEmptyGraphToPlot()
 {
     int CurrentNumberOfGraphs = GraphVector.size();
     addGraph();
-    addGraph();
     graph(CurrentNumberOfGraphs)->setPen(QPen(this->GenerateColor(CurrentNumberOfGraphs)));
 }
 
@@ -1375,9 +1384,7 @@ h-файл и dll
 //
 // Функций больше, чем мы думали: Неизолированные функции. Обернуть все функции.
 //
-//
-// м
-//  Прислать в телеграмме, когда мы будем обсуждать.
+// Прислать в телеграмме, когда мы будем обсуждать.
 //
 //
 //
@@ -1519,17 +1526,6 @@ h-файл и dll
  *
  *
  * Перемещение маркера в следующую точку,
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
  *
  *
  *

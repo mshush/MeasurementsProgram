@@ -388,7 +388,7 @@ void MeasurmentsControl::PrimaryProcessSweep(MeasDataClass::MeasDataType RawData
            auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
            qDebug() << "processing time: " << duration << "ms";
 
-            return;
+           return;
 
 
     }

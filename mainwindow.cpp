@@ -399,13 +399,11 @@ void MainWindow::ChangeLanguageToEnglish()
 
 void MainWindow::OnMeasureAzTargetActionPressed()
 {
-    qDebug()<<"1";
     SetAllOPUParamsFromInterface();
     SetAllVNAParamsFromInterface();
-    qDebug()<<"Starting Timer";
+
     Timer->start(100);
     ResetPlotNeeded = true;
-    qDebug()<<"Starting MeasureAzTarget";
 
     try
     {
@@ -424,7 +422,6 @@ void MainWindow::OnMeasureAzTargetActionPressed()
 
 void MainWindow::OnMeasureResponseAtSingleAnglActionPressed()
 {
-    qDebug()<<"2";
     SetAllOPUParamsFromInterface();
     SetAllVNAParamsFromInterface();
 
@@ -445,7 +442,6 @@ void MainWindow::OnMeasureResponseAtSingleAnglActionPressed()
 
 void MainWindow::OnMeasureBckgndAtSingleAnglActionPressed()
 {
-    qDebug()<<"3";
     this->SetAllOPUParamsFromInterface();
     this->SetAllVNAParamsFromInterface();
 
@@ -466,7 +462,6 @@ void MainWindow::OnMeasureBckgndAtSingleAnglActionPressed()
 }
 void MainWindow::OnMeasureCurrentAspectActionPressed()
 {
-    qDebug()<<"4";
     this->SetAllOPUParamsFromInterface();
     this->SetAllVNAParamsFromInterface();
     try
@@ -486,7 +481,6 @@ void MainWindow::OnMeasureCurrentAspectActionPressed()
 
 void MainWindow::OnAbortActionPressed()
 {
-    qDebug()<<"5";
     try
     {
         this->MeasControl->Abort();
@@ -494,18 +488,18 @@ void MainWindow::OnAbortActionPressed()
     catch(const std::exception& e)
     {
         std::cerr << "An error occurred in SetAllVNAParamsNoAction: " << e.what() << std::endl;
-        //this->TabOfTools->Debug_MessagesTab->
     }
     catch(...)
     {
         std::cerr << "An UNKNOWN error occurred in SetAllVNAParamsNoAction: " << std::endl;
     }
-    Timer->stop(); // Почему ломает?
+    Timer->stop();
 }
 
 void MainWindow::PaintAllPlots()
 {
-    for (int i=0;i<8;i++)    {ChartTab->PlotTabs[0]->customPlot->addGraph();}
+    for (int i=0;i<8;i++)
+    {ChartTab->PlotTabs[0]->customPlot->addGraph();}
 
     QComplexVector CASweepVector = MeasData.ReadSweepFrom(MeasDataClass::MeasDataType::CurrentAspect);
     QDoubleVector CASweepVector_abs(CASweepVector.size());
@@ -537,6 +531,7 @@ void MainWindow::PaintAllPlots()
     for (int i = 0; i < ClbrSweepVector.size(); i++)  {ClbrSweepVector_abs[i] = std::abs(ClbrSweepVector[i]);}
     QVector<double> XClbr;
     for (int i = 0; i < ClbrSweepVector.size(); ++i)  {XClbr.push_back(i);}
+
 
     QComplexVector PttrnSweepVector = MeasData.ReadSweepFrom(MeasDataClass::MeasDataType::PatternArr);
     QDoubleVector PttrnSweepVector_abs(PttrnSweepVector.size());
@@ -598,7 +593,7 @@ void MainWindow::UpdatePlots()
     MeasData.GetAmplVectordB(MeasDataClass::MeasDataType::CurrentGatedProfRange, CurrentGatedProfRangeVector,0,0);
     ChartTab->PlotTabs[7]->customPlot->graph(1)->setData(XVect, CurrentGatedProfRangeVector);
     ChartTab->PlotTabs[7]->customPlot->graph(1)->setPen(QPen(Qt::yellow));
-    //ChartTab->PlotTabs[7]->customPlot->yAxis->setScaleType(QCPAxis::stLogarithmic);
+
 
     ChartTab->PlotTabs[6]->customPlot->replot();
     ChartTab->PlotTabs[7]->customPlot->replot();
@@ -1317,7 +1312,6 @@ void MainWindow::ChangeAngleOfDemonstration()
         emit ErrorOccured("mainwindow : Измеренных данных не обнаружено.");
         //ShowErrorMessage("Измеренных данных не обнаружено!", "Убедитесь, что измерение прошло успешно");
     }
-
 }
 */
 
