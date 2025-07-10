@@ -166,6 +166,17 @@ public:
 
     void SetupContextMenu();
 
+    enum class ComplexInfo
+    {
+        Amplitude,
+        Phase,
+        Real_Part,
+        Imaginary_Part
+    };
+
+
+    ComplexInfo CompInfo = ComplexInfo::Amplitude;
+
 public slots:
     void EnterSelectLocalMinMode();
     void PutMarkerAtLocalMin();

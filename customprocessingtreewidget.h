@@ -5,7 +5,7 @@
 #include <QObject>
 #include <QWidget>
 #include <QTableWidget>
-
+#include <QtWidgets>
 
 class CustomProcessingTreeWidget : public QTreeWidget
 {

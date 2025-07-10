@@ -12,7 +12,8 @@
 #include <QIcon>
 #include <QProgressBar>
 #include <treewidgetforfiles.h>
-#include <widgetforcustomplot.h>>
+#include <widgetforcustomplot.h>
+#include <legendwidget.h>
 
 class TabWidgetForTools : public QTabWidget
 {
@@ -23,7 +24,7 @@ public:
 
     WidgetForCustomPlot * PatternTab;
     QTreeWidget * MessagesTab;
-    QTableWidget * LegendTab;
+    LegendWidget * LegendTab;
     QWidget * ScriptTab;
     TreeWidgetForFiles * File_ManagerTab;
     QTreeWidget * DebugMessagesTab;

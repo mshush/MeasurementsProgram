@@ -22,12 +22,6 @@ std::complex<double> ThreeDimensionalVector::ReadFromObjectResult(int f, int a, 
 }
 
 
-
-
-
-
-
-
 void ThreeDimensionalVector::WriteToObjectResult(int f, int a, int e, std::complex<double> NewValue)
 {
     ObjectMeasurementResult[e * (OPUParameters.AzTrigPoints * VNAParameters.NumOfPoi)  + a * VNAParameters.NumOfPoi + f] = NewValue;
@@ -51,8 +45,6 @@ ThreeDimensionalVector::~ThreeDimensionalVector()
 }
 
 
-
-
 int ThreeDimensionalVector::FindAzimuthIndex(double AzimuthValue)
 {
     int Result = int( (AzimuthValue - OPUParameters.startAzAngl)/(OPUParameters.stopAzAngl - OPUParameters.startAzAngl) * double(OPUParameters.AzTrigPoints-1) ) ;
@@ -65,10 +57,6 @@ int ThreeDimensionalVector::FindElevationIndex(double ElevationValue)
     int Result = int( (ElevationValue - OPUParameters.startElAngl)/(OPUParameters.stopElAngl - OPUParameters.startElAngl) * double(OPUParameters.ElTrigPoints-1) ) ;
     return Result;
 }
-
-
-
-
 
 void ThreeDimensionalVector::WriteToRowOfObjectResult(int r, int t, QVector <std::complex<double>> FreqVect)
 {
@@ -109,15 +97,11 @@ double ThreeDimensionalVector::FindAzimuthValue(int a)
 }
 
 
-
-
 double ThreeDimensionalVector::FindElevationValue (int e)
 {
     double Result = OPUParameters.startElAngl + double(e) * (OPUParameters.stopElAngl - OPUParameters.startElAngl) / double(OPUParameters.ElTrigPoints-1)  ;
     return Result;
 }
-
-
 
 void ThreeDimensionalVector::AddMeasuredRow(QVector <std::complex<double>> FrequencyRow)
 {

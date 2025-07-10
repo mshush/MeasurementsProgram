@@ -172,8 +172,10 @@ public slots:
 
     void DrawPreset(QImage image, QPainter &painter);
 
+    void OnPaintRequested();
 
     void UpdatePreview();
+
 
 };
 

@@ -779,7 +779,7 @@ void PlotClass::loadCsv(QString FilePath) //Проверить в Origin и Exce
 }
 
 
-void PlotClass::saveCsv(QString FilePath)
+void PlotClass::saveCsv(QString FilePath) // ПРОВЕРИТЬ!!! Что-то не то
 {
     QFile File(FilePath);
     if (!File.open(QIODevice::WriteOnly | QIODevice::Text))

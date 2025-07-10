@@ -51,8 +51,6 @@ MainWindow::MainWindow(QWidget *parent)
     }
 
 
-
-
     FillMenu();
     ConnectMenu();
 
@@ -88,10 +86,10 @@ MainWindow::MainWindow(QWidget *parent)
 
 
 
-    //Timer = new QTimer(this);
-    //connect(Timer, &QTimer::timeout, this, &MainWindow::UpdatePlots); // Куда-нибудь в другое место
+    Timer = new QTimer(this);
+    connect(Timer, &QTimer::timeout, this, &MainWindow::UpdatePlots); // Куда-нибудь в другое место
 
-
+    ConnectLegendAndChartTabs();
 
 
     for (int i = 0; i < 1601; i++)  {X1601.push_back(i);}
@@ -106,9 +104,6 @@ MainWindow::MainWindow(QWidget *parent)
 
     this->setWindowFlags(Qt::Window | Qt::WindowTitleHint | Qt::WindowSystemMenuHint | Qt::WindowCloseButtonHint | Qt::WindowMinMaxButtonsHint);
     this->setWindowState(Qt::WindowMaximized);
-
-
-
 
 }
 
@@ -418,6 +413,7 @@ void MainWindow::OnMeasureAzTargetActionPressed()
         std::cerr << "An UNKNOWN error occurred in SetAllVNAParamsNoAction: " << std::endl;
     }
 
+    //SendDataToLegend();
 }
 
 void MainWindow::OnMeasureResponseAtSingleAnglActionPressed()
@@ -501,44 +497,39 @@ void MainWindow::PaintAllPlots()
     for (int i=0;i<8;i++)
     {ChartTab->PlotTabs[0]->customPlot->addGraph();}
 
+
     QComplexVector CASweepVector = MeasData.ReadSweepFrom(MeasDataClass::MeasDataType::CurrentAspect);
     QDoubleVector CASweepVector_abs(CASweepVector.size());
-    for (int i = 0; i < CASweepVector.size(); i++)  {CASweepVector_abs[i] = std::abs(CASweepVector[i]);}
-    QVector<double> XCA;
-    for (int i = 0; i < CASweepVector.size(); ++i)  {XCA.push_back(i);}
-
+    for (int i = 0; i < CASweepVector.size(); i++)  {CASweepVector_abs[i] = std::log10(std::abs(CASweepVector[i]));}
 
     QComplexVector RTSweepVector = MeasData.ReadSweepFrom(MeasDataClass::MeasDataType::RawTarget);
     QDoubleVector RTSweepVector_abs(RTSweepVector.size());
     for (int i = 0; i < RTSweepVector.size(); i++)  {RTSweepVector_abs[i] = std::abs(RTSweepVector[i]);}
-    QVector<double> XRT;
-    for (int i = 0; i < RTSweepVector.size(); ++i)  {XRT.push_back(i);}
+    QVector<double> XRT = MeasData.GetFreqVectorGHz();
+
+
 
     QComplexVector RBSweepVector = MeasData.ReadSweepFrom(MeasDataClass::MeasDataType::RawBcknd);
     QDoubleVector RBSweepVector_abs(RBSweepVector.size());
     for (int i = 0; i < RBSweepVector.size(); i++)  {RBSweepVector_abs[i] = std::abs(RBSweepVector[i]);}
-    QVector<double> XRB;
-    for (int i = 0; i < RBSweepVector.size(); ++i)  {XRB.push_back(i);}
+    QVector<double> XRB = MeasData.GetFreqVectorGHz();
 
     QComplexVector RRSweepVector = MeasData.ReadSweepFrom(MeasDataClass::MeasDataType::RawRsp);
     QDoubleVector RRSweepVector_abs(RRSweepVector.size());
     for (int i = 0; i < RRSweepVector.size(); i++)  {RRSweepVector_abs[i] = std::abs(RRSweepVector[i]);}
-    QVector<double> XRR;
-    for (int i = 0; i < RRSweepVector.size(); ++i)  {XRR.push_back(i);}
+    QVector<double> XRR = MeasData.GetFreqVectorGHz();
 
     QComplexVector ClbrSweepVector = MeasData.ReadSweepFrom(MeasDataClass::MeasDataType::CalibrationArr);
     QDoubleVector ClbrSweepVector_abs(ClbrSweepVector.size());
     for (int i = 0; i < ClbrSweepVector.size(); i++)  {ClbrSweepVector_abs[i] = std::abs(ClbrSweepVector[i]);}
-    QVector<double> XClbr;
-    for (int i = 0; i < ClbrSweepVector.size(); ++i)  {XClbr.push_back(i);}
+    QVector<double> XClbr = MeasData.GetFreqVectorGHz();
 
 
     QComplexVector PttrnSweepVector = MeasData.ReadSweepFrom(MeasDataClass::MeasDataType::PatternArr);
     QDoubleVector PttrnSweepVector_abs(PttrnSweepVector.size());
     for (int i = 0; i < PttrnSweepVector.size(); i++)  {PttrnSweepVector_abs[i] = std::abs(PttrnSweepVector[i]);}
-    QVector<double> XPttrn;
-    for (int i = 0; i < PttrnSweepVector.size(); ++i)  {XPttrn.push_back(i);}
 
+    QVector<double> FreqVector = MeasData.GetFreqVectorGHz();
 
     ChartTab->PlotTabs[0]->customPlot->graph(0)->setData(MeasData.GetFreqVectorGHz(), CASweepVector_abs);
     ChartTab->PlotTabs[0]->customPlot->graph(0)->setPen(QPen(Qt::red));
@@ -642,16 +633,124 @@ void MainWindow::UpdateAzimuthPlot(int iaz, int iel)
         ResetPlotNeeded = false;
     }
     */
-
-
-
-
 }
 
 
 
 
 
+
+
+void MainWindow::PaintSomePlot(int TabID, LegendWidget::DataFromLegendRow LD)
+{
+    // Добавить рассмотрение случая Gated/ Не Gated????
+    MeasDataClass::MeasDataType DType = DataTypeVector[TabID];
+    WidgetForCustomPlot::ComplexInfo CompInfo = ChartTab->PlotTabs[TabID]->CompInfo;
+
+    QString Title   = LD.Title;
+    //int Data        = LD.Data;    // Ничего не делает
+    int Plane       = LD.Plane;
+    int Freq        = LD.Freq;
+    int Az          = LD.Az;
+    int El          = LD.El;
+    //int Channel     = LD.Channel; // Ничего не делает
+    //int Smooth      = LD.Smooth;  // Ничего не делает
+    //int Percent     = LD.Percent; // Ничего не делает
+    int Colour      = LD.Colour;
+
+    QComplexVector YComplexData;
+    QDoubleVector XData;
+    QDoubleVector YData;
+
+    switch (Plane)
+    {
+        case 0: // Частота
+        {
+            XData = MeasData.GetFreqVectorGHz();
+            YComplexData = MeasData.ReadSweepFrom(DType, Az, El);
+            break;
+        }
+        case 1: // Азимут
+        {
+            XData = MeasData.GetAzimuthVector();
+            int AzPoints = MeasData.GetAzTrigPoints();
+            YComplexData.resize(AzPoints);
+            for (int az=0; az<AzPoints; az++)
+            {
+            YComplexData[az] = MeasData.ReadValueFrom(DType, Freq, az, El);
+            }
+            break;
+        }
+        case 2: // Подъём
+        {
+            XData = MeasData.GetElevationVector();
+            int ElPoints = MeasData.GetElTrigPoints();
+            YComplexData.resize(ElPoints);
+            for (int el=0; el<ElPoints; el++)
+            {
+                YComplexData[el] = MeasData.ReadValueFrom(DType, Freq, Az, el);
+            }
+            break;
+        }
+        case 3: // Метры как отдельный случай рассмотрим пока (Тоже лучше сделать через enum)
+        {
+            XData = MeasData.GetDistVector();
+            int DistPoints = XData.size();
+            YComplexData.resize(DistPoints);
+            for (int m=0; m<DistPoints; m++)
+            {
+                YComplexData[m] = MeasData.ReadValueFrom(DType, m, Az, El);
+            }
+            break;
+        }
+    }
+
+
+    YData.resize(YComplexData.size());
+
+    switch (CompInfo)
+    {
+        case WidgetForCustomPlot::ComplexInfo::Amplitude:
+        {
+            for (int i=0; i<YData.size(); i++)
+            {
+                YData[i] = std::abs(YComplexData[i]);
+            }
+            break;
+        }
+        case WidgetForCustomPlot::ComplexInfo::Phase:
+        {
+            for (int i=0; i<YData.size(); i++)
+            {
+                YData[i] = std::arg(YComplexData[i]);
+            }
+            break;
+        }
+        case WidgetForCustomPlot::ComplexInfo::Real_Part:
+        {
+            for (int i=0; i<YData.size(); i++)
+            {
+                YData[i] = std::real(YComplexData[i]);
+            }
+            break;
+        }
+        case WidgetForCustomPlot::ComplexInfo::Imaginary_Part:
+        {
+            for (int i=0; i<YData.size(); i++)
+            {
+                YData[i] = std::imag(YComplexData[i]);
+            }
+            break;
+        }
+    }
+
+    ChartTab->PlotTabs[TabID]->customPlot->graph(0)->setData(XData, YData);
+    QColor PlotColour = TabOfTools->LegendTab->ColourVector[Colour];
+    ChartTab->PlotTabs[TabID]->customPlot->graph(0)->setPen(QPen(PlotColour));
+    ChartTab->PlotTabs[TabID]->customPlot->rescaleAxes(); // Всегда ли менять масштаб?
+    ChartTab->PlotTabs[TabID]->customPlot->replot();
+
+}
 
 
 
@@ -714,6 +813,153 @@ void MainWindow::changeEvent(QEvent *event)
     }
     QWidget::changeEvent(event);
 }
+
+
+
+
+
+
+
+
+
+
+void MainWindow::ConnectLegendAndChartTabs()
+{
+    connect(TabOfTools->LegendTab, &LegendWidget::ReadDataSignal        ,this, &MainWindow::OnReadDataSignalReceived);
+    connect(TabOfTools->LegendTab, &LegendWidget::WriteDataSignal       ,this, &MainWindow::OnWriteDataSignalReceived);
+    connect(TabOfTools->LegendTab, &LegendWidget::AddLineSignal         ,this, &MainWindow::OnAddLineSignalReceived);
+    connect(TabOfTools->LegendTab, &LegendWidget::DeleteLineSignal      ,this, &MainWindow::OnDeleteLineSignalReceived);
+    connect(TabOfTools->LegendTab, &LegendWidget::ClearAllSignal        ,this, &MainWindow::OnClearAllSignalReceived);
+    connect(TabOfTools->LegendTab, &LegendWidget::UpLineSignal          ,this, &MainWindow::OnUpLineSignalReceived);
+    connect(TabOfTools->LegendTab, &LegendWidget::DownLineSignal        ,this, &MainWindow::OnDownLineSignalReceived);
+    connect(TabOfTools->LegendTab, &LegendWidget::CopyToMemoryLineSignal,this, &MainWindow::CopyToMemoryLineSignalReceived);
+    connect(TabOfTools->LegendTab, &LegendWidget::RefreshSignal         ,this, &MainWindow::RefreshSignalReceived);
+
+
+}
+
+
+
+
+void MainWindow::FillPatternArrayFromMeasData()
+{
+    int FNum = MeasData.GetNFreqPoints();
+    int ANum = MeasData.GetAzTrigPoints();
+    int ENum = MeasData.GetElTrigPoints();
+
+    for (int f=0;f<FNum;f++)
+    {
+        for (int a=0;a<ANum;a++)
+        {
+            for (int e=0;e<ENum;e++)
+            {
+                std::complex<double> Value = MeasData.ReadValueFrom(MeasDataClass::MeasDataType::PatternArr,f, a, e);
+                FullPatternArray.append(Value);
+            }
+        }
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+void MainWindow::OnReadDataSignalReceived()
+{
+
+}
+
+void MainWindow::OnWriteDataSignalReceived()
+{
+
+}
+
+void MainWindow::OnAddLineSignalReceived()
+{
+
+}
+
+void MainWindow::OnDeleteLineSignalReceived()
+{
+
+}
+
+void MainWindow::OnClearAllSignalReceived()
+{
+
+}
+
+void MainWindow::OnUpLineSignalReceived()
+{
+
+}
+
+void MainWindow::OnDownLineSignalReceived()
+{
+
+}
+
+void MainWindow::CopyToMemoryLineSignalReceived()
+{
+
+}
+
+void MainWindow::RefreshSignalReceived()
+{
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -1123,6 +1369,8 @@ void MainWindow::SubstractBackground()
 
 
 
+
+
 /*
 void MainWindow::ConnectObjects()
 {
@@ -1314,4 +1562,5 @@ void MainWindow::ChangeAngleOfDemonstration()
     }
 }
 */
+
 

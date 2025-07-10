@@ -36,7 +36,6 @@ public:
     PrintPreview        * PrintPreviewTab;
 
 
-
 public slots:
     //void CreateNewTabFromImportedData();
     //void SendMeasureSignalToFirstTab(); // Теперь процесс имитируется в ProcessImitation

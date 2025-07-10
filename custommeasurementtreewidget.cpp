@@ -14,7 +14,7 @@ CustomMeasurementTreeWidget::CustomMeasurementTreeWidget(QWidget * parent) : QTr
     this->setHeaderHidden(true);
 
     setIndentation(0);
-    //setHeaderLabels(QStringList() << "Parameter Groups");
+    //setHeaderLabels(QStringList() << "Parameter Groups";
 
     this->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     //this->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
@@ -25,7 +25,7 @@ CustomMeasurementTreeWidget::CustomMeasurementTreeWidget(QWidget * parent) : QTr
     NavigatorItem = new QTreeWidgetItem(this);
     NavigatorItem->setBackground(0,brush);
     QTreeWidgetItem * NavigatorTableItem = new QTreeWidgetItem(NavigatorItem);
-    NavigatorItem->setText(0,"Navigator");
+    NavigatorItem->setText(0,tr("Navigator"));
     addTopLevelItem(NavigatorItem);
     setItemWidget(NavigatorTableItem, 0, Navigator);
     FillNavigator();
@@ -36,7 +36,7 @@ CustomMeasurementTreeWidget::CustomMeasurementTreeWidget(QWidget * parent) : QTr
     SummaryItem = new QTreeWidgetItem(this);
     SummaryItem->setBackground(0,brush);
     QTreeWidgetItem * SummaryTableItem = new QTreeWidgetItem(SummaryItem);
-    SummaryItem->setText(0,"Summary");
+    SummaryItem->setText(0,tr("Summary"));
     addTopLevelItem(SummaryItem);
     setItemWidget(SummaryTableItem, 0, Summary);
     FillSummary();
@@ -46,7 +46,7 @@ CustomMeasurementTreeWidget::CustomMeasurementTreeWidget(QWidget * parent) : QTr
     ConfigsItem = new QTreeWidgetItem(this);
     ConfigsItem->setBackground(0,brush);
     QTreeWidgetItem * ConfigsTableItem = new QTreeWidgetItem(ConfigsItem);
-    ConfigsItem->setText(0,"Configs");
+    ConfigsItem->setText(0,tr("Configs"));
     //Configs->setContentsMargins(0,0,0,0);
     addTopLevelItem(ConfigsItem);
     setItemWidget(ConfigsTableItem, 0, Configs);
@@ -57,7 +57,7 @@ CustomMeasurementTreeWidget::CustomMeasurementTreeWidget(QWidget * parent) : QTr
     FilesItem = new QTreeWidgetItem(this);
     FilesItem->setBackground(0,brush);
     QTreeWidgetItem * FilesTableItem = new QTreeWidgetItem(FilesItem);
-    FilesItem->setText(0,"Files");
+    FilesItem->setText(0,tr("Files"));
     addTopLevelItem(FilesItem);
     setItemWidget(FilesTableItem, 0, Files);
     FillFiles();
@@ -67,7 +67,7 @@ CustomMeasurementTreeWidget::CustomMeasurementTreeWidget(QWidget * parent) : QTr
     FrequencyRangeItem = new QTreeWidgetItem(this);
     FrequencyRangeItem->setBackground(0,brush);
     QTreeWidgetItem * FrequencyRangeTableItem = new QTreeWidgetItem(FrequencyRangeItem);
-    FrequencyRangeItem->setText(0,"FrequencyRange");
+    FrequencyRangeItem->setText(0,tr("FrequencyRange"));
     addTopLevelItem(FrequencyRangeItem);
     setItemWidget(FrequencyRangeTableItem, 0, FrequencyRange);
     FillFrequencyRange();
@@ -77,7 +77,7 @@ CustomMeasurementTreeWidget::CustomMeasurementTreeWidget(QWidget * parent) : QTr
     AzimuthRangeItem = new QTreeWidgetItem(this);
     AzimuthRangeItem->setBackground(0,brush);
     QTreeWidgetItem * AzimuthRangeTableItem = new QTreeWidgetItem(AzimuthRangeItem);
-    AzimuthRangeItem->setText(0,"AzimuthRange");
+    AzimuthRangeItem->setText(0,tr("AzimuthRange"));
     addTopLevelItem(AzimuthRangeItem);
     setItemWidget(AzimuthRangeTableItem, 0, AzimuthRange);
     FillAzimuthRange();
@@ -87,7 +87,7 @@ CustomMeasurementTreeWidget::CustomMeasurementTreeWidget(QWidget * parent) : QTr
     Pre_ProcessingGateItem = new QTreeWidgetItem(this);
     Pre_ProcessingGateItem->setBackground(0,brush);
     QTreeWidgetItem * Pre_ProcessingGateTableItem = new QTreeWidgetItem(Pre_ProcessingGateItem);
-    Pre_ProcessingGateItem->setText(0,"Pre_ProcessingGate");
+    Pre_ProcessingGateItem->setText(0,tr("Pre_ProcessingGate"));
     addTopLevelItem(Pre_ProcessingGateItem);
     setItemWidget(Pre_ProcessingGateTableItem, 0, Pre_ProcessingGate);
     FillPre_ProcessingGate();
@@ -97,7 +97,7 @@ CustomMeasurementTreeWidget::CustomMeasurementTreeWidget(QWidget * parent) : QTr
     CalibrationTargetItem = new QTreeWidgetItem(this);
     CalibrationTargetItem->setBackground(0,brush);
     QTreeWidgetItem * CalibrationTargetTableItem = new QTreeWidgetItem(CalibrationTargetItem);
-    CalibrationTargetItem->setText(0,"CalibrationTarget");
+    CalibrationTargetItem->setText(0,tr("CalibrationTarget"));
     addTopLevelItem(CalibrationTargetItem);
     setItemWidget(CalibrationTargetTableItem, 0, CalibrationTarget);
     FillCalibrationTarget();
@@ -107,7 +107,7 @@ CustomMeasurementTreeWidget::CustomMeasurementTreeWidget(QWidget * parent) : QTr
     PNAItem = new QTreeWidgetItem(this);
     PNAItem->setBackground(0,brush);
     QTreeWidgetItem * PNATableItem = new QTreeWidgetItem(PNAItem);
-    PNAItem->setText(0,"PNA");
+    PNAItem->setText(0,tr("PNA"));
     addTopLevelItem(PNAItem);
     setItemWidget(PNATableItem, 0, PNA);
     FillPNA();
@@ -135,11 +135,11 @@ void CustomMeasurementTreeWidget::FillNavigator()
     Navigator->setEditTriggers(QAbstractItemView::SelectedClicked); // Изменение нажатием?
 
     Navigator->insertRow(0);
-    Navigator->setItem(0, 0, new QTableWidgetItem("Az (deg)"));
-    QLineEdit * NavigatorEdit = new QLineEdit("");
+    Navigator->setItem(0, 0, new QTableWidgetItem(tr("Az (deg)")));
+    QLineEdit * NavigatorEdit = new QLineEdit(tr(""));
     Navigator->setCellWidget(0, 1, NavigatorEdit);
-    Navigator->setCellWidget(0, 2, new QPushButton(""));
-    Navigator->setCellWidget(0, 3, new QPushButton(""));
+    Navigator->setCellWidget(0, 2, new QPushButton(tr("")));
+    Navigator->setCellWidget(0, 3, new QPushButton(tr("")));
     QDoubleValidator * NavigatorValidator = new QDoubleValidator(0.0, 100.0, 2, NavigatorEdit);
     NavigatorValidator->setRange(0,100);
     NavigatorEdit->setValidator(NavigatorValidator);
@@ -183,21 +183,21 @@ void CustomMeasurementTreeWidget::FillSummary()
 
 
     Summary->insertRow(0);
-    Summary->setItem(0, 0, new QTableWidgetItem("Title"));
-    Summary->setCellWidget(0, 1, new QLineEdit("Iteration 5"));
+    Summary->setItem(0, 0, new QTableWidgetItem(tr("Title")));
+    Summary->setCellWidget(0, 1, new QLineEdit(tr("Iteration 5"))); // Нужно считывать
 
     Summary->insertRow(1);
-    Summary->setItem(1, 0, new QTableWidgetItem("Group"));
-    Summary->setCellWidget(1, 1, new QLineEdit("Adjustment"));
+    Summary->setItem(1, 0, new QTableWidgetItem(tr("Group")));
+    Summary->setCellWidget(1, 1, new QLineEdit(tr("Adjustment")));
 
     Summary->insertRow(2);
-    Summary->setItem(2, 0, new QTableWidgetItem("Operator"));
-    Summary->setCellWidget(2, 1, new QLineEdit("Mr. Operator"));
+    Summary->setItem(2, 0, new QTableWidgetItem(tr("Operator")));
+    Summary->setCellWidget(2, 1, new QLineEdit(tr("Mr. Operator")));
 
 
     Summary->insertRow(3);
     QLineEdit * Description = new QLineEdit();
-    Description->setPlaceholderText("Description");
+    Description->setPlaceholderText(tr("Description"));
     Summary->setCellWidget(3, 0, Description);
     Summary->setSpan(3, 0, 1, 2);
 
@@ -228,16 +228,16 @@ void CustomMeasurementTreeWidget::FillConfigs()
 
 
     Configs->insertRow(0);
-    Configs->setItem(0, 0, new QTableWidgetItem("Range"));
+    Configs->setItem(0, 0, new QTableWidgetItem(tr("Range")));
     Configs->horizontalHeader()->setStretchLastSection(true);
     ConfigsRangeComboBox = new QComboBox(this);
-    ConfigsRangeComboBox->addItem("User");
-    ConfigsRangeComboBox->addItem("S-Band");
-    ConfigsRangeComboBox->addItem("C-Band");
-    ConfigsRangeComboBox->addItem("C2-Band");
-    ConfigsRangeComboBox->addItem("X-Band");
-    ConfigsRangeComboBox->addItem("Ku-Band");
-    ConfigsRangeComboBox->addItem("Ka-Band");
+    ConfigsRangeComboBox->addItem(tr("User"));
+    ConfigsRangeComboBox->addItem(tr("S-Band"));
+    ConfigsRangeComboBox->addItem(tr("C-Band"));
+    ConfigsRangeComboBox->addItem(tr("C2-Band"));
+    ConfigsRangeComboBox->addItem(tr("X-Band"));
+    ConfigsRangeComboBox->addItem(tr("Ku-Band"));
+    ConfigsRangeComboBox->addItem(tr("Ka-Band"));
     Configs->setCellWidget(0, 1, ConfigsRangeComboBox);
 
 
@@ -268,19 +268,19 @@ void CustomMeasurementTreeWidget::FillFiles()
 
 
     Files->insertRow(0);
-    Files->setItem(0, 0, new QTableWidgetItem("Background"));
-    Files->setCellWidget(0, 1, new QLineEdit("---"));
-    Files->setCellWidget(0, 2, new QPushButton("Select"));
+    Files->setItem(0, 0, new QTableWidgetItem(tr("Background")));
+    Files->setCellWidget(0, 1, new QLineEdit(("---")));
+    Files->setCellWidget(0, 2, new QPushButton(tr("Select")));
 
     Files->insertRow(1);
-    Files->setItem(1, 0, new QTableWidgetItem("Calibration"));
-    Files->setCellWidget(1, 1, new QLineEdit("---"));
-    Files->setCellWidget(1, 2, new QPushButton("Select"));
+    Files->setItem(1, 0, new QTableWidgetItem(tr("Calibration")));
+    Files->setCellWidget(1, 1, new QLineEdit(("---")));
+    Files->setCellWidget(1, 2, new QPushButton(tr("Select")));
 
     Files->insertRow(2);
-    Files->setItem(2, 0, new QTableWidgetItem("Sketch"));
-    Files->setCellWidget(2, 1, new QLineEdit("---"));
-    Files->setCellWidget(2, 2, new QPushButton("Select"));
+    Files->setItem(2, 0, new QTableWidgetItem(tr("Sketch")));
+    Files->setCellWidget(2, 1, new QLineEdit(("---")));
+    Files->setCellWidget(2, 2, new QPushButton(tr("Select")));
 
     Files->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     Files->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
@@ -304,12 +304,12 @@ void CustomMeasurementTreeWidget::FillFrequencyRange()
 
 
     FrequencyRange->insertRow(0);
-    FrequencyRange->setItem(0, 0, new QTableWidgetItem("Center (GHz)"));
+    FrequencyRange->setItem(0, 0, new QTableWidgetItem(tr("Center (GHz)")));
     FrequencyRangeCenterEdit = new QLineEdit("",this);
     FrequencyRange->setCellWidget(0, 1, FrequencyRangeCenterEdit);
 
     FrequencyRange->insertRow(1);
-    FrequencyRange->setItem(1, 0, new QTableWidgetItem("Span (GHz)"));
+    FrequencyRange->setItem(1, 0, new QTableWidgetItem(tr("Span (GHz)")));
     FrequencyRangeSpanEdit = new QLineEdit("",this);
     FrequencyRange->setCellWidget(1, 1, FrequencyRangeSpanEdit);
 
@@ -320,8 +320,8 @@ void CustomMeasurementTreeWidget::FillFrequencyRange()
     FrequencyRange->setCellWidget(2, 1, FrequencyRangeNEdit);
 
     //FrequencyRange->insertRow(3);
-    //FrequencyRange->setCellWidget(3, 0, new QPushButton("Center-Span"));
-    //FrequencyRange->setCellWidget(3, 1, new QPushButton("Start-Stop"));
+    //FrequencyRange->setCellWidget(3, 0, new QPushButton(tr("Center-Span")));
+    //FrequencyRange->setCellWidget(3, 1, new QPushButton(tr("Start-Stop")));
 
 
     FrequencyRange->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
@@ -346,28 +346,28 @@ void CustomMeasurementTreeWidget::FillAzimuthRange()
 
 
     AzimuthRange->insertRow(0);
-    AzimuthRange->setItem(0, 0, new QTableWidgetItem("Center (m)"));
+    AzimuthRange->setItem(0, 0, new QTableWidgetItem(tr("Center (m)")));
     AzimuthRangeCenterEdit = new QLineEdit("1.5");
     AzimuthRange->setCellWidget(0, 1, AzimuthRangeCenterEdit);
 
     AzimuthRange->insertRow(1);
-    AzimuthRange->setItem(1, 0, new QTableWidgetItem("Span (m)"));
+    AzimuthRange->setItem(1, 0, new QTableWidgetItem(tr("Span (m)")));
     AzimuthRangeSpanEdit = new QLineEdit("0");
     AzimuthRange->setCellWidget(1, 1, AzimuthRangeSpanEdit);
 
     AzimuthRange->insertRow(2);
-    AzimuthRange->setItem(2, 0, new QTableWidgetItem("N"));
+    AzimuthRange->setItem(2, 0, new QTableWidgetItem(tr("N")));
     AzimuthRangeNEdit = new QLineEdit("101");
     AzimuthRange->setCellWidget(2, 1, AzimuthRangeNEdit);
 
     AzimuthRange->insertRow(3);
-    AzimuthRange->setItem(3, 0, new QTableWidgetItem("Default N"));
+    AzimuthRange->setItem(3, 0, new QTableWidgetItem(tr("Default N")));
     AzimuthRangeDefaultNCheckBox = new QCheckBox();
     AzimuthRange->setCellWidget(3, 1, AzimuthRangeDefaultNCheckBox);
 
     //AzimuthRange->insertRow(4);
-    //AzimuthRange->setCellWidget(4, 0, new QPushButton("Center-Span"));
-    //AzimuthRange->setCellWidget(4, 1, new QPushButton("Start-Stop"));
+    //AzimuthRange->setCellWidget(4, 0, new QPushButton(tr("Center-Span")));
+    //AzimuthRange->setCellWidget(4, 1, new QPushButton(tr("Start-Stop")));
 
     AzimuthRange->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     AzimuthRange->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
@@ -393,26 +393,26 @@ void CustomMeasurementTreeWidget::FillPre_ProcessingGate()
 
 
     Pre_ProcessingGate->insertRow(0);
-    Pre_ProcessingGate->setItem(0, 0, new QTableWidgetItem("Start (m)"));
+    Pre_ProcessingGate->setItem(0, 0, new QTableWidgetItem(tr("Start (m)")));
     Pre_ProcessingGateStartEdit = new QLineEdit("",this);
     Pre_ProcessingGate->setCellWidget(0, 1, Pre_ProcessingGateStartEdit);
 
     Pre_ProcessingGate->insertRow(1);
-    Pre_ProcessingGate->setItem(1, 0, new QTableWidgetItem("Stop (m)"));
+    Pre_ProcessingGate->setItem(1, 0, new QTableWidgetItem(tr("Stop (m)")));
     Pre_ProcessingGateStopEdit  = new QLineEdit("",this);
     Pre_ProcessingGate->setCellWidget(1, 1, Pre_ProcessingGateStopEdit);
 
     Pre_ProcessingGate->insertRow(2);
-    Pre_ProcessingGate->setItem(2, 0, new QTableWidgetItem("Shape"));
+    Pre_ProcessingGate->setItem(2, 0, new QTableWidgetItem(tr("Shape")));
     Pre_ProcessingGateShapeBox = new QComboBox(this);
-    Pre_ProcessingGateShapeBox->addItem("Minimal");
-    Pre_ProcessingGateShapeBox->addItem("Normal");
-    Pre_ProcessingGateShapeBox->addItem("Maximal");
+    Pre_ProcessingGateShapeBox->addItem(tr("Minimal"));
+    Pre_ProcessingGateShapeBox->addItem(tr("Normal"));
+    Pre_ProcessingGateShapeBox->addItem(tr("Maximal"));
     Pre_ProcessingGate->setCellWidget(2, 1, Pre_ProcessingGateShapeBox);
 
     //Pre_ProcessingGate->insertRow(3);
-    //Pre_ProcessingGate->setCellWidget(3, 0, new QPushButton("Center-Span"));
-    //Pre_ProcessingGate->setCellWidget(3, 1, new QPushButton("Start-Stop"));
+    //Pre_ProcessingGate->setCellWidget(3, 0, new QPushButton(tr("Center-Span"));
+    //Pre_ProcessingGate->setCellWidget(3, 1, new QPushButton(tr("Start-Stop"));
 
     Pre_ProcessingGate->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     Pre_ProcessingGate->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
@@ -438,19 +438,19 @@ void CustomMeasurementTreeWidget::FillCalibrationTarget()
 
 
     CalibrationTarget->insertRow(0);
-    CalibrationTarget->setItem(0, 0, new QTableWidgetItem("Target"));
+    CalibrationTarget->setItem(0, 0, new QTableWidgetItem(tr("Target")));
     QComboBox * TargetBox = new QComboBox(this);
-    TargetBox->addItem("Sphere");
-    TargetBox->addItem("Cylinder");
-    TargetBox->addItem("Reflect");
+    TargetBox->addItem(tr("Sphere"));
+    TargetBox->addItem(tr("Cylinder"));
+    TargetBox->addItem(tr("Reflect"));
     CalibrationTarget->setCellWidget(0, 1, TargetBox);
 
     CalibrationTarget->insertRow(1);
-    CalibrationTarget->setItem(1, 0, new QTableWidgetItem("Diameter (m)"));
+    CalibrationTarget->setItem(1, 0, new QTableWidgetItem(tr("Diameter (m)")));
     CalibrationTarget->setCellWidget(1, 1, new QLineEdit(""));
 
     CalibrationTarget->insertRow(2);
-    CalibrationTarget->setItem(2, 0, new QTableWidgetItem("Height (m)"));
+    CalibrationTarget->setItem(2, 0, new QTableWidgetItem(tr("Height (m)")));
     CalibrationTarget->setCellWidget(2, 1, new QLineEdit(""));
 
 
@@ -478,32 +478,32 @@ void CustomMeasurementTreeWidget::FillPNA()
 
 
     PNA->insertRow(0);
-    PNA->setItem(0, 0, new QTableWidgetItem("Port"));
+    PNA->setItem(0, 0, new QTableWidgetItem(tr("Port")));
     QComboBox * PortBox = new QComboBox(this);
-    PortBox->addItem("A/R1");
-    PortBox->addItem("B/R1");
-    PortBox->addItem("R2/R1");
+    PortBox->addItem(tr("A/R1"));
+    PortBox->addItem(tr("B/R1"));
+    PortBox->addItem(tr("R2/R1"));
     PNA->setCellWidget(0, 1, PortBox);
 
 
     PNA->insertRow(1);
-    PNA->setItem(1, 0, new QTableWidgetItem("Generator (dBm)"));
+    PNA->setItem(1, 0, new QTableWidgetItem(tr("Generator (dBm)")));
     PNAGeneratorEdit = new QLineEdit("0",this);
     PNA->setCellWidget(1, 1, PNAGeneratorEdit);
 
     PNA->insertRow(2);
-    PNA->setItem(2, 0, new QTableWidgetItem("IF"));
+    PNA->setItem(2, 0, new QTableWidgetItem(tr("IF")));
     PNAIFBox = new QComboBox(this);
-    PNAIFBox->addItem("0.01 kHz");
-    PNAIFBox->addItem( "0.1 kHz");
-    PNAIFBox->addItem( "1.0 kHz");
-    PNAIFBox->addItem( "3.0 kHz");
-    PNAIFBox->addItem("10.0 kHz");
-    PNAIFBox->addItem("35.0 kHz");
+    PNAIFBox->addItem( tr("0.01kHz"));
+    PNAIFBox->addItem( tr("0.1 kHz"));
+    PNAIFBox->addItem( tr("1.0 kHz"));
+    PNAIFBox->addItem( tr("3.0 kHz"));
+    PNAIFBox->addItem(tr("10.0 kHz"));
+    PNAIFBox->addItem(tr("35.0 kHz"));
     PNA->setCellWidget(2, 1, PNAIFBox);
 
     PNA->insertRow(3);
-    PNA->setItem(3, 0, new QTableWidgetItem("OptimalValues"));
+    PNA->setItem(3, 0, new QTableWidgetItem(tr("OptimalValues")));
     PNA->setCellWidget(3, 1, new QCheckBox());
 
     PNA->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);

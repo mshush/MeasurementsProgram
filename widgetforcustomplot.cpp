@@ -19,13 +19,18 @@ WidgetForCustomPlot::WidgetForCustomPlot(QWidget *parent)
     ControlsWidget ->setLayout(VerticalControlsLayout);
     ControlsWidget->setMaximumWidth(280);
 
+
+
+
+
+
+
+
     // Не используется больше (теперь как в старой программе)
     InitiateMovementGroupBox();
     //VerticalControlsLayout->addWidget(MovementGroupBox);
-
     InitiateMarkerGroupBox();
     //VerticalControlsLayout->addWidget(MarkerGroupBox);
-
     InitiateSaveLayout();
     //VerticalControlsLayout->addLayout(HorizontalSaveLayout);
     //------------------------------------------------------
@@ -1653,12 +1658,12 @@ void WidgetForCustomPlot::InitiateButtons()
 
 void WidgetForCustomPlot::OnYLinScaleClicked()
 {
-
+    customPlot->yAxis->setScaleType(QCPAxis::ScaleType::stLinear);
 }
 
 void WidgetForCustomPlot::OnYLogScaleClicked()
 {
-
+    customPlot->yAxis->setScaleType(QCPAxis::ScaleType::stLogarithmic);
 }
 
 void WidgetForCustomPlot::OnYFitMaxSpanClicked()

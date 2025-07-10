@@ -25,6 +25,7 @@
 #include "testVNA.h"
 #include "ui_mainwindow.h"
 
+
 QT_BEGIN_NAMESPACE
 namespace Ui
 {
@@ -51,9 +52,9 @@ public:
     TabWidgetForCharts * ChartTab;
     WidgetForCustomPlot * CustomPlotWidget;
     ProcessImitation * Process;
-    ThreeDimensionalVector StoredFunction; // Хранить в WidgetForCustomPlot чтобы открывать старое?
-    ThreeDimensionalVector CalibrationFunction;
-    ThreeDimensionalVector BackgroundFunction;
+
+    QComplexVector FullPatternArray;
+    void FillPatternArrayFromMeasData();
 
 
 
@@ -85,7 +86,6 @@ public:
     void ConnectTabs();
 
     void UpdatePlotData();
-
 
     void UploadFile();
 
@@ -132,7 +132,18 @@ public:
 
     void changeEvent(QEvent *event) override;
 
-
+    QVector <MeasDataClass::MeasDataType> DataTypeVector =
+        {
+            MeasDataClass::MeasDataType::CalibrationArr,
+            MeasDataClass::MeasDataType::CurrentAspect,
+            MeasDataClass::MeasDataType::CurrentGatedProfRange,
+            MeasDataClass::MeasDataType::CurrentProfRange,
+            MeasDataClass::MeasDataType::PatternArr,
+            MeasDataClass::MeasDataType::ProcessedBcknd,
+            MeasDataClass::MeasDataType::RawBcknd,
+            MeasDataClass::MeasDataType::RawRsp,
+            MeasDataClass::MeasDataType::RawTarget
+        };
 
 public slots:
     void SetAllVNAParamsFromInterface();
@@ -152,16 +163,37 @@ public slots:
     void ChangeLanguageToRussian();
     void ChangeLanguageToEnglish();
 
-    void PaintAllPlots(); // разбить
+    void PaintAllPlots();
+
+
+
+    void PaintSomePlot(int TabID, LegendWidget::DataFromLegendRow LegendData);
+
+    //void SendDataToLegend();
+
+
     void UpdatePlots();
 
 
     void addRandomError(QVector<double>& data, double mean, double stddev);
 
+    void ConnectLegendAndChartTabs();
+    // Связанные с легендой слоты: возможно лучше перенести.
+    void OnReadDataSignalReceived();
+    void OnWriteDataSignalReceived();
+    void OnAddLineSignalReceived();
+    void OnDeleteLineSignalReceived();
+    void OnClearAllSignalReceived();
+    void OnUpLineSignalReceived();
+    void OnDownLineSignalReceived();
+    void CopyToMemoryLineSignalReceived();
+    void RefreshSignalReceived();
+
 
 
 signals:
     void ErrorOccured(QString ErrorText);
+    //void SendDataToLegend(QVector <double> Freq, QVector <double> Az, QVector <double> El);
 
 private:
     Ui::MainWindow *ui;

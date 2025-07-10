@@ -29,32 +29,7 @@ PrintPreview::PrintPreview(QWidget *parent) : QWidget{parent}
 
     PrintPreviewWidget->setMouseTracking(true);
 
-    connect(PrintPreviewWidget, &QPrintPreviewWidget::paintRequested, this, [this](QPrinter *printer)
-    {
-        QPainter Painter(Printer);
-        Painter.drawText(9*dpi/25.4, 9*dpi/25.4, "Графики:");
-        QPen DottedPen(Qt::black);
-        DottedPen.setStyle(Qt::DashLine);
-        DottedPen.setWidth(0.3*dpi/25.4);
-        Painter.setPen(DottedPen);
-
-        Painter.drawLine(LeftMargin    , TopMargin     , RightMarginX  , TopMargin    ); // Верхняя линия
-        Painter.drawLine(LeftMargin    , BottomMarginY , RightMarginX  , BottomMarginY); // Нижняя линия
-        Painter.drawLine(LeftMargin    , TopMargin     , LeftMargin    , BottomMarginY); // Левая линия
-        Painter.drawLine(RightMarginX  , TopMargin     , RightMarginX  , BottomMarginY); // Правая линия
-
-
-
-        this->DrawPreset(VectorOfPlotImages[7], Painter);
-        qDebug()<<"Works here";
-
-        //PrintPreviewWidget->updatePreview();
-        //PrintPreviewWidget->print();
-        //PrintPreviewWidget->show();
-    });
-
-
-
+    connect(PrintPreviewWidget, &QPrintPreviewWidget::paintRequested, this, &PrintPreview::OnPaintRequested);
 
     PrintPreviewLayout       = new QHBoxLayout(this);
     OldButtonsLayout         = new QVBoxLayout();
@@ -493,7 +468,29 @@ void PrintPreview::UpdatePreview()
 }
 
 
+void PrintPreview::OnPaintRequested()
+{
+    QPainter Painter(Printer);
+    Painter.drawText(9*dpi/25.4, 9*dpi/25.4, "Графики:");
+    QPen DottedPen(Qt::black);
+    DottedPen.setStyle(Qt::DashLine);
+    DottedPen.setWidth(0.3*dpi/25.4);
+    Painter.setPen(DottedPen);
 
+    Painter.drawLine(LeftMargin    , TopMargin     , RightMarginX  , TopMargin    ); // Верхняя линия
+    Painter.drawLine(LeftMargin    , BottomMarginY , RightMarginX  , BottomMarginY); // Нижняя линия
+    Painter.drawLine(LeftMargin    , TopMargin     , LeftMargin    , BottomMarginY); // Левая линия
+    Painter.drawLine(RightMarginX  , TopMargin     , RightMarginX  , BottomMarginY); // Правая линия
+
+
+
+    this->DrawPreset(VectorOfPlotImages[7], Painter);
+    qDebug()<<"Works here";
+
+    //PrintPreviewWidget->updatePreview();
+    //PrintPreviewWidget->print();
+    //PrintPreviewWidget->show();
+}
 
 
 

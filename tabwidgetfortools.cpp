@@ -17,7 +17,7 @@ TabWidgetForTools::TabWidgetForTools()
     PatternTab->customPlot->xAxis->setLabel("Az, deg");
     PatternTab->MarkerFrame->setVisible(false);
     MessagesTab = new QTreeWidget(this);
-    LegendTab = new QTableWidget(this);
+    LegendTab = new LegendWidget(this);
     ScriptTab = new QWidget(this);
     File_ManagerTab = new TreeWidgetForFiles(this);
     DebugMessagesTab = new QTreeWidget(this);
@@ -34,18 +34,6 @@ TabWidgetForTools::TabWidgetForTools()
     addTab(ScriptTab,        "Script");
     addTab(File_ManagerTab,  "File_Manager");
     addTab(DebugMessagesTab, "Debug_Messages");
-
-
-    LegendTab->setRowCount(5); // Set the number of rows
-    LegendTab->setColumnCount(10); // Set the number of columns
-
-    // Set the headers for the columns
-    QStringList headers = {
-        "Title", "Data", "Plane", "Freq", "Az",
-        "El", "Channel", "Smooth", "%", "Color"
-    };
-    LegendTab->setHorizontalHeaderLabels(headers);
-
 
 
 

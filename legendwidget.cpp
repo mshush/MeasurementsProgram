@@ -3,36 +3,93 @@
 LegendWidget::LegendWidget(QWidget *parent)
     : QWidget{parent}
 {
+    FillLayout();
+
+}
+
+void LegendWidget::OnReadDataClicked()
+{
+    emit ReadDataSignal();
+}
+
+void LegendWidget::OnWriteDataClicked()
+{
+    emit WriteDataSignal();
+}
+
+void LegendWidget::OnAddLineClicked()
+{
+
+}
+
+void LegendWidget::OnDeleteLineClicked()
+{
+
+}
+
+void LegendWidget::OnClearAllClicked()
+{
+
+}
+
+void LegendWidget::OnUpLineClicked()
+{
+
+}
+
+void LegendWidget::OnDownLineClicked()
+{
+
+}
+
+void LegendWidget::OnCopyToMemoryLineClicked()
+{
+
+}
+
+void LegendWidget::OnRefreshClicked()
+{
+
+}
+
+void LegendWidget::OnChartTabChanged()
+{
+
+}
+
+
+
+
+void LegendWidget::FillLayout()
+{
 
     VerticalLegendLayot             = new QVBoxLayout(this);
-    HorizontalUpperButtonsLayout    = new QHBoxLayout(this);
-    HorizontalLowerCheckboxLayout   = new QHBoxLayout(this);
+    HorizontalUpperButtonsLayout    = new QHBoxLayout();
+    HorizontalLowerCheckboxLayout   = new QHBoxLayout();
+
+    ReadDataButton        = new QPushButton(tr("Read Data"),            this);
+    WriteDataButton       = new QPushButton(tr("Write Data"),           this);
+    AddLineButton         = new QPushButton(tr("Add Line"),             this);
+    DeleteLineButton      = new QPushButton(tr("Delete Line"),          this);
+    ClearAllButton        = new QPushButton(tr("Clear All"),            this);
+    UpLineButton          = new QPushButton(tr("Up Line"),              this);
+    DownLineButton        = new QPushButton(tr("Down Line"),            this);
+    CopyToMemoryLineButton= new QPushButton(tr("Copy To Memory Line"),  this);
+    RefreshButton         = new QPushButton(tr("Refresh"),this);
 
 
-    ReadDataButton        = new QPushButton(this);
-    WriteDataButton       = new QPushButton(this);
-    AddLineButton         = new QPushButton(this);
-    DeleteLineButton      = new QPushButton(this);
-    ClearAllButton        = new QPushButton(this);
-    UpLineButton          = new QPushButton(this);
-    DownLineButton        = new QPushButton(this);
-    CopyToMemoryLineButton= new QPushButton(this);
-    RefreshButton         = new QPushButton(this);
+    ShowInLegendBoxLabel    = new QLabel(tr("Show in legend box"   ), this);
+    GraphTitleLabel         = new QLabel(tr("Graph title"          ), this);
+    TitleLabel              = new QLabel(tr("Title"                ), this);
 
 
-
-    ShowInLegendBoxLabel    = new QLabel("Show in legend box"   , this);
-    GraphTitleLabel         = new QLabel("Graph title"          , this);
-    TitleLabel              = new QLabel("Title"                , this);
-
-
-    TitleChBox  = new QCheckBox("Title"  ,this);
-    DataChBox   = new QCheckBox("Data"   ,this);
-    PlaneChBox  = new QCheckBox("Plane"  ,this);
-    FreqChBox   = new QCheckBox("Freq"   ,this);
-    AzChBox     = new QCheckBox("Az"     ,this);
-    ElChBox     = new QCheckBox("El"     ,this);
-    ChannelChBox= new QCheckBox("Channel",this);
+    TitleChBox  = new QCheckBox(tr("Title")  ,this);
+    DataChBox   = new QCheckBox(tr("Data")   ,this);
+    PlaneChBox  = new QCheckBox(tr("Plane")  ,this);
+    FreqChBox   = new QCheckBox(tr("Freq")   ,this);
+    AzChBox     = new QCheckBox(tr("Az")     ,this);
+    ElChBox     = new QCheckBox(tr("El")     ,this);
+    ChannelChBox= new QCheckBox(tr("Channel"),this);
 
 
     LegendTable = new QTableWidget(this);
@@ -63,4 +120,23 @@ LegendWidget::LegendWidget(QWidget *parent)
     HorizontalLowerCheckboxLayout->addWidget(TitleLabel);
 
 
+    VerticalLegendLayot->addLayout(HorizontalLowerCheckboxLayout);
+
+    LegendTable->setRowCount(5);
+    LegendTable->setColumnCount(10);
+
+    LegendTable->setHorizontalHeaderLabels(headers);
+
 }
+
+
+
+
+
+
+
+
+
+
+
+
