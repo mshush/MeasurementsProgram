@@ -2,13 +2,9 @@
 #define WIDGETFORCUSTOMPLOT_H
 
 #include <QObject>
-#include <QWidget>
-#include <QHBoxLayout>
-#include <QVBoxLayout>
+#include <QtWidgets>
 #include <qcustomplot.h>
-#include <QFileDialog>
 #include <plotclass.h>
-#include <QDoubleValidator>
 #include <selectionrectclass.h>
 
 
@@ -19,98 +15,48 @@ public:
     explicit WidgetForCustomPlot(QWidget *parent = nullptr);
     ~WidgetForCustomPlot();
 
+    // Функции из конструктора
+    void SetUpGeneralStyle();
+    void SetUpPlot();
+    void FillControlsWidget();
+    void FillLayouts();
+    void SetUpContextMenu();
+    void SetUpConnections();
+
+    // Функции из функций конструктора
+    // Внутри FillControlsWidget:
+    void InitiateButtons();
+    void FillYAxisControl();
+    void FillXAxisAndMarkerControl();
+    void FillMarkerTable();
+
+    // Внутри SetUpConnections:
+    void ConnectControlsWidget();
+
+
+
+    // Компоновки
+    QHBoxLayout * HorizontalPlotLayout;   // В ней и график, и панель
+    QVBoxLayout * VerticalControlsLayout; // Компоновка панели
+
+    //Основной график
     PlotClass * customPlot;
+
+    // Виджет панели управления
     QWidget * ControlsWidget;
-    QHBoxLayout * HorizontalPlotLayout;
-    QVBoxLayout * VerticalControlsLayout;
 
-    //Кнопки для сохранения
-    void InitiateSaveLayout();
-    QHBoxLayout * HorizontalSaveLayout;
-    QPushButton * SaveButton;
-    QPushButton * CopyButton;
+    // Заголовки групп кнопок (для смены языка пишу отдельно)
+    QLabel      * YAxisTitleLabel;
+    QLabel      * XAxisTitleLabel;
+    QLabel      *  MarkerTitleLabel;
 
-
-    QColor HighlightColor = QColor(200, 200, 255);
-
-
-    //GroupBox для движения/приближения
-    void InitiateMovementGroupBox();
-    QGroupBox * MovementGroupBox;
-    QVBoxLayout * MovementGroupBoxLayout;
-    QHBoxLayout * LockAxesLayout;
-    QPushButton * ResetButton;
-    QPushButton * RubberBandButton;
-    QPushButton * LockXAxisButton;
-    QPushButton * LockYAxisButton;
-
-    //GroupBox для установки диапазона вручную
-    void InitiateSetRangeGroupBox();
-    QGroupBox * SetRangeGroupBox;
-    QGridLayout * SetRangeLayout;
-    QLabel * XRangeLabel1;
-    QLineEdit *XRangeEditFrom;
-    QLabel * XRangeLabel2;
-    QLineEdit *XRangeEditTo;
-    QLabel * YRangeLabel1;
-    QLineEdit *YRangeEditFrom;
-    QLabel * YRangeLabel2;
-    QLineEdit *YRangeEditTo;
-    QLabel * XRangeUnitsLabel;
-    QLabel * YRangeUnitsLabel;
-    QVBoxLayout * SetRangeVerticalLayout;
-    QPushButton * SetRangeButton;
-    QDoubleValidator * DoubleValidator;
-
-    //GroupBox для манипуляций с маркерами
-    void InitiateMarkerGroupBox();
-    QGroupBox * MarkerGroupBox;
-    QVBoxLayout * MarkerGroupBoxLayout;
-    QHBoxLayout * MarkerStyleLayout;
-    QHBoxLayout * MarkerAddDeleteLayout;
-    //QPushButton * MarkerAddButton; Ниже
-    //QPushButton * MarkerDeleteButton;
-    QPushButton * DeleteAllMarkersButton;
-    QPushButton * MarkerSettingsButton;
-    QColor MarkerColourChoise = Qt::black;
-    int MarkerStyleChoise = 0;
-    QComboBox * MarkerStyleComboBox;
-    QPushButton * MarkerColourButton;
-    QColorDialog * ColourDialogue;
-    void InitiateMarkerPreviewPlot();
-    QCustomPlot * MarkerPreviewPlot;
-    QCPItemTracer * PreviewMarker;
-
-    QHBoxLayout * SelectLocalMarkerLayout;
-    QPushButton * SelectLocalMaxButton;
-    QPushButton * SelectLocalMinButton;
-
-    //QThread * PlotThread;
-    QVBoxLayout  * VerticalMarkerStyleConfigurationLayout;
-    QComboBox * GraphChoiceComboBox;
-
-    //int NumberOfRows=0;
-    int CurrentMarkerIndex = 0;
-
-    QTableWidget * MarkerPositionsTable;
-    QTableWidget * MarkerDifferenceTable;
-
-    //Отдельное окно с настройкой внешнего вида маркера
-    //QDialog * MarkerSettingsDialogue;
-    //QDialogButtonBox * MarkerSettingsDialogueButtonBox;
-
-    //QVBoxLayout * MarkerSettingsDialogueLayout;
-    //int MarkerStyleChoice;
-
-    QFrame * MarkerFrame;
-
+    // Виджеты настройки шкалы по Y
     QLabel      * YAxisMaxLabel;
     QLabel      * YAxisSpanLabel;
     QComboBox   * YAxisMaxBox;
     QComboBox   * YAxisSpanBox;
 
-    void ConnectControlsWidget();
-    void InitiateButtons();
+
 
     QPushButton * YLinScaleButton;
     QPushButton * YLogScaleButton;
@@ -164,22 +110,45 @@ public:
     QAction * DisableLegendAction;
 
 
-    void SetupContextMenu();
-
-    enum class ComplexInfo
-    {
-        Amplitude,
-        Phase,
-        Real_Part,
-        Imaginary_Part
-    };
 
 
-    ComplexInfo CompInfo = ComplexInfo::Amplitude;
+    QStringList iconPaths =
+        {
+            "C:/Users/HP/Documents/MeasurementsProgram/Icons/Y1.png",
+            "C:/Users/HP/Documents/MeasurementsProgram/Icons/Y2.png",
+            "C:/Users/HP/Documents/MeasurementsProgram/Icons/Y3.png",
+            "C:/Users/HP/Documents/MeasurementsProgram/Icons/Y4.png",
+            "C:/Users/HP/Documents/MeasurementsProgram/Icons/Y5.png",
+            "C:/Users/HP/Documents/MeasurementsProgram/Icons/X1.png",
+            "C:/Users/HP/Documents/MeasurementsProgram/Icons/X2.png",
+            "C:/Users/HP/Documents/MeasurementsProgram/Icons/X3.png",
+            "C:/Users/HP/Documents/MeasurementsProgram/Icons/X4.png",
+            "C:/Users/HP/Documents/MeasurementsProgram/Icons/X5.png",
+            "C:/Users/HP/Documents/MeasurementsProgram/Icons/X6.png",
+            "C:/Users/HP/Documents/MeasurementsProgram/Icons/X7.png",
+            "C:/Users/HP/Documents/MeasurementsProgram/Icons/X8.png",
+            "C:/Users/HP/Documents/MeasurementsProgram/Icons/X9.png",
+            "C:/Users/HP/Documents/MeasurementsProgram/Icons/X10.png",
+            "C:/Users/HP/Documents/MeasurementsProgram/Icons/X11.png",
+            "C:/Users/HP/Documents/MeasurementsProgram/Icons/X12.png",
+            "C:/Users/HP/Documents/MeasurementsProgram/Icons/X13.png",
+            "C:/Users/HP/Documents/MeasurementsProgram/Icons/M1.png",
+            "C:/Users/HP/Documents/MeasurementsProgram/Icons/M2.png",
+            "C:/Users/HP/Documents/MeasurementsProgram/Icons/M3.png",
+            "C:/Users/HP/Documents/MeasurementsProgram/Icons/M4.png",
+            "C:/Users/HP/Documents/MeasurementsProgram/Icons/M5.png",
+            "C:/Users/HP/Documents/MeasurementsProgram/Icons/M6.png",
+            "C:/Users/HP/Documents/MeasurementsProgram/Icons/M7.png",
+            "C:/Users/HP/Documents/MeasurementsProgram/Icons/M8.png",
+            "C:/Users/HP/Documents/MeasurementsProgram/Icons/M9.png",
+            "C:/Users/HP/Documents/MeasurementsProgram/Icons/M10.png"
+        };
+
+
 
 public slots:
-    void EnterSelectLocalMinMode();
-    void PutMarkerAtLocalMin();
+    //void EnterSelectLocalMinMode();
+    //void PutMarkerAtLocalMin();
     void EnterSelectLocalMaxMode();
     void PutMarkerAtLocalMax();
 
@@ -191,7 +160,7 @@ public slots:
     void ToNextKey();
     void ToPrevKey();
 
-    void SetRange();
+    //void SetRange();
 
     void DeleteMarkerSlot();
     void AddMarkerSlot();
@@ -200,9 +169,9 @@ public slots:
     void OpenMarkerColourDialogue();
     void ChangeMarkerStyle( int ComboIndex);
     //void DialogueResultAccepted();
-    void ActivateRubberBand();
-    void LockXAxis();
-    void LockYAxis();
+    //void ActivateRubberBand();
+    //void LockXAxis();
+    //void LockYAxis();
     void XAxisRangeChanged(const QCPRange &range);
     void YAxisRangeChanged(const QCPRange &range);
     //void SavePlotAsDat(); // Перенесено в PlotClass
@@ -213,8 +182,7 @@ public slots:
     //void SubstractMarkers();
 
 
-    void FillControlsWidget();
-    void AdjustContentsOfTableOfDifference(int row, int column);
+    //void AdjustContentsOfTableOfDifference(int row, int column);
 
     void OnYLinScaleClicked();
     void OnYLogScaleClicked();
@@ -258,12 +226,6 @@ public slots:
     void OnLegendInside();
     void OnDisableLegend();
 
-
-
-
-
-
-
 signals:
     void ErrorOccured(QString ErrorText);
 };
@@ -271,3 +233,105 @@ signals:
 
 
 #endif // WIDGETFORCUSTOMPLOT_H
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*
+// Устаревшее
+//Кнопки для сохранения
+void InitiateSaveLayout();
+QHBoxLayout * HorizontalSaveLayout;
+QPushButton * SaveButton;
+QPushButton * CopyButton;
+
+
+//GroupBox для движения/приближения
+void InitiateMovementGroupBox();
+QGroupBox * MovementGroupBox;
+QVBoxLayout * MovementGroupBoxLayout;
+QHBoxLayout * LockAxesLayout;
+QPushButton * ResetButton;
+QPushButton * RubberBandButton;
+QPushButton * LockXAxisButton;
+QPushButton * LockYAxisButton;
+
+//GroupBox для установки диапазона вручную
+void InitiateSetRangeGroupBox();
+QGroupBox * SetRangeGroupBox;
+QGridLayout * SetRangeLayout;
+QLabel * XRangeLabel1;
+QLineEdit *XRangeEditFrom;
+QLabel * XRangeLabel2;
+QLineEdit *XRangeEditTo;
+QLabel * YRangeLabel1;
+QLineEdit *YRangeEditFrom;
+QLabel * YRangeLabel2;
+QLineEdit *YRangeEditTo;
+QLabel * XRangeUnitsLabel;
+QLabel * YRangeUnitsLabel;
+QVBoxLayout * SetRangeVerticalLayout;
+QPushButton * SetRangeButton;
+QDoubleValidator * DoubleValidator;
+
+//GroupBox для манипуляций с маркерами
+void InitiateMarkerGroupBox();
+QGroupBox * MarkerGroupBox;
+QVBoxLayout * MarkerGroupBoxLayout;
+QHBoxLayout * MarkerStyleLayout;
+QHBoxLayout * MarkerAddDeleteLayout;
+//QPushButton * MarkerAddButton; Ниже
+//QPushButton * MarkerDeleteButton;
+QPushButton * DeleteAllMarkersButton;
+QPushButton * MarkerSettingsButton;
+QColor MarkerColourChoise = Qt::black;
+int MarkerStyleChoise = 0;
+QComboBox * MarkerStyleComboBox;
+QPushButton * MarkerColourButton;
+QColorDialog * ColourDialogue;
+void InitiateMarkerPreviewPlot();
+QCustomPlot * MarkerPreviewPlot;
+QCPItemTracer * PreviewMarker;
+
+QHBoxLayout * SelectLocalMarkerLayout;
+QPushButton * SelectLocalMaxButton;
+QPushButton * SelectLocalMinButton;
+
+//QThread * PlotThread;
+QVBoxLayout  * VerticalMarkerStyleConfigurationLayout;
+QComboBox * GraphChoiceComboBox;
+
+//int NumberOfRows=0;
+int CurrentMarkerIndex = 0;
+
+QTableWidget * MarkerPositionsTable;
+QTableWidget * MarkerDifferenceTable;
+
+
+QFrame * MarkerFrame;
+*/
+
+
+

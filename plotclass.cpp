@@ -3,105 +3,249 @@
 
 PlotClass::PlotClass(QWidget * parent) : QCustomPlot(parent)
 {
+    SetUpGeneralStyle(); // Устанавливает общее оформление
 
-    //this->setMinimumSize(800,600);
+    SetUpItems(); // Создаёт и настраивает вспомогательные объекты: маркер прицела, прямоугольник выделения, контекстное меню
+
+    SetUpConnections(); // Устанавливает соединения между сигналами и слотами
+
+    //AddEmptyGraphToPlot();
+}
+
+
+void PlotClass::SetUpGeneralStyle()
+{
+    // Размер
     setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding);
     setMinimumWidth(1000);
 
-
+    // Цвет фона
     setBackground(QBrush(Qt::black));
-    xAxis->setBasePen(QPen(Qt::white));
-    yAxis->setBasePen(QPen(Qt::white));
-    xAxis->setTickPen(QPen(Qt::white));
-    yAxis->setTickPen(QPen(Qt::white));
-    xAxis->setLabelColor(Qt::white);
-    yAxis->setLabelColor(Qt::white);
-    xAxis->setTickLabelColor(Qt::white);
-    yAxis->setTickLabelColor(Qt::white);
 
+        // Позволенные взаимодействия с графиком: можно менять масштаб, двигать и выбирать объекты.
+    setInteractions(QCP::iRangeZoom | QCP::iRangeDrag | QCP::iSelectItems);
 
-    //RefreshTimer = new QTimer(this);
-    MarkerStyle=1;
-    AddedMarkersList.clear();
-    AddedMarkerLabelsList.clear();
+    // Стиль подписи легенды // Тоже переместить наверное отдельно
+    legend->setVisible(false);
+    legend->setBrush(QBrush(Qt::black));
+    legend->setBorderPen(QPen(Qt::white));
+    legend->setTextColor(Qt::white);
+    //legend->clearItems();
+    //legend->clear();
 
+}
 
-    MouseMoveMarker = new QCPItemTracer(this); // Перенести маркер в отдельный QCPLayer? Затем Layer->setMode(QCPLayer::lmBuffered); (Чтобы работало быстрее можно попробовать так)
+void PlotClass::SetUpItems()
+{
+    // Область для информации, настраиваемой через легенду (надо поменять)
+    SetUpCursorPositionText();
+
+    // Прямоугольник выбора
+    SelectionRectClass * SelectionRectangle = new SelectionRectClass(this);
+    setSelectionRect(SelectionRectangle);
+
+    // Контекстное меню
+    setContextMenuPolicy(Qt::CustomContextMenu);
+
+    // Маркер прицела
+    SetUpMouseMoveMarker();
+
+    // Оси для полярного формата графика
+    SetUpPolarAxes();
+
+    // Оси декартового формата
+    SetUpDescartesAxes();
+
+}
+
+void PlotClass::SetUpMouseMoveMarker()
+{
+    // МАРКЕР ПРИЦЕЛА
+    // Создаём маркер прицела и подпись к нему
+    MouseMoveMarker = new QCPItemTracer(this);
     MouseMoveLabel = new QCPItemText(this);
+    // Может перенести маркер в отдельный QCPLayer для более быстрой работы? Затем Layer->setMode(QCPLayer::lmBuffered);
 
+    // Устанавливаем цвет маркера, стиль и размер
     MouseMoveMarker->setBrush(QBrush(Qt::white));
     MouseMoveMarker->setPen(QPen(Qt::white));
     MouseMoveMarker->setStyle(QCPItemTracer::TracerStyle(2));
     MouseMoveMarker->setSize(0.1);
 
+    // Подпись к маркеру устанавливаем в правом нижнем углу (можно сделать так, чтобы менялось в зависимости от близости к границе), меняем шрифт
     MouseMoveLabel->setPositionAlignment(Qt::AlignRight|Qt::AlignBottom);
     MouseMoveLabel->setTextAlignment(Qt::AlignLeft);
     MouseMoveLabel->setFont(QFont(font().family(), 9));
 
+    // Делаем маркер и подпись невидимыми (до надобности) и невыбираемыми
     MouseMoveMarker->setVisible(false);
     MouseMoveLabel->setVisible(false);
     MouseMoveMarker->setSelectable(false);
     MouseMoveLabel->setSelectable(false);
 
+}
 
-    AddEmptyGraphToPlot();
+void PlotClass::SetUpPolarAxes()
+{
+    // Инициируем полярный график
+    AngularAxis = new QCPPolarAxisAngular(this);
+    AngularAxis->removeRadialAxis(AngularAxis->radialAxis()); //Убираем радиальную ось по умолчанию и создаём свою (иначе она будет отрисовываться и мешать)
+    RadialAxis = new CustomRadialAxis(AngularAxis);
+    AngularAxis->addRadialAxis(RadialAxis);
+    qDebug()<<AngularAxis->radialAxisCount();
+
+    // Настраиваем угловую ось
+    AngularAxis->grid()->setAngularSubGridPen(QPen(Qt::white));
+    AngularAxis->grid()->setRadialSubGridPen(QPen(Qt::white));
+    AngularAxis->grid()->setRadialAxis(RadialAxis);
+    //AngularAxis->grid()->setAngularPen(QPen(Qt::white));
+    AngularAxis->setTickPen(QPen(Qt::white,2));
+    AngularAxis->setLabelColor(Qt::white);
+    AngularAxis->setBasePen(QPen(Qt::white,2));
+    AngularAxis->setSubTickPen(QPen(Qt::white));
+    AngularAxis->setTickLength(10,0);
+    AngularAxis->setSubTickLength(5,0);
+
+    // Настраиваем радиальную ось
+    RadialAxis->setTickPen(QPen(Qt::white,2));
+    RadialAxis->setSubTickPen(QPen(Qt::white));
+    RadialAxis->setLabelColor(Qt::white);
+    RadialAxis->setBasePen(QPen(Qt::white,2));
 
 
-    xAxis->setLabel("Частота, ГГц");
-    yAxis->setLabel("Amplitude (dB)");
+    // Устанавливает радиальную ось прямо (Положение слева устанавливается через наследование)
+    RadialAxis->setTickLabelMode(QCPPolarAxisRadial::LabelMode::lmUpright);
+    RadialAxis->setAngle(0);
+
+    RadialAxis->setTickLength(-10,0);
+    RadialAxis->setSubTickLength(-5,0);
+    //RadialAxis->setTickLabelRotation(0);
+    //RadialAxis->ticklabel
+    //AngularAxis->setLabelPosition(Qt::AlignmentFlag::AlignBottom);
+
+    //RadialAxis->setAngleReference(QCPPolarAxisRadial::AngleReference::arAbsolute);
+
+    //Шрифт полярного графика
+    QFont font("Arial",10);
+    AngularAxis->setTickLabelFont(font);
+    RadialAxis->setTickLabelFont(font);
+    AngularAxis->setTickLabelColor(Qt::white);
+    RadialAxis->setTickLabelColor(Qt::white);
+
+    // Поведение:
+    AngularAxis->setRangeZoom(true);
+    AngularAxis->setRangeDrag(true);
+
+    // Подписи к осям
+    AngularAxis->setLabelColor(Qt::white);
+    RadialAxis->setLabelColor(Qt::white);
+    AngularAxis->setLabel(XAxisLabel);
+    RadialAxis ->setLabel(YAxisLabel);
+    AngularAxis->setLabelFont(QFont("Arial", 12));
+    RadialAxis->setLabelFont(QFont("Arial", 12));
+    AngularAxis->setVisible(true);
+    RadialAxis->setVisible(true);
+    qDebug()<< "Label Ang" << AngularAxis->label();
 
 
+    //setBackground(QBrush(Qt::white));
 
+    // Устанавливаем поведение отметок на графика
+    QSharedPointer<QCPAxisTicker> AngularTicker = QSharedPointer<QCPAxisTicker>::create();
+    AngularAxis->setTicker(AngularTicker);
+    QSharedPointer<QCPAxisTicker> RadialTicker = QSharedPointer<QCPAxisTicker>::create();
+    RadialAxis ->setTicker(RadialTicker);
+    RadialAxis->setTickLabelPadding(-20);
+
+
+    //RadialAxis->moveRange(0); // Посмотреть для смены на логарифмический
+    //RadialAxis->setRange ( 0,  10, Qt::AlignmentFlag::AlignLeft);
+    replot();
+}
+
+void PlotClass::SetUpDescartesAxes()
+{
+    // Сохраняем указатель на прямоугольник с осями (чтобы мы могли его вернуть после смены на полярный режим)
+    AxisRectangle = axisRect();
+
+    // Ось x
+    xAxis->setBasePen(QPen(Qt::white));
+    xAxis->setTickPen(QPen(Qt::white,2));
+    xAxis->setLabelColor(Qt::white);
+    xAxis->setTickLabelColor(Qt::white);
+    xAxis->setLabel(XAxisLabel);
+
+    // Ось y
+    yAxis->setBasePen(QPen(Qt::white));
+    yAxis->setTickPen(QPen(Qt::white,2));
+    yAxis->setLabelColor(Qt::white);
+    yAxis->setTickLabelColor(Qt::white);
+    yAxis->setLabel(YAxisLabel);
+
+}
+
+void PlotClass::SetUpCursorPositionText()
+{
     PlotLabel = new QCPItemText(this);
-    PlotLabel->setPositionAlignment(Qt::AlignTop|Qt::AlignRight);
+    PlotLabel->setPositionAlignment(Qt::AlignTop|Qt::AlignLeft);
     PlotLabel->position->setType(QCPItemPosition::ptAxisRectRatio);
-    PlotLabel->position->setCoords(1, 0);
+    PlotLabel->position->setCoords(0, 0);
     PlotLabel->setText("x=0.00\ny=0.00");
     //PlotLabel->setFont(QFont());//(QFont(font().family(), 16));
     PlotLabel->setColor(Qt::white);
     PlotLabel->setPen(QPen(Qt::white));
     PlotLabel->setClipToAxisRect(false);
+    PlotLabel->setSelectable(false);// Можно сделать выбираемой, чтобы удалять при необходимости
+}
 
-    setInteractions(QCP::iRangeZoom | QCP::iRangeDrag | QCP::iSelectItems);
-
-
-    SelectionRectClass * SelectionRectangle = new SelectionRectClass(this);
-    this->setSelectionRect(SelectionRectangle);
-
-    Timer = new QTimer(this);
-
-    layer(0)->setMode(QCPLayer::lmBuffered);
+void PlotClass::SetUpConnections()
+{
+    // Соединяем сигнал клика на график и слот смены выбранного графика
     connect(this, &PlotClass::GraphClickedSignal, this, &PlotClass::ChangeSelectedGraph);
 
-    setContextMenuPolicy(Qt::CustomContextMenu);
-
     /*
-    AngularAxis = new QCPPolarAxisAngular(this);
+     * Никак совсем не работает. Но скорее всего это и не нужно
+    // Соединяем диапазоны осей, чтобы у полярного и декартового графиков они менялись синхронно:
+    //connect(xAxis,      SIGNAL(rangeChanged(QCPRange)), AngularAxis,SIGNAL(setRange(QCPRange)));
+    //connect(yAxis,      SIGNAL(rangeChanged(QCPRange)), RadialAxis, SIGNAL(setRange(QCPRange)));
+    //connect(AngularAxis,SIGNAL(rangeChanged(QCPRange)), xAxis,      SIGNAL(setRange(QCPRange)));
+    //connect(RadialAxis, SIGNAL(rangeChanged(QCPRange)), yAxis,      SIGNAL(setRange(QCPRange)));
 
-    plotLayout()->addElement(0,1,AngularAxis);
 
-    RadialAxis = new QCPPolarAxisRadial(AngularAxis);
+    connect(xAxis,
+            QOverload<const QCPRange &>::of(&QCPAxis::rangeChanged),
+            AngularAxis,
+            QOverload<const QCPRange &>::of(&QCPPolarAxisAngular::setRange));
 
-    AngularAxis->setRange(0, 360);
-    RadialAxis->setRange(0, 10);
-    AngularAxis->grid()->setAngularSubGridPen(QPen(Qt::lightGray));
-    AngularAxis->grid()->setRadialSubGridPen(QPen(Qt::lightGray));
+    connect(yAxis,
+            QOverload<const QCPRange &>::of(&QCPAxis::rangeChanged),
+            RadialAxis,
+            QOverload<const QCPRange &>::of(&QCPPolarAxisRadial::setRange));
 
-        PolarGraph = new QCPPolarGraph(AngularAxis,RadialAxis);
 
-    QVector<double> angles, radii;
-    for (int i = 0; i <= 360; ++i) {
-        angles.append(i);
-        radii.append(5 + 2 * qSin(qDegreesToRadians(i * 2.0)));
-    }
-    PolarGraph->setData(angles, radii);
-    AngularAxis->addRadialAxis(RadialAxis);
 
-    AngularAxis->setVisible(true);
+    connect(AngularAxis,
+            QOverload<const QCPRange &>::of(&QCPPolarAxisAngular::rangeChanged),
+            xAxis,
+            QOverload<const QCPRange &>::of(&QCPAxis::setRange));
 
-    AngularAxis->setLayer(this->layer(1));
-    */
+    connect(RadialAxis,
+            QOverload<const QCPRange &>::of(&QCPPolarAxisRadial::rangeChanged),
+            yAxis,
+            QOverload<const QCPRange &>::of(&QCPAxis::setRange));
 
+    //connect <QCPAxis, AngularAxis> (xAxis, &QCPAxis::rangeChanged, AngularAxis,  &QCPPolarAxisAngular::setRange);
+
+
+    //connect(AxisRectangle->axis(QCPAxis::AxisType::atBottom), &QCPAxis::rangeChanged, AngularAxis, &QCPPolarAxisAngular::setRange);
+
+    connect(
+        AxisRectangle->axis(QCPAxis::AxisType::atBottom),
+        QOverload<const QCPRange &>::of(&QCPAxis::rangeChanged),
+        this,
+        yAxis,
+        QOverload<const QCPRange &>::of(&QCPAxis::setRange));
+*/
 
 }
 
@@ -126,8 +270,6 @@ void PlotClass::mouseMoveEvent(QMouseEvent *event)
         replot();
     }
 }
-
-
 void PlotClass::mousePressEvent(QMouseEvent *event)
 {
     QCustomPlot::mousePressEvent(event);
@@ -155,6 +297,84 @@ void PlotClass::mouseReleaseEvent(QMouseEvent *event)
         }
     }
 }
+
+
+
+void PlotClass::ChangeToPolarFormat()
+{
+    PolarFormatInUse = true;
+
+    plotLayout()->take(plotLayout()->element(0,0)); // Убираем прямоугольник с осями
+    //xAxis->setVisible(false);
+    plotLayout()->addElement(0,0, AngularAxis); // Ставим на его место круг угловой оси
+
+    //Подстраиваем диапазоны
+    AngularAxis->setRange(xAxis->range());
+    RadialAxis->setRange(yAxis->range());
+
+    qDebug()<<xAxis->range()<<"=x=a="<<AngularAxis->range();
+
+
+    int NumberOfGraphs = graphCount();
+    for (int i=0;i<NumberOfGraphs; i++)
+    {
+        QCPPolarGraph * PolarGraph = new QCPPolarGraph(AngularAxis,RadialAxis);
+        PolarGraph->setData(graph(i)->data());
+        PolarGraph->setPen(graph(i)->pen());
+    }
+
+
+
+    AngularAxis->setVisible(true);
+    AngularAxis->setLayer(this->layer(1));
+    AxisRectangle->setVisible(false);
+    AngularAxis->setVisible(true);
+
+    qDebug()<< "TICKLABELMODE===" <<AngularAxis->tickLabelMode();
+    replot();
+}
+
+
+
+void PlotClass::ChangeToDescartesFormat()
+{
+    PolarFormatInUse = false;
+
+    plotLayout()->take(plotLayout()->element(0,0));
+    xAxis->setLabel(XAxisLabel);
+    yAxis->setLabel(YAxisLabel);
+    plotLayout()->addElement(0,0,AxisRectangle);
+
+
+
+    //xAxis->setRange(AngularAxis->range());
+    //yAxis->setRange(RadialAxis ->range());
+
+
+
+
+
+
+
+
+
+
+
+    AxisRectangle->setVisible(true);
+    AngularAxis->setVisible(false);
+    replot();
+}
+
+
+
+
+
+
+
+
+
+
+
 
 
 void PlotClass::ResetPlot()
@@ -518,26 +738,6 @@ void PlotClass::AddNewMarker(double Key, int Style, QColor Colour, int GraphNumb
 
 
 
-void PlotClass::ContinuousMeasurementsModeChanged(bool ModeStatus)
-{
-    ContinuousMeasurementMode = ModeStatus;
-
-    if (ModeStatus)
-    {
-        ////////connect(Timer, &QTimer::timeout, this, &PlotClass::ResetPlot);
-
-        Timer->setInterval(10);
-        Timer->start();
-        //qDebug()<<"Replotted!";
-    }
-    else
-    {
-        //disconnect(Timer, &QTimer::timeout, this, &PlotClass::ResetPlot);
-        Timer->stop();
-    }
-}
-
-
 void PlotClass::ChangeSelectedGraph(int GraphId)
 {
     SelectedGraph = GraphId;
@@ -659,12 +859,12 @@ void PlotClass::saveDat(QString FilePath)  //Доделать сохранени
     }
 
     File.close();
-
 }
 
 
 
-void PlotClass::loadDat(QString FilePath) //Перенести туда, где будет использоваться. Что не так???????
+
+void PlotClass::loadDat(QString FilePath) //Добавить данные полярного графика
 {
 
     QFile File(FilePath);
@@ -890,6 +1090,195 @@ void PlotClass::SendPlotImageForPreview()
 
 
 
+PlotClass::CustomRadialAxis::CustomRadialAxis(QCPPolarAxisAngular *parent) : QCPPolarAxisRadial(parent)
+{
+    // Не меняю конструктор
+}
+
+void PlotClass::CustomRadialAxis::draw(QCPPainter *painter)
+{
+    // Сохраняем исходные
+    QPointF originalCenter = mCenter;
+    //mSubTickLengthOut;
+    // Меняем на свои
+    mCenter += QPointF(-1, 0) * (mRadius - 0.5); // Можно ещё немного левее сдвинуть
+    // Используем исходную функцию
+    QCPPolarAxisRadial::draw(painter);
+
+
+
+    // Параллельные горизонтальные линии подсетки от отметок
+    painter->setPen(QPen(Qt::white, 0, Qt::DotLine));
+    if (!mTickVector.isEmpty())
+    {
+        // Дорисовываем горизонтальные линии
+        for (int i=0; i<mTickVector.size(); ++i)
+        {
+            double r = coordToRadius(mTickVector.at(i));
+            QPointF tickPosition = mCenter+QPointF(0,-1)*r;
+            painter->drawLine(QLineF(tickPosition, QPointF(originalCenter.x(),tickPosition.y())));
+        }
+
+        // Дорисоваем подпись к последней отметке
+        const QPointF MyTickNormal = QCPVector2D(QPointF(-1,0)).perpendicular().toPointF();
+        const double r = coordToRadius(mTickVector.at(mTickVector.size()-1));
+        const QPointF LastTickPosition = mCenter+QPointF(0,-1)*r;
+
+        painter->setFont(getTickLabelFont());
+        painter->setPen(getTickLabelColor());
+        QPointF LastLabelPosition = LastTickPosition+MyTickNormal*mSubTickLengthOut + QPointF(-19.3,5); // Последнее слагаемое -- подбором. Придумать, как сделать так, чтобы адаптировалось ( Вроде изначально в коде как-то через высоту текста?)
+        painter->drawText(LastLabelPosition, mTickVectorLabels.at(mTickVector.size()-1));
+
+
+
+    }
+
+    // Возвращаем как было
+    mCenter = originalCenter;
+
+
+
+}
+
+
+
+/* // Функция отрисовки радиальной оси от qcustomplot (для сравнения)
+void QCPPolarAxisRadial::draw(QCPPainter *painter)
+{
+  const double axisAngleRad = (mAngle+(mAngleReference==arAngularAxis ? mAngularAxis->angle() : 0))/180.0*M_PI;
+  const QPointF axisVector(qCos(axisAngleRad), qSin(axisAngleRad)); // semantically should be QCPVector2D, but we save time in loops when we keep it as QPointF
+  const QPointF tickNormal = QCPVector2D(axisVector).perpendicular().toPointF(); // semantically should be QCPVector2D, but we save time in loops when we keep it as QPointF
+
+  // draw baseline:
+  painter->setPen(getBasePen());
+  painter->drawLine(QLineF(mCenter, mCenter+axisVector*(mRadius-0.5)));
+
+  // draw subticks:
+  if (!mSubTickVector.isEmpty())
+  {
+    painter->setPen(getSubTickPen());
+    for (int i=0; i<mSubTickVector.size(); ++i)
+    {
+      const QPointF tickPosition = mCenter+axisVector*coordToRadius(mSubTickVector.at(i));
+      painter->drawLine(QLineF(tickPosition-tickNormal*mSubTickLengthIn, tickPosition+tickNormal*mSubTickLengthOut));
+    }
+  }
+
+  // draw ticks and labels:
+  if (!mTickVector.isEmpty())
+  {
+    mLabelPainter.setAnchorReference(mCenter-axisVector); // subtract (normalized) axisVector, just to prevent degenerate tangents for tick label at exact lower axis range
+    mLabelPainter.setFont(getTickLabelFont());
+    mLabelPainter.setColor(getTickLabelColor());
+    const QPen ticksPen = getTickPen();
+    painter->setPen(ticksPen);
+    for (int i=0; i<mTickVector.size(); ++i)
+    {
+      const double r = coordToRadius(mTickVector.at(i));
+      const QPointF tickPosition = mCenter+axisVector*r;
+      painter->drawLine(QLineF(tickPosition-tickNormal*mTickLengthIn, tickPosition+tickNormal*mTickLengthOut));
+      // possibly draw tick labels:
+      if (!mTickVectorLabels.isEmpty())
+      {
+        if ((!mRangeReversed && (i < mTickVectorLabels.count()-1 || mRadius-r > 10)) || (mRangeReversed && (i > 0 || mRadius-r > 10))) // skip last label if it's closer than 10 pixels to angular axis
+          mLabelPainter.drawTickLabel(painter, tickPosition+tickNormal*mSubTickLengthOut, mTickVectorLabels.at(i));
+      }
+    }
+  }
+}
+*/
+
+/*
+void QCPAxisPainterPrivate::drawTickLabel(QCPPainter *painter, double x, double y, const TickLabelData &labelData) const
+{
+    // backup painter settings that we're about to change:
+    QTransform oldTransform = painter->transform();
+    QFont oldFont = painter->font();
+
+    // transform painter to position/rotation:
+    painter->translate(x, y);
+    if (!qFuzzyIsNull(tickLabelRotation))
+        painter->rotate(tickLabelRotation);
+
+    // draw text:
+    if (!labelData.expPart.isEmpty()) // indicator that beautiful powers must be used
+    {
+        painter->setFont(labelData.baseFont);
+        painter->drawText(0, 0, 0, 0, Qt::TextDontClip, labelData.basePart);
+        if (!labelData.suffixPart.isEmpty())
+            painter->drawText(labelData.baseBounds.width()+1+labelData.expBounds.width(), 0, 0, 0, Qt::TextDontClip, labelData.suffixPart);
+        painter->setFont(labelData.expFont);
+        painter->drawText(labelData.baseBounds.width()+1, 0, labelData.expBounds.width(), labelData.expBounds.height(), Qt::TextDontClip,  labelData.expPart);
+    } else
+    {
+        painter->setFont(labelData.baseFont);
+        painter->drawText(0, 0, labelData.totalBounds.width(), labelData.totalBounds.height(), Qt::TextDontClip | Qt::AlignHCenter, labelData.basePart);
+    }
+
+    // reset painter settings to what it was before:
+    painter->setTransform(oldTransform);
+    painter->setFont(oldFont);
+}
+*/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 /*
@@ -1089,6 +1478,117 @@ void PlotClass::RefreshPlot()
     }
 }
 */
+
+
+/*
+void PlotClass::ContinuousMeasurementsModeChanged(bool ModeStatus)
+{
+
+    ContinuousMeasurementMode = ModeStatus;
+
+    if (ModeStatus)
+    {
+        ////////connect(Timer, &QTimer::timeout, this, &PlotClass::ResetPlot);
+
+        //Timer->setInterval(10);
+        //Timer->start();
+        //qDebug()<<"Replotted!";
+    }
+    else
+    {
+        //disconnect(Timer, &QTimer::timeout, this, &PlotClass::ResetPlot);
+        //Timer->stop();
+    }
+}
+*/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

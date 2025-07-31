@@ -11,7 +11,7 @@ TabWidgetForCharts::TabWidgetForCharts()
     for (int i=0;i<9;i++)
     {
         WidgetForCustomPlot * TempTab = new WidgetForCustomPlot(this);
-        TempTab->customPlot->xAxis->setLabel("Frequency, GHz");
+        //TempTab->customPlot->xAxis->setLabel("Frequency, GHz");
         addTab(TempTab,"Tab" + QString::number(i));
         PlotTabs.push_back(TempTab);
         TempTab->customPlot->addGraph();
@@ -29,7 +29,7 @@ TabWidgetForCharts::TabWidgetForCharts()
     setTabText(7, "Current(Gated)ProfRangeVector");
     setTabText(8, "Azimuth");
 
-    PlotTabs[7]->GraphChoiceComboBox->addItem("График 2"); // Переменовать в Gated...
+    //PlotTabs[7]->GraphChoiceComboBox->addItem("График 2"); // Переменовать в Gated...
 
     PrintPreviewTab = new PrintPreview(this);
     addTab(PrintPreviewTab,"Print Preview");
@@ -38,9 +38,6 @@ TabWidgetForCharts::TabWidgetForCharts()
     connect(this, &TabWidgetForCharts::currentChanged, this, &TabWidgetForCharts::SendImagesIfPrintPreview);
 
     //connect(PrintPreviewTab->PatternBox, &QCheckBox::toggled, PlotTabs[0], PlotClass::SendPlotImageForPreview);
-
-
-
 
     /*
     SweepTab = new WidgetForCustomPlot(this);
@@ -166,8 +163,10 @@ void TabWidgetForCharts::SendImagesIfPrintPreview(int TabIndex)
             VectorOfPlotImages.append(PlotImage);
         }
         PrintPreviewTab->VectorOfPlotImages = VectorOfPlotImages;
-        qDebug()<<"Sent";
+        emit SendCurrentPlotIndexToLegendSignal(-1);
     }
+    else
+        emit SendCurrentPlotIndexToLegendSignal(TabIndex);
 
 }
 
@@ -361,13 +360,6 @@ void TabWidgetForCharts::InitiateCloseTabButton()
 }
 
 
-void TabWidgetForCharts::ContinuousMeasurementModeChanged()
-{
-    PlotTabs[0]->customPlot->ContinuousMeasurementMode = dynamic_cast<QPushButton*>(sender())->isChecked();
-}
-
-
-
 
 
 
@@ -379,6 +371,45 @@ TabWidgetForCharts::~TabWidgetForCharts()
     PlotTabs.clear();
     */
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// Устаревшее
+/*
+void TabWidgetForCharts::ContinuousMeasurementModeChanged()
+{
+    PlotTabs[0]->customPlot->ContinuousMeasurementMode = dynamic_cast<QPushButton*>(sender())->isChecked();
+}
+*/
+
 
 /*
 void TabWidgetForCharts::PerformFourierTransformOfCurrentPlot()

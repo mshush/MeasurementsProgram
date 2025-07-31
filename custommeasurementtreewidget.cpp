@@ -315,7 +315,7 @@ void CustomMeasurementTreeWidget::FillFrequencyRange()
 
 
     FrequencyRange->insertRow(2);
-    FrequencyRange->setItem(2, 0, new QTableWidgetItem("N"));
+    FrequencyRange->setItem(2, 0, new QTableWidgetItem(tr("N")));
     FrequencyRangeNEdit = new QLineEdit("",this);
     FrequencyRange->setCellWidget(2, 1, FrequencyRangeNEdit);
 

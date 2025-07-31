@@ -36,79 +36,44 @@ QT_END_NAMESPACE
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
-
 public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
-    //TestVNA * VNATest;
+    // Переводчик
     QTranslator translator;
 
+    // Измерения и таймер
     MeasDataClass MeasData;
-    MeasurmentsControl *MeasControl;
+    MeasurmentsControl * MeasControl;
+    QTimer * Timer;
 
-    TabWidgetForParameters * TabOfParameters;
-    TabWidgetForTools * TabOfTools;
-    TabWidgetForCharts * ChartTab;
-    WidgetForCustomPlot * CustomPlotWidget;
-    ProcessImitation * Process;
-
-    QComplexVector FullPatternArray;
+    QComplexVector FullPatternArray; // Нужно ли так заморачиваться?
     void FillPatternArrayFromMeasData();
 
 
 
-    QAction * SaveFileAction;
-    QAction * OpenFileAction;
-    QAction * StartMeasureAction;
-    QAction * StopMeasureAction;
-    QAction * MeasureBackground;
-    QAction * MeasureCalibration;
-    QTimer * Timer;
+    // Видимые виджеты
+    TabWidgetForParameters * TabOfParameters;
+    TabWidgetForTools * TabOfTools;
+    TabWidgetForCharts * ChartTab;
 
 
-    void SetThreeDimensionalVector(ThreeDimensionalVector F);
-    void ChangeAngleOfDemonstration();
-    void SaveThreeDimensionalVector();
-    void SetBackground();
-    void SubstractBackground();
-    void SetCalibration ();
-
-    bool BackgroundAddedToMainPlot = false;
-
-    void ShowErrorMessage(QString Description, QString Advice);
-
-
-    void ConnectPlot();
+    // Функции соединения
     void ConnectMenu();
-    void ConnectSetup();
-    void ConnectProcessing();
-    void ConnectTabs();
+    void ConnectMessages();
+    void ConnectDebugMessages();
+    void ConnectLegendAndChartTabs();
 
-    void UpdatePlotData();
-
-    void UploadFile();
-
-    int azim=0;
-    int elev=0;
-
-
-    int CurrentPlotIndex=0;
-    bool ResetPlotNeeded;
+    // Функции из конструктора
+    void FillMainWindow();
+    void FillMenu();
+    void SetUpMeasControlAndTimer();
+    void SetUpGeneralStyle();
+    void SetUpConnections();
 
 
-    QAction* MeasureAction;
-    QAction* MeasureBackgroundAction;
-    QAction* MeasureTargetAction;
-
-
-    QAction* MeasureAzTargetAction;
-    QAction* MeasureResponseAtSingleAnglAction;
-    QAction* MeasureBckgndAtSingleAnglAction;
-    QAction* MeasureCurrentAspectAction;
-    QAction* AbortAction;
-    QAction* PaintPlotsAction;
-
+    // Пункты Меню
     QMenu * MenuFile;
     QMenu * MenuFileWrite;
     QMenu * MenuFileRead;
@@ -119,19 +84,33 @@ public:
     QMenu * MenuCreatePylComp;
     QMenu * MenuLanguage;
 
+    // Всплывающие действия в строке меню
+    QAction * SaveFileAction;
+    QAction * OpenFileAction;
+    QAction * StartMeasureAction;
+    QAction * StopMeasureAction;
+    QAction * MeasureBackground;
+    QAction * MeasureCalibration;
+
+    QAction* MeasureAction;
+    QAction* MeasureBackgroundAction;
+    QAction* MeasureTargetAction;
+
+    QAction* MeasureAzTargetAction;
+    QAction* MeasureResponseAtSingleAnglAction;
+    QAction* MeasureBckgndAtSingleAnglAction;
+    QAction* MeasureCurrentAspectAction;
+    QAction* AbortAction;
+    QAction* PaintPlotsAction;
 
     QAction * SetRussianLanguageAction;
     QAction * SetEnglishLanguageAction;
 
-
-    QVector<double> X1601;
-
-    void FillMenu();
-
-    void SetConnectionMainWinWithMeasCntrl();
-
+    // Переделываю функцию изменения для смены языка
     void changeEvent(QEvent *event) override;
 
+
+    // Вектор типов данных (для простоты)
     QVector <MeasDataClass::MeasDataType> DataTypeVector =
         {
             MeasDataClass::MeasDataType::CalibrationArr,
@@ -145,40 +124,35 @@ public:
             MeasDataClass::MeasDataType::RawTarget
         };
 
+    bool ResetPlotNeeded; // Индикатор, нужно ли обновить график -- как-то избавиться
+
 public slots:
+    // Слоты установки параметров приборов из интерфейса
     void SetAllVNAParamsFromInterface();
     void SetAllOPUParamsFromInterface();
-    void GetPlotFromDat();
+
+    // Вызываются при нажатии на действия из меню
+    void OnMeasureAzTargetActionTriggered();
+    void OnMeasureResponseAtSingleAnglActionTriggered();
+    void OnMeasureBckgndAtSingleAnglActionTriggered();
+    void OnMeasureCurrentAspectActionTriggered();
+    void OnAbortActionTriggered();
+    void OnSaveAsActionTriggered();
 
 
-    void OnMeasureAzTargetActionPressed(); // Переименовать в clicked
-    void OnMeasureResponseAtSingleAnglActionPressed();
-    void OnMeasureBckgndAtSingleAnglActionPressed();
-    void OnMeasureCurrentAspectActionPressed();
-    void OnAbortActionPressed();
-    void OnSaveAsActionPressed();
-
-    void UpdateAzimuthPlot(int iaz, int iel);
-
+    //Слоты смены языка
     void ChangeLanguageToRussian();
     void ChangeLanguageToEnglish();
 
-    void PaintAllPlots();
+    // Рисование графиков
+    void UpdateAzimuthPlot(int iaz, int iel); // Обновляет график от угла
+    void PaintAllPlots();  // Слот перерисовки всех графиков
+    void PaintSomePlot(int TabID, LegendWidget::DataFromLegendRow LegendData);// Функция отрисовки одного графика в соответствии с легендой
+    void UpdatePlots(); // Обновить графики
 
 
 
-    void PaintSomePlot(int TabID, LegendWidget::DataFromLegendRow LegendData);
-
-    //void SendDataToLegend();
-
-
-    void UpdatePlots();
-
-
-    void addRandomError(QVector<double>& data, double mean, double stddev);
-
-    void ConnectLegendAndChartTabs();
-    // Связанные с легендой слоты: возможно лучше перенести.
+    // Связанные с легендой слоты
     void OnReadDataSignalReceived();
     void OnWriteDataSignalReceived();
     void OnAddLineSignalReceived();
@@ -189,15 +163,65 @@ public slots:
     void CopyToMemoryLineSignalReceived();
     void RefreshSignalReceived();
 
-
+    // Вывод сообщения об ошибке
+    void ShowErrorMessage(QString Description, QString Advice);
 
 signals:
     void ErrorOccured(QString ErrorText);
-    //void SendDataToLegend(QVector <double> Freq, QVector <double> Az, QVector <double> El);
-
 private:
     Ui::MainWindow *ui;
 };
 
 #endif // MAINWINDOW_H
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//  Не используемые, устаревшие куски
+/*
+    void SetThreeDimensionalVector(ThreeDimensionalVector F);
+    void ChangeAngleOfDemonstration();
+    void SaveThreeDimensionalVector();
+    void SetBackground();
+    void SubstractBackground();
+    void SetCalibration ();
+    bool BackgroundAddedToMainPlot = false;
+    //void ConnectSetup();
+    //void ConnectProcessing();
+    //void ConnectTabs();
+    //void ConnectPlot();
+
+    void SetConnectionMainWinWithMeasCntrl();
+    void UploadFile();
+
+
+    void UpdatePlotData();
+
+
+    int azim=0;
+    int elev=0;
+
+    int CurrentPlotIndex=0;
+
+    //void GetPlotFromDat();
+
+    //void addRandomError(QVector<double>& data, double mean, double stddev);
+
+*/
+
 

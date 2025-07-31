@@ -15,7 +15,7 @@ TabWidgetForTools::TabWidgetForTools()
     //PatternTab->VerticalControlsLayout->setContentsMargins(QMargins(0,0,0,0));
     //PatternTab->SetRangeVerticalLayout->setContentsMargins(QMargins(0,0,0,0));
     PatternTab->customPlot->xAxis->setLabel("Az, deg");
-    PatternTab->MarkerFrame->setVisible(false);
+    //PatternTab->MarkerFrame->setVisible(false);
     MessagesTab = new QTreeWidget(this);
     LegendTab = new LegendWidget(this);
     ScriptTab = new QWidget(this);

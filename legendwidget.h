@@ -4,9 +4,6 @@
 #include <QObject>
 #include <QWidget>
 #include <QtWidgets>
-//#include <legendrow.h>
-
-
 
 
 
@@ -18,8 +15,9 @@ public:
 
     struct LegendRow
     {
+        LegendRow(QWidget * parent = nullptr);
         QCheckBox * VisibilityBox;
-        QLabel    * ColourIndicatorLabel;
+        QLabel    * ColourLabel;
         QLabel    * TitleLabel;
         QComboBox * DataBox;
         QComboBox * PlaneBox;
@@ -30,6 +28,7 @@ public:
         QComboBox * SmoothBox;
         QComboBox * PercentBox;
         QComboBox * ColourBox;
+        int ChartTabIndex;
     };
 
     struct DataForLegendRow
@@ -44,6 +43,7 @@ public:
         QVector <QString> Smooth;
         QVector <int>     Percent;
         QVector <QString> Colour;
+
     };
 
     struct DataFromLegendRow
@@ -60,7 +60,8 @@ public:
         int Colour      = 0;
     };
 
-    QStringList headers = {
+    QStringList headers =
+    {
         "Title",
         "Data",
         "Plane",
@@ -75,18 +76,25 @@ public:
 
     int SelectedRow = 0;
 
-    QVector<QColor> ColourVector = //Чтобы было больше вариантов, можно добавить функцию из PlotClass генерации цветов
+    QStringList ColourVector = //Чтобы было больше вариантов, можно использовать QColor::colorNames()
     {
-        QColor(Qt::yellow),
-        QColor(Qt::green),
-        QColor(Qt::cyan),
-        QColor(Qt::red),
-        QColor(Qt::magenta),
-        QColor(Qt::blue),
-        QColor(Qt::green),
-        QColor(Qt::white),
+        "Yellow",
+        "Green",
+        "Cyan",
+        "Red",
+        "Magenta",
+        "Blue",
+        "Green",
+        "White"
     };
 
+    QVector <LegendRow> VectorOfRows; //Вектор всех строк таблицы (в строке хранится номер соответствующей графику вкладки)
+
+
+    void InitiateRow();
+
+
+    void RefillRows(int TabIndex);
 
 
 
@@ -117,6 +125,8 @@ public:
     QVector <LegendRow> RowVector;
     QTableWidget * LegendTable;
 
+    int ActiveTab = 0;
+
 public slots:
     void OnReadDataClicked();
     void OnWriteDataClicked();
@@ -130,7 +140,7 @@ public slots:
 
     //void ReceiveMeasurementsData();
 
-    void OnChartTabChanged();
+    void OnChartTabChanged(int TabNumber);
 
 signals:
     void ReadDataSignal();
@@ -143,20 +153,6 @@ signals:
     void CopyToMemoryLineSignal();
     void RefreshSignal();
 };
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 #endif // LEGENDWIDGET_H

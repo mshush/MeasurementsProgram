@@ -1,8 +1,7 @@
 #include "selectionrectclass.h"
 
 SelectionRectClass::SelectionRectClass(QCustomPlot *parent): QCPSelectionRect(parent)
-{
-}
+{}
 
 
 void SelectionRectClass::draw(QCPPainter *painter)

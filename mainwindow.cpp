@@ -11,105 +11,22 @@ MainWindow::MainWindow(QWidget *parent)
     , ui(new Ui::MainWindow)
 {
 
-    //this->setWindowFlags(Qt::Window | Qt::WindowTitleHint | Qt::WindowSystemMenuHint | Qt::WindowCloseButtonHint | Qt::WindowMinMaxButtonsHint);
+    ChangeLanguageToRussian(); // Меняет язык на русский
 
+    SetUpGeneralStyle(); // Устанавливает общее оформление
 
-    ui->setupUi(this);
+    SetUpMeasControlAndTimer(); // Инициирует класс управления измерениями и таймер
 
-    QFont Font("Segoe UI", 12); // Был QFont(Segoe UI,9,-1,5,400,0,0,0,0,0,0,0,0,0,0,1)
-    QApplication::setFont(Font);
+    FillMainWindow(); // Заполняет главное окно виджетами
 
-    /*
-    setStyleSheet("QWidget {"  // Добавить только где надо
-                  "border-style: outset;"
-                  "border-width: 2px;"
-                  "border-color: gray"
-                  "}");
-    */
-
-
-
-
-    HKL hkl = GetKeyboardLayout(0);
-    DWORD langId = LOWORD(hkl);
-    char langCode[10];
-    GetLocaleInfoA(langId, LOCALE_SISO639LANGNAME, langCode, sizeof(langCode));
-
-
-    if (strcmp(langCode, "ru") == 0)
-    {
-        if (translator.load("C:/Users/HP/Documents/MeasurementsProgram/translation/MeasProg_ru.qm"))
-        {
-            qApp->installTranslator(&translator);
-            QCoreApplication::installTranslator(&translator);
-        }
-        else
-        {
-            qDebug() << "Failed to load translation file For Russian";
-        }
-        ui->retranslateUi(this);
-    }
-
-
-    FillMenu();
-    ConnectMenu();
-
-    TabOfTools = new TabWidgetForTools;
-    ChartTab = new TabWidgetForCharts;
-    TabOfParameters = new TabWidgetForParameters;
-
-
-    QLayout * MainLayout = new QVBoxLayout();
-    QSplitter * OutermostHorizontalSplitter = new QSplitter(Qt::Horizontal, this);
-    MainLayout->addWidget(OutermostHorizontalSplitter);
-
-    QSplitter * LeftVerticalSplitter = new QSplitter(Qt::Vertical,this);
-    OutermostHorizontalSplitter->addWidget(LeftVerticalSplitter);
-
-    LeftVerticalSplitter->addWidget(ChartTab);
-    LeftVerticalSplitter->addWidget(TabOfTools);
-
-    ChartTab    ->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-    TabOfTools  ->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-
-
-    OutermostHorizontalSplitter->addWidget(TabOfParameters);
-
-    centralWidget()->setLayout(MainLayout);
-
-
-    MeasControl = new MeasurmentsControl;
-
-    //MeasThread = new QThread;
-    //MeasControl->moveToThread(MeasThread);
-    //MeasThread->start(QThread::TimeCriticalPriority);
-
-
-
-    Timer = new QTimer(this);
-    connect(Timer, &QTimer::timeout, this, &MainWindow::UpdatePlots); // Куда-нибудь в другое место
-
-    ConnectLegendAndChartTabs();
-
-
-    for (int i = 0; i < 1601; i++)  {X1601.push_back(i);}
-
-
-    connect(MeasControl,&MeasurmentsControl::updateGraph,this, &MainWindow::UpdateAzimuthPlot);
-
-
-    //VNATest = new TestVNA();
-
-
-
-    this->setWindowFlags(Qt::Window | Qt::WindowTitleHint | Qt::WindowSystemMenuHint | Qt::WindowCloseButtonHint | Qt::WindowMinMaxButtonsHint);
-    this->setWindowState(Qt::WindowMaximized);
+    SetUpConnections(); // Устанавливает соединения между частями программы
 
 }
 
 
 MainWindow::~MainWindow()
 {
+    Timer->stop();
     delete ui;
 }
 
@@ -126,18 +43,14 @@ void MainWindow::ShowErrorMessage(QString Description, QString Advice)
 }
 
 
-
-
-
 void MainWindow::ConnectMenu()
 {
-    connect(SaveFileAction,&QAction::triggered, this, &MainWindow::OnSaveAsActionPressed); // Что и как должно сохраняться?
-
-    connect(MeasureAzTargetAction,&QAction::triggered, this, &MainWindow::OnMeasureAzTargetActionPressed);
-    connect(MeasureResponseAtSingleAnglAction,&QAction::triggered, this, &MainWindow::OnMeasureResponseAtSingleAnglActionPressed);
-    connect(MeasureBckgndAtSingleAnglAction,&QAction::triggered, this, &MainWindow::OnMeasureBckgndAtSingleAnglActionPressed);
-    connect(MeasureCurrentAspectAction,&QAction::triggered, this, &MainWindow::OnMeasureCurrentAspectActionPressed);
-    connect(AbortAction,&QAction::triggered, this, &MainWindow::OnAbortActionPressed);
+    connect(SaveFileAction,&QAction::triggered, this, &MainWindow::OnSaveAsActionTriggered); // Что и как должно сохраняться?
+    connect(MeasureAzTargetAction,&QAction::triggered, this, &MainWindow::OnMeasureAzTargetActionTriggered);
+    connect(MeasureResponseAtSingleAnglAction,&QAction::triggered, this, &MainWindow::OnMeasureResponseAtSingleAnglActionTriggered);
+    connect(MeasureBckgndAtSingleAnglAction,&QAction::triggered, this, &MainWindow::OnMeasureBckgndAtSingleAnglActionTriggered);
+    connect(MeasureCurrentAspectAction,&QAction::triggered, this, &MainWindow::OnMeasureCurrentAspectActionTriggered);
+    connect(AbortAction,&QAction::triggered, this, &MainWindow::OnAbortActionTriggered);
 
     connect(this->PaintPlotsAction,&QAction::triggered, this, &MainWindow::PaintAllPlots);
 
@@ -145,18 +58,6 @@ void MainWindow::ConnectMenu()
     connect(SetRussianLanguageAction,&QAction::triggered, this, &MainWindow::ChangeLanguageToRussian);
     connect(SetEnglishLanguageAction,&QAction::triggered, this, &MainWindow::ChangeLanguageToEnglish);
 }
-
-
-
-
-void MainWindow::GetPlotFromDat() // Куда его строить?
-{
-    //WidgetForCustomPlot * NewPlotWidget = new WidgetForCustomPlot;
-    //this->ChartTab->addTab(NewPlotWidget,"Загружено");
-    //NewPlotWidget->customPlot=;
-}
-
-
 
 void MainWindow::FillMenu()
 {
@@ -292,8 +193,6 @@ void MainWindow::FillMenu()
     menuBar()->addMenu(MenuLanguage);
 }
 
-
-
 void MainWindow::SetAllVNAParamsFromInterface()
 {
 
@@ -322,10 +221,6 @@ void MainWindow::SetAllVNAParamsFromInterface()
         std::cerr << "An UNKNOWN error occurred in SetAllVNAParamsNoAction: " << std::endl;
     }
 }
-
-
-
-
 
 void MainWindow::SetAllOPUParamsFromInterface()
 {
@@ -364,10 +259,6 @@ void MainWindow::SetAllOPUParamsFromInterface()
 
 }
 
-
-
-
-
 void MainWindow::ChangeLanguageToRussian()
 {
     if (translator.load("C:/Users/HP/Documents/MeasurementsProgram/translation/MeasProg_ru"))
@@ -381,18 +272,26 @@ void MainWindow::ChangeLanguageToRussian()
     }
 }
 
-
-
 void MainWindow::ChangeLanguageToEnglish()
 {
     qApp->removeTranslator(&translator);
     ui->retranslateUi(this);
 }
 
+void MainWindow::OnSaveAsActionTriggered()
+{
 
+    if (ChartTab->currentIndex() < ChartTab->PlotTabs.size())
+    {
+        ChartTab->PlotTabs[ChartTab->currentIndex()]->customPlot->SaveAs();
+    }
+    else
+    {
+        QMessageBox::warning(this, "Сохранение графика недоступно для вкладки предварительного просмотра", "Выберите вкладку с графиком");
+    }
+}
 
-
-void MainWindow::OnMeasureAzTargetActionPressed()
+void MainWindow::OnMeasureAzTargetActionTriggered()
 {
     SetAllOPUParamsFromInterface();
     SetAllVNAParamsFromInterface();
@@ -416,7 +315,7 @@ void MainWindow::OnMeasureAzTargetActionPressed()
     //SendDataToLegend();
 }
 
-void MainWindow::OnMeasureResponseAtSingleAnglActionPressed()
+void MainWindow::OnMeasureResponseAtSingleAnglActionTriggered()
 {
     SetAllOPUParamsFromInterface();
     SetAllVNAParamsFromInterface();
@@ -436,7 +335,7 @@ void MainWindow::OnMeasureResponseAtSingleAnglActionPressed()
     PaintAllPlots();
 }
 
-void MainWindow::OnMeasureBckgndAtSingleAnglActionPressed()
+void MainWindow::OnMeasureBckgndAtSingleAnglActionTriggered()
 {
     this->SetAllOPUParamsFromInterface();
     this->SetAllVNAParamsFromInterface();
@@ -456,7 +355,8 @@ void MainWindow::OnMeasureBckgndAtSingleAnglActionPressed()
     PaintAllPlots();
 
 }
-void MainWindow::OnMeasureCurrentAspectActionPressed()
+
+void MainWindow::OnMeasureCurrentAspectActionTriggered()
 {
     this->SetAllOPUParamsFromInterface();
     this->SetAllVNAParamsFromInterface();
@@ -475,7 +375,7 @@ void MainWindow::OnMeasureCurrentAspectActionPressed()
     PaintAllPlots();
 }
 
-void MainWindow::OnAbortActionPressed()
+void MainWindow::OnAbortActionTriggered()
 {
     try
     {
@@ -560,29 +460,24 @@ void MainWindow::PaintAllPlots()
     */
 }
 
-
-
-
-
 void MainWindow::UpdatePlots()
 {
-
-    QVector<double> XVect;
-    for (int i = 0; i < 2048; i++)  {XVect.push_back(i);}
-
     QDoubleVector CurrentAspectVector(MeasData.GetNFreqPoints());
     MeasData.GetAmplVectordB(MeasDataClass::MeasDataType::CurrentAspect, CurrentAspectVector,0,0);
     ChartTab->PlotTabs[6]->customPlot->graph(0)->setData(MeasData.GetFreqVectorGHz(), CurrentAspectVector);
     ChartTab->PlotTabs[6]->customPlot->graph(0)->setPen(QPen(Qt::blue));
 
-    QDoubleVector CurrentProfRangeVector(2048);
+
+    QDoubleVector DistVect = MeasData.GetDistVector();
+
+    QDoubleVector CurrentProfRangeVector(DistVect.size());
     MeasData.GetAmplVectordB(MeasDataClass::MeasDataType::CurrentProfRange, CurrentProfRangeVector,0,0);
-    ChartTab->PlotTabs[7]->customPlot->graph(0)->setData(XVect, CurrentProfRangeVector);
+    ChartTab->PlotTabs[7]->customPlot->graph(0)->setData(DistVect, CurrentProfRangeVector);
     ChartTab->PlotTabs[7]->customPlot->graph(0)->setPen(QPen(Qt::red));
 
-    QDoubleVector CurrentGatedProfRangeVector(2048);
+    QDoubleVector CurrentGatedProfRangeVector(DistVect.size());
     MeasData.GetAmplVectordB(MeasDataClass::MeasDataType::CurrentGatedProfRange, CurrentGatedProfRangeVector,0,0);
-    ChartTab->PlotTabs[7]->customPlot->graph(1)->setData(XVect, CurrentGatedProfRangeVector);
+    ChartTab->PlotTabs[7]->customPlot->graph(1)->setData(DistVect, CurrentGatedProfRangeVector);
     ChartTab->PlotTabs[7]->customPlot->graph(1)->setPen(QPen(Qt::yellow));
 
 
@@ -596,7 +491,6 @@ void MainWindow::UpdatePlots()
         ResetPlotNeeded = false;
     }
 }
-
 
 void MainWindow::UpdateAzimuthPlot(int iaz, int iel)
 {
@@ -635,17 +529,11 @@ void MainWindow::UpdateAzimuthPlot(int iaz, int iel)
     */
 }
 
-
-
-
-
-
-
 void MainWindow::PaintSomePlot(int TabID, LegendWidget::DataFromLegendRow LD)
 {
     // Добавить рассмотрение случая Gated/ Не Gated????
     MeasDataClass::MeasDataType DType = DataTypeVector[TabID];
-    WidgetForCustomPlot::ComplexInfo CompInfo = ChartTab->PlotTabs[TabID]->CompInfo;
+    PlotClass::ComplexInfo CompInfo = ChartTab->PlotTabs[TabID]->customPlot->ComplexDisplayMode;
 
     QString Title   = LD.Title;
     //int Data        = LD.Data;    // Ничего не делает
@@ -692,7 +580,7 @@ void MainWindow::PaintSomePlot(int TabID, LegendWidget::DataFromLegendRow LD)
             }
             break;
         }
-        case 3: // Метры как отдельный случай рассмотрим пока (Тоже лучше сделать через enum)
+        case 3: // Метры как отдельный случай рассмотрим пока (Тоже лучше сделать через enum?)
         {
             XData = MeasData.GetDistVector();
             int DistPoints = XData.size();
@@ -710,7 +598,7 @@ void MainWindow::PaintSomePlot(int TabID, LegendWidget::DataFromLegendRow LD)
 
     switch (CompInfo)
     {
-        case WidgetForCustomPlot::ComplexInfo::Amplitude:
+        case PlotClass::ComplexInfo::Amplitude:
         {
             for (int i=0; i<YData.size(); i++)
             {
@@ -718,7 +606,7 @@ void MainWindow::PaintSomePlot(int TabID, LegendWidget::DataFromLegendRow LD)
             }
             break;
         }
-        case WidgetForCustomPlot::ComplexInfo::Phase:
+        case PlotClass::ComplexInfo::Phase:
         {
             for (int i=0; i<YData.size(); i++)
             {
@@ -726,7 +614,7 @@ void MainWindow::PaintSomePlot(int TabID, LegendWidget::DataFromLegendRow LD)
             }
             break;
         }
-        case WidgetForCustomPlot::ComplexInfo::Real_Part:
+        case PlotClass::ComplexInfo::Real_Part:
         {
             for (int i=0; i<YData.size(); i++)
             {
@@ -734,7 +622,7 @@ void MainWindow::PaintSomePlot(int TabID, LegendWidget::DataFromLegendRow LD)
             }
             break;
         }
-        case WidgetForCustomPlot::ComplexInfo::Imaginary_Part:
+        case PlotClass::ComplexInfo::Imaginary_Part:
         {
             for (int i=0; i<YData.size(); i++)
             {
@@ -752,49 +640,7 @@ void MainWindow::PaintSomePlot(int TabID, LegendWidget::DataFromLegendRow LD)
 
 }
 
-
-
-
-
-
-
-
-
-
-
-void MainWindow::addRandomError(QDoubleVector& data, double mean, double sigma)
-{
-
-    std::random_device rd;
-    std::mt19937 eng(rd());
-    std::normal_distribution<> distr(mean, sigma);
-    for (int i = 0; i < data.size(); ++i) {
-        double error = distr(eng);
-        data[i] += i + error;
-    }
-}
-
-
-
-
-
-
-void MainWindow::OnSaveAsActionPressed()
-{
-
-    if (ChartTab->currentIndex() < ChartTab->PlotTabs.size())
-    {
-        ChartTab->PlotTabs[ChartTab->currentIndex()]->customPlot->SaveAs();
-    }
-    else
-    {
-        QMessageBox::warning(this, "Сохранение графика недоступно для вкладки предварительного просмотра", "Выберите вкладку с графиком");
-    }
-}
-
-
-
-void MainWindow::changeEvent(QEvent *event)
+void MainWindow::changeEvent(QEvent *event) // Именно здесь меняется язык!!!
 {
 
     if (event->type() == QEvent::LanguageChange)
@@ -814,17 +660,9 @@ void MainWindow::changeEvent(QEvent *event)
     QWidget::changeEvent(event);
 }
 
-
-
-
-
-
-
-
-
-
 void MainWindow::ConnectLegendAndChartTabs()
 {
+    // Сигналы от легенды к главному окну MainWindow
     connect(TabOfTools->LegendTab, &LegendWidget::ReadDataSignal        ,this, &MainWindow::OnReadDataSignalReceived);
     connect(TabOfTools->LegendTab, &LegendWidget::WriteDataSignal       ,this, &MainWindow::OnWriteDataSignalReceived);
     connect(TabOfTools->LegendTab, &LegendWidget::AddLineSignal         ,this, &MainWindow::OnAddLineSignalReceived);
@@ -835,11 +673,10 @@ void MainWindow::ConnectLegendAndChartTabs()
     connect(TabOfTools->LegendTab, &LegendWidget::CopyToMemoryLineSignal,this, &MainWindow::CopyToMemoryLineSignalReceived);
     connect(TabOfTools->LegendTab, &LegendWidget::RefreshSignal         ,this, &MainWindow::RefreshSignalReceived);
 
+    // Сигналы от вкладок графиков к легенде
+    connect(ChartTab, &TabWidgetForCharts::SendCurrentPlotIndexToLegendSignal,TabOfTools->LegendTab, &LegendWidget::OnChartTabChanged);
 
 }
-
-
-
 
 void MainWindow::FillPatternArrayFromMeasData()
 {
@@ -860,26 +697,82 @@ void MainWindow::FillPatternArrayFromMeasData()
     }
 }
 
+void MainWindow::FillMainWindow()
+{
+    FillMenu(); // Заполняет меню в верхней строке окна программы
+
+    TabOfTools = new TabWidgetForTools;
+    ChartTab = new TabWidgetForCharts;
+    TabOfParameters = new TabWidgetForParameters;
+
+    QLayout * MainLayout = new QVBoxLayout();
+    QSplitter * OutermostHorizontalSplitter = new QSplitter(Qt::Horizontal, this);
+    MainLayout->addWidget(OutermostHorizontalSplitter);
+
+    QSplitter * LeftVerticalSplitter = new QSplitter(Qt::Vertical,this);
+    OutermostHorizontalSplitter->addWidget(LeftVerticalSplitter);
+
+    LeftVerticalSplitter->addWidget(ChartTab);
+    LeftVerticalSplitter->addWidget(TabOfTools);
+
+    ChartTab    ->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    TabOfTools  ->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
 
+    OutermostHorizontalSplitter->addWidget(TabOfParameters);
 
+    centralWidget()->setLayout(MainLayout);
+}
 
+void MainWindow::SetUpMeasControlAndTimer()
+{
+    MeasControl = new MeasurmentsControl;
+    connect(MeasControl,&MeasurmentsControl::updateGraph,this, &MainWindow::UpdateAzimuthPlot);
 
+    Timer = new QTimer(this);
+    connect(Timer, &QTimer::timeout, this, &MainWindow::UpdatePlots);
 
+    //MeasThread = new QThread;
+    //MeasControl->moveToThread(MeasThread);
+    //MeasThread->start(QThread::TimeCriticalPriority);
+}
 
+void MainWindow::SetUpGeneralStyle()
+{
+    ui->setupUi(this);
 
+    QFont Font("Arial", 12); // Был QFont(Segoe UI,9,-1,5,400,0,0,0,0,0,0,0,0,0,0,1)
+    QApplication::setFont(Font);
 
+    setWindowFlags(Qt::Window | Qt::WindowTitleHint | Qt::WindowSystemMenuHint | Qt::WindowCloseButtonHint | Qt::WindowMinMaxButtonsHint);
+    setWindowState(Qt::WindowMaximized);
 
+    /*
+    setStyleSheet("QWidget {"  // Добавить только где надо
+                  "border-style: outset;"
+                  "border-width: 2px;"
+                  "border-color: gray"
+                  "}");
+    */
+}
 
+void MainWindow::SetUpConnections()
+{
+    ConnectMenu();
+    ConnectLegendAndChartTabs();
+    ConnectMessages();
+    ConnectDebugMessages();
+}
 
+void MainWindow::ConnectMessages()
+{
 
+}
 
+void MainWindow::ConnectDebugMessages()
+{
 
-
-
-
-
-
+}
 
 void MainWindow::OnReadDataSignalReceived()
 {
@@ -983,29 +876,35 @@ void MainWindow::RefreshSignalReceived()
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 // Дальше устаревшие функции
+/*
+void MainWindow::GetPlotFromDat() // Куда его строить?
+{
+    //WidgetForCustomPlot * NewPlotWidget = new WidgetForCustomPlot;
+    //this->ChartTab->addTab(NewPlotWidget,"Загружено");
+    //NewPlotWidget->customPlot=;
+}
+*/
+/*
+void MainWindow::addRandomError(QDoubleVector& data, double mean, double sigma)
+{
 
-
-
+    std::random_device rd;
+    std::mt19937 eng(rd());
+    std::normal_distribution<> distr(mean, sigma);
+    for (int i = 0; i < data.size(); ++i) {
+        double error = distr(eng);
+        data[i] += i + error;
+    }
+}
+*/
+/*
+    HKL hkl = GetKeyboardLayout(0);// Перевод сменой языка раскладки
+    DWORD langId = LOWORD(hkl);
+    char langCode[10];
+    GetLocaleInfoA(langId, LOCALE_SISO639LANGNAME, langCode, sizeof(langCode));
+    if (strcmp(langCode, "ru") == 0)
+*/
 /*
 void MainWindow::SetCalibration()
 {
@@ -1085,11 +984,6 @@ void MainWindow::SetCalibration()
     """
 }
 */
-
-
-
-
-
 /*
 void MainWindow::SaveThreeDimensionalVector()
 {
@@ -1116,17 +1010,6 @@ void MainWindow::SaveThreeDimensionalVector()
     File.close();
  }
 */
-
-
-
-
-
-
-
-
-
-
-
 /*
 void MainWindow::UpdateSweepGraphSlot(QDoubleVector SweepArrayAmpl) //От частоты
 {
@@ -1170,14 +1053,6 @@ void MainWindow::UpdateGatedProfileRangeSlot(QDoubleVector SweepArrayAmpl)// О�
 
 
 
-
-
-
-
-
-
-
-
 void MainWindow::UpdatePatternSlot(QDoubleVector DiagAnglArrayAmpl) // От угла
 {
     //DoubleVector XVector = ChartTab->FrequencyTab->customPlot->KeyVector;
@@ -1192,9 +1067,6 @@ void MainWindow::UpdatePatternSlot(QDoubleVector DiagAnglArrayAmpl) // От уг
     void ResetPlot();
 }
 */
-
-
-
 /*
 void MainWindow::SetThreeDimensionalVector(ThreeDimensionalVector F)
 {
@@ -1233,30 +1105,6 @@ void MainWindow::SetThreeDimensionalVector(ThreeDimensionalVector F)
 
 }
 */
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 /*
  void MainWindow::SetBackground()
  {
@@ -1350,27 +1198,6 @@ void MainWindow::SubstractBackground()
 
 }
 */
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 /*
 void MainWindow::ConnectObjects()
 {
@@ -1441,24 +1268,6 @@ void MainWindow::ConnectObjects()
 
 }
 */
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 /*
 void MainWindow::HandleReceivedMeasuredFreqVector(QVector <double> ReceivedVector)
 {
@@ -1507,8 +1316,6 @@ void MainWindow::HandleReceivedMeasuredFreqVector(QVector <double> ReceivedVecto
 
 }
 */
-
-
 /*
 void MainWindow::showEvent(QShowEvent *event)
 {
@@ -1516,10 +1323,6 @@ void MainWindow::showEvent(QShowEvent *event)
     this->setWindowState(Qt::WindowMaximized);
 }
 */
-
-
-
-
 /*
 // Нужно переделать!!!
 void MainWindow::ChangeAngleOfDemonstration()
@@ -1562,5 +1365,3 @@ void MainWindow::ChangeAngleOfDemonstration()
     }
 }
 */
-
-

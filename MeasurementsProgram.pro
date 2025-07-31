@@ -8,7 +8,6 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets printsupport
 CONFIG += c++17
 
 SOURCES += \
-    legendrow.cpp \
     legendwidget.cpp \
     measurmentscontrol.cpp \
     #errorhandler.cpp \
@@ -17,11 +16,8 @@ SOURCES += \
     customprocessingtreewidget.cpp \
     main.cpp \
     mainwindow.cpp \
-    measurementsparameterswidget.cpp \
     plotclass.cpp \
-    processimitation.cpp \
     #qcustomplot.cpp \
-    resultparameterswidget.cpp \
     selectionrectclass.cpp \
     tabwidgetforcharts.cpp \
     tabwidgetforparameters.cpp \
@@ -32,18 +28,14 @@ SOURCES += \
     widgetforcustomplot.cpp
 
 HEADERS += \
-    legendrow.h \
     legendwidget.h \
     measurmentscontrol.h \
     printpreview.h \
     custommeasurementtreewidget.h \
     customprocessingtreewidget.h \
     mainwindow.h \
-    measurementsparameterswidget.h \
     plotclass.h \
-    processimitation.h \
     #qcustomplot.h \
-    resultparameterswidget.h \
     selectionrectclass.h \
     tabwidgetforcharts.h \
     tabwidgetforparameters.h \

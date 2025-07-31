@@ -22,9 +22,61 @@ public:
     PlotClass(QWidget *parent = nullptr);
     ~PlotClass();
 
+    //Функции из конструктора:
+    void SetUpGeneralStyle();
+    void SetUpItems();
+    void SetUpCursorPositionText();
+    void SetUpConnections();
+
+    // Функции из функций из конструктора
+    void SetUpMouseMoveMarker();
+    void SetUpPolarAxes();
+    void SetUpDescartesAxes();
+
+
+
+
+
+    enum class ComplexInfo // Перечисление видов отображения комплексных чисел (по оси Y)
+    {
+        Amplitude,
+        Phase,
+        Real_Part,
+        Imaginary_Part
+    };
+
+    ComplexInfo ComplexDisplayMode = ComplexInfo::Amplitude; //Режим отображения комплексных чисел
+
+    bool PolarFormatInUse = false; // Булевая переменная для обозначения, используется ли полярный формат
+
+    SelectionRectClass * SelectionRectangle; // Прямоугольник выбора
+
+
+    QCPItemTracer * MouseMoveMarker; // Маркер прицела
+    QCPItemText * MouseMoveLabel; // Подпись к маркеру прицела
+
+    // Для полярного графика:
+    class CustomRadialAxis : public QCPPolarAxisRadial
+    {
+    public:
+        CustomRadialAxis(QCPPolarAxisAngular *parent);
+    protected:
+        void draw(QCPPainter *painter) override;
+    };
+
+
+
+    // Оси полярного графика
+    QCPPolarAxisAngular * AngularAxis;
+    //QCPPolarAxisRadial * RadialAxis;
+    CustomRadialAxis * RadialAxis;
+    // Возможно понадобится массив графиков
+
+    QCPAxisRect * AxisRectangle; // Прямоугольник с осями сохраняю сюда пока работа идёт с полярным графиком
+
     QVector <double> KeyVector;
-    QCPItemTracer * MouseMoveMarker;
-    QCPItemText * MouseMoveLabel;
+
+
     bool markeraddbuttonactive = false;
     bool markerdeletebuttonactive = false;
     int iter = 0;
@@ -34,31 +86,26 @@ public:
     std::list <QCPItemText*> AddedMarkerLabelsList;     //Переименовать
 
     int SelectedGraph = 0;
-    bool ContinuousMeasurementMode = false;
 
-    SelectionRectClass * SelectionRectangle;
-
-    QTimer * Timer;
 
     QCPItemText * PlotLabel;
 
     int CurrentMarkerIndex = 0;
 
-    QColor GenerateColor(int n) // Чтобы графики были разных цветов, но не слишком тёмными
+    QColor GenerateColor(int n) // Чтобы графики были разных цветов, но не слишком тёмными.
     {
-        int R = 0;//255;//100 + (n * 222) % 156;
-        int G = 255;//100 + (n * 553) % 156;
-        int B = 0;//255;//100 + (n * 819) % 156;
-
+        int R = 100 + (n * 222) % 156;
+        int G = 100 + (n * 553) % 156;
+        int B = 100 + (n * 819) % 156;
         return QColor(R,G,B);
     }
 
     QVector <QCPGraph *> GraphVector;
+
     void AddEmptyGraphToPlot();
 
-    QCPPolarAxisAngular * AngularAxis;
-    QCPPolarAxisRadial * RadialAxis;
-    QCPPolarGraph * PolarGraph;
+    QString XAxisLabel = tr("X-Axis, x-units");
+    QString YAxisLabel = tr("Y-Axis, y-units");
 
 
 
@@ -74,13 +121,9 @@ public slots:
     void CopyPlot();
     void SaveData(); // Устар
     double SubstractMarkers(QCPItemTracer * Marker1, QCPItemTracer * Marker2);
-    //void ImportData();
-    //void FourierTransform(); //Перенести в MainWindow?
-    //QVector <std::complex<double>> FourierTransformVector(QVector <std::complex<double>> f);
-    //void InverseFourierTransform();
+
     void AddNewMarker(double Key, int Style, QColor Colour, int GraphNumber = 0); // Возможно стоит добавить value, если маркер откреплён
 
-    void ContinuousMeasurementsModeChanged(bool ModeStatus);
 
     void ChangeSelectedGraph(int GraphId);
 
@@ -96,10 +139,23 @@ public slots:
     void ToNextMax(); // Переместить маркер на следующий максимум справа от текущего положения
     void ToPrevMax();
 
-    //void OnSelectionChangedSlot(bool selected, QCPItemText * NewMarkerLabel, QCPItemTracer * NewMarker);
 
     void ChangeYAxisMax (QString  MaxValue);
     void ChangeYAxisSpan(QString SpanValue);
+
+
+    void ChangeToPolarFormat(); // Переводит график в полярный формат
+    void ChangeToDescartesFormat(); // Переводит график в декартовый формат
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -116,7 +172,32 @@ signals:
     void MarkerSelectedSignal(int Index);
     void MarkerUnSelectedSignal(int Index);
     void GraphClickedSignal(int Index);
-    //void selectionChangedByUser() override; Так не работает
+
+
 };
 
 #endif // PLOTCLASS_H
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//void ContinuousMeasurementsModeChanged(bool ModeStatus);
+//void ImportData();
+//void FourierTransform(); //Перенести в MainWindow?
+//QVector <std::complex<double>> FourierTransformVector(QVector <std::complex<double>> f);
+//void InverseFourierTransform();
+//void OnSelectionChangedSlot(bool selected, QCPItemText * NewMarkerLabel, QCPItemTracer * NewMarker);
+//void selectionChangedByUser() override; Так не работает
+//bool ContinuousMeasurementMode = false;
+

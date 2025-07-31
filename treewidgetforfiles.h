@@ -16,13 +16,12 @@ class TreeWidgetForFiles : public QWidget
     Q_OBJECT
 public:
     TreeWidgetForFiles(QWidget *parent = nullptr);
-    //~TreeWidgetForFiles();
+
     QFileSystemModel * model;
 
     QPushButton * MoveRootToParentFolderButton;
     QLineEdit * RootPathEdit;
     QPushButton * ChooseRootButton;
-    //QPushButton * SaveButton;
     QPushButton * SaveCopyButton;
 
 
@@ -35,13 +34,29 @@ public slots:
     void OpenOnClick(const QModelIndex &index);
     void MoveRootToParentFolder();
     void ChangeRootDirectoryManually();
-    //void ChangeRootEditBack();
 
 signals:
     void ErrorOccured(QString ErrorText); // Почему вызывает ошибку?
 
+};
 
-    /*
+#endif // TREEWIDGETFORFILES_H
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*
     QTreeView * FileTree;
 
     void AddItems(const QDir &CurrentDirectory, QTreeWidgetItem *parent, int CurrentDepth);
@@ -79,8 +94,3 @@ public:
 signals:
     void FileWasChosenSignal(int Mode, QString FilePath);
 */
-
-
-};
-
-#endif // TREEWIDGETFORFILES_H

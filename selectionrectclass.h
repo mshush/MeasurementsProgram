@@ -5,7 +5,7 @@
 #include <QObject>
 #include <QtGui/QPainter>
 
-class SelectionRectClass : public QCPSelectionRect
+class SelectionRectClass : public QCPSelectionRect // Для компактности лучше перенести в PlotClass
 {
     Q_OBJECT
 public:
