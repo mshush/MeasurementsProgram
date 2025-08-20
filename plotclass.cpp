@@ -92,7 +92,6 @@ void PlotClass::SetUpPolarAxes()
     AngularAxis->removeRadialAxis(AngularAxis->radialAxis()); //Убираем радиальную ось по умолчанию и создаём свою (иначе она будет отрисовываться и мешать)
     RadialAxis = new CustomRadialAxis(AngularAxis);
     AngularAxis->addRadialAxis(RadialAxis);
-    qDebug()<<AngularAxis->radialAxisCount();
 
     // Настраиваем угловую ось
     AngularAxis->grid()->setAngularSubGridPen(QPen(Qt::white));
@@ -145,7 +144,7 @@ void PlotClass::SetUpPolarAxes()
     RadialAxis->setLabelFont(QFont("Arial", 12));
     AngularAxis->setVisible(true);
     RadialAxis->setVisible(true);
-    qDebug()<< "Label Ang" << AngularAxis->label();
+    //qDebug()<< "Label Ang" << AngularAxis->label();
 
 
     //setBackground(QBrush(Qt::white));
@@ -169,7 +168,9 @@ void PlotClass::SetUpDescartesAxes()
     AxisRectangle = axisRect();
 
     // Ось x
+    xAxis->grid()->setSubGridPen(QPen(Qt::white));
     xAxis->setBasePen(QPen(Qt::white));
+    //xAxis->grid()->setPen(QPen(Qt::white)); -- делает сплошной линией
     xAxis->setTickPen(QPen(Qt::white,2));
     xAxis->setLabelColor(Qt::white);
     xAxis->setTickLabelColor(Qt::white);
@@ -312,7 +313,7 @@ void PlotClass::ChangeToPolarFormat()
     AngularAxis->setRange(xAxis->range());
     RadialAxis->setRange(yAxis->range());
 
-    qDebug()<<xAxis->range()<<"=x=a="<<AngularAxis->range();
+    //qDebug()<<xAxis->range()<<"=x=a="<<AngularAxis->range();
 
 
     int NumberOfGraphs = graphCount();
@@ -330,7 +331,7 @@ void PlotClass::ChangeToPolarFormat()
     AxisRectangle->setVisible(false);
     AngularAxis->setVisible(true);
 
-    qDebug()<< "TICKLABELMODE===" <<AngularAxis->tickLabelMode();
+    //qDebug()<< "TICKLABELMODE===" <<AngularAxis->tickLabelMode();
     replot();
 }
 
@@ -898,7 +899,7 @@ void PlotClass::loadDat(QString FilePath) //Добавить данные пол
             double x;
             double y;
             QIn >> x >> y;
-            qDebug()<<"x,y="<<x<<y;
+            //qDebug()<<"x,y="<<x<<y;
             LoadedXVector.append(x);
             LoadedYVector.append(y);
         }
@@ -912,7 +913,7 @@ void PlotClass::loadDat(QString FilePath) //Добавить данные пол
 
         QIn >> NumberOfMarkersInGraph;
 
-        qDebug()<<NumberOfMarkersInGraph;
+        //qDebug()<<NumberOfMarkersInGraph;
         this->AddedMarkersList.clear();
 
         for (const auto& marker : this->AddedMarkersList)
@@ -925,7 +926,7 @@ void PlotClass::loadDat(QString FilePath) //Добавить данные пол
             QIn >> MValue;
             QIn >> MStyle;
             QIn >> MColour;
-            qDebug()<<MColour;
+            //qDebug()<<MColour;
 
             LoadedPlot->AddNewMarker( MKey, MStyle, MColour, i); //
         }
@@ -984,7 +985,7 @@ void PlotClass::saveCsv(QString FilePath) // ПРОВЕРИТЬ!!! Что-то �
     QFile File(FilePath);
     if (!File.open(QIODevice::WriteOnly | QIODevice::Text))
     {
-        qDebug()<< "Не получилось прочитать";  // Ошибки в отдельную вкладку
+        //qDebug()<< "Не получилось прочитать";  // Ошибки в отдельную вкладку
         return;
     }
 
@@ -1012,7 +1013,7 @@ void PlotClass::saveCsv(QString FilePath) // ПРОВЕРИТЬ!!! Что-то �
             double x;
             double y;
             QIn >> x >> y;
-            qDebug()<<"x,y="<<x<<y;
+            //qDebug()<<"x,y="<<x<<y;
             LoadedXVector.append(x);
             LoadedYVector.append(y);
         }
@@ -1026,7 +1027,7 @@ void PlotClass::saveCsv(QString FilePath) // ПРОВЕРИТЬ!!! Что-то �
 
         QIn >> NumberOfMarkersInGraph;
 
-        qDebug()<<NumberOfMarkersInGraph;
+        //qDebug()<<NumberOfMarkersInGraph;
         this->AddedMarkersList.clear();
 
         for (const auto& marker : this->AddedMarkersList)
@@ -1039,7 +1040,7 @@ void PlotClass::saveCsv(QString FilePath) // ПРОВЕРИТЬ!!! Что-то �
             QIn >> MValue;
             QIn >> MStyle;
             QIn >> MColour;
-            qDebug()<<MColour;
+            //qDebug()<<MColour;
 
             LoadedPlot->AddNewMarker( MKey, MStyle, MColour, i); //
         }
@@ -1083,9 +1084,96 @@ void PlotClass::AddEmptyGraphToPlot()
 }
 
 
-void PlotClass::SendPlotImageForPreview()
+QPixmap PlotClass::PixmapForPreview(int widthparam, int heightparam, double scaleparam)    // Здесь меняем цвета, выдаём, меняем обратно
 {
+    // Меняем для печати
+    //Фон
+    setBackground(QBrush(Qt::white));
+    // Декартова сетка
+    xAxis->setBasePen(QPen(Qt::black));
+    yAxis->setBasePen(QPen(Qt::black));
+    xAxis->setTickPen(QPen(Qt::black));
+    yAxis->setTickPen(QPen(Qt::black));
+    xAxis->setLabelColor(Qt::black);
+    yAxis->setLabelColor(Qt::black);
+    xAxis->setTickLabelColor(Qt::black);
+    yAxis->setTickLabelColor(Qt::black);
 
+    // Полярная сетка
+    AngularAxis->grid()->setAngularSubGridPen(QPen(Qt::white));
+    AngularAxis->grid()->setRadialSubGridPen(QPen(Qt::white));
+    AngularAxis->setTickPen(QPen(Qt::white, 2));
+    AngularAxis->setLabelColor(Qt::white);
+    AngularAxis->setBasePen(QPen(Qt::white, 2));
+    AngularAxis->setSubTickPen(QPen(Qt::white));
+    AngularAxis->setTickLabelColor(Qt::black);
+
+    RadialAxis->setTickPen(QPen(Qt::white, 2));
+    RadialAxis->setSubTickPen(QPen(Qt::white));
+    RadialAxis->setLabelColor(Qt::white);
+    RadialAxis->setBasePen(QPen(Qt::white, 2));
+    RadialAxis->setTickLabelColor(Qt::black);
+
+    widthparam  = widthparam  *4;
+    heightparam = heightparam *4;
+    qDebug()<< widthparam << heightparam;
+    // Меняем размер:
+    QSize SizeBefore = size();
+    resize(widthparam, heightparam);
+    /*
+    // Меняем размер шрифта
+     // Можно добавить где-нибудь настройку
+    int fontsize = 25;
+    QFont axisFont = xAxis->labelFont();
+    QFont TempFont = axisFont;
+    TempFont.setPointSize(fontsize);
+    //xAxis->setLabelFont(TempFont);
+    //yAxis->setLabelFont(TempFont);
+    xAxis->setLabelPadding(1);
+    yAxis->setLabelPadding(1);
+    */
+    xAxis->antialiased();
+    yAxis->antialiased();
+
+    //Выдаём изображения
+    QPixmap PixMap = toPixmap(widthparam, heightparam, scaleparam);
+
+    // Меняем всё обратно
+    // Фон
+    setBackground(QBrush(QBrush(Qt::black)));
+    // Декартова сетка
+    xAxis->grid()->setSubGridPen(QPen(Qt::white));
+    xAxis->setBasePen(QPen(Qt::white));
+    yAxis->setBasePen(QPen(Qt::white));
+    xAxis->setTickPen(QPen(Qt::white));
+    yAxis->setTickPen(QPen(Qt::white));
+    xAxis->setLabelColor(Qt::white);
+    yAxis->setLabelColor(Qt::white);
+    xAxis->setTickLabelColor(Qt::white);
+    yAxis->setTickLabelColor(Qt::white);
+
+    // Полярная сетка
+    AngularAxis->grid()->setAngularSubGridPen(QPen(Qt::black));
+    AngularAxis->grid()->setRadialSubGridPen(QPen(Qt::black));
+    AngularAxis->setTickPen(QPen(Qt::black, 2));
+    AngularAxis->setLabelColor(Qt::black);
+    AngularAxis->setBasePen(QPen(Qt::black, 2));
+    AngularAxis->setSubTickPen(QPen(Qt::black));
+    AngularAxis->setTickLabelColor(Qt::black);
+
+    RadialAxis->setTickPen(QPen(Qt::black, 2));
+    RadialAxis->setSubTickPen(QPen(Qt::black));
+    RadialAxis->setLabelColor(Qt::black);
+    RadialAxis->setBasePen(QPen(Qt::black, 2));
+    RadialAxis->setTickLabelColor(Qt::black);
+
+    //Меняем размеры обратно:
+    resize(SizeBefore);
+    // Меняем размер шрифта
+    //xAxis->setLabelFont(axisFont);
+    //yAxis->setLabelFont(axisFont);
+
+    return PixMap;
 }
 
 
@@ -1135,10 +1223,11 @@ void PlotClass::CustomRadialAxis::draw(QCPPainter *painter)
 
     // Возвращаем как было
     mCenter = originalCenter;
-
-
-
 }
+
+
+
+
 
 
 
@@ -1988,15 +2077,15 @@ h-файл и dll
  *
  *  Сделать объект для хранания ошибок
  *
- *  Всё заключаем в try, throw, catch -- не очень срочная, но обязательно нужная
+ * Всё заключаем в try, throw, catch -- не очень срочная, но обязательно нужная
  *
- *  std::terminate, std::abort
- *
- *
- *  Как хранить список ошибок?
+ * std::terminate, std::abort
  *
  *
- *  SaveData()?
+ * Как хранить список ошибок?
+ *
+ *
+ * SaveData()?
  *
  *
  *
@@ -2015,18 +2104,42 @@ h-файл и dll
  *
  * Программа лезет в область памяти, отображает и ждёт время. Не нужно QThread, что
  *
- *03042025
- *В заглушке тест подключения подкл задать число точек посчитать значение вывести в debug числа, которые пришли.
- *Можно график от модуля, можно в файл, маленькие кнопки: коннект и тест 1 измерение
- *Эта кнопка должна
- *Не нужно новый код поместить
+ * 03042025
+ * В заглушке тест подключения подкл задать число точек посчитать значение вывести в debug числа, которые пришли.
+ * Можно график от модуля, можно в файл, маленькие кнопки: коннект и тест 1 измерение
+ * Эта кнопка должна
+ * Не нужно новый код поместить
  * Скопировать и в копию где коннект вставить коннект, параметры, генерация, не имит а TestVNA
- *
- *
  *
  *
  * Перемещение маркера в следующую точку,
  *
  *
  *
+ * 1)
+ * Придумать метод сохранения данных
+ * Предложить решение для записи в файл
+ * Представить каждый свою версию: свежий взгляд
+ * На листочке, со схемой?
+ * Почему нельзя в строчку?
+ * Не автоматически, что?
+ * Инвариант между измерением и фоном? Соответствие между фоном и откликом?
+ * И как файлы организовать: соображения физические, практические, программистские
+ * За час до встречи не получится придумать
+ *
+ * 2)
+ * Компании используют базы данных: SQL итд
+ * Почитать, рассказать, как компании хранят их
+ * Всякие бд придумать разные
+ *
+ * HDF5?
+ * metadata читает-- понимает, что дальше считывать
+ * Закрытый формат -- плюс.
+ *
+ * Один день измерений производит примерно гигабайт данных в бинарном виде
+
+
+
+
+
  * */

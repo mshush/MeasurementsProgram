@@ -28,15 +28,14 @@ void LegendWidget::FillLayout()
     GraphTitleLabel         = new QLabel(tr("Graph title"          ), this);
     TitleLabel              = new QLabel(tr("Title"                ), this);
 
-
     TitleChBox  = new QCheckBox(tr("Title")  ,this);
     DataChBox   = new QCheckBox(tr("Data")   ,this);
     PlaneChBox  = new QCheckBox(tr("Plane")  ,this);
     FreqChBox   = new QCheckBox(tr("Freq")   ,this);
     AzChBox     = new QCheckBox(tr("Az")     ,this);
     ElChBox     = new QCheckBox(tr("El")     ,this);
+    DistChBox   = new QCheckBox(tr("Dist")   ,this);
     ChannelChBox= new QCheckBox(tr("Channel"),this);
-
 
     LegendTable = new QTableWidget(this);
 
@@ -69,12 +68,24 @@ void LegendWidget::FillLayout()
     VerticalLegendLayot->addLayout(HorizontalLowerCheckboxLayout);
 
     LegendTable->setRowCount(0); // Пусть для начала она пустой будет
-    LegendTable->setColumnCount(10);
+    LegendTable->setColumnCount(11);
+
+    LegendTable->setColumnWidth(0,100);
+    LegendTable->setColumnWidth(1,100);
+    LegendTable->setColumnWidth(2,100);
+    LegendTable->setColumnWidth(3,100);
+    LegendTable->setColumnWidth(4,100);
+    LegendTable->setColumnWidth(5,100);
+    LegendTable->setColumnWidth(6,100);
+    LegendTable->setColumnWidth(7,100);
+    LegendTable->setColumnWidth(8,100);
+    LegendTable->setColumnWidth(9,100);
+    LegendTable->setColumnWidth(10,100);
 
     LegendTable->setHorizontalHeaderLabels(headers);
     LegendTable->verticalHeader()->setVisible(false);
 
-    OnAddLineClicked();
+    //OnAddLineClicked();
 }
 
 void LegendWidget::OnReadDataClicked()
@@ -97,8 +108,9 @@ LegendWidget::LegendRow::LegendRow(QWidget * parent)
     DataBox     = new QComboBox(parent);
     PlaneBox    = new QComboBox(parent);
     FreqBox     = new QComboBox(parent);
-    AlBox       = new QComboBox(parent);
+    AzBox       = new QComboBox(parent);
     ElBox       = new QComboBox(parent);
+    DistBox     = new QComboBox(parent);
     ChannelBox  = new QComboBox(parent);
     SmoothBox   = new QComboBox(parent);
     PercentBox  = new QComboBox(parent);
@@ -131,14 +143,15 @@ void LegendWidget::OnAddLineClicked()
     LegendTable->setCellWidget(RowCount, 1, NewRow.DataBox);
     LegendTable->setCellWidget(RowCount, 2, NewRow.PlaneBox);
     LegendTable->setCellWidget(RowCount, 3, NewRow.FreqBox);
-    LegendTable->setCellWidget(RowCount, 4, NewRow.AlBox);
+    LegendTable->setCellWidget(RowCount, 4, NewRow.AzBox);
     LegendTable->setCellWidget(RowCount, 5, NewRow.ElBox);
-    LegendTable->setCellWidget(RowCount, 6, NewRow.ChannelBox);
-    LegendTable->setCellWidget(RowCount, 7, NewRow.SmoothBox);
-    LegendTable->setCellWidget(RowCount, 8, NewRow.PercentBox);
-    LegendTable->setCellWidget(RowCount, 9, NewRow.ColourBox);
+    LegendTable->setCellWidget(RowCount, 6, NewRow.DistBox);
+    LegendTable->setCellWidget(RowCount, 7, NewRow.ChannelBox);
+    LegendTable->setCellWidget(RowCount, 8, NewRow.SmoothBox);
+    LegendTable->setCellWidget(RowCount, 9, NewRow.PercentBox);
+    LegendTable->setCellWidget(RowCount, 10,NewRow.ColourBox);
 
-    //QStringList ColoueVector = QColor::colorNames(); // Слишком много цветов
+    //QStringList ColourVector = QColor::colorNames(); // Слишком много цветов
 
     for (int i=0;i<ColourVector.size();i++)
     {
@@ -183,13 +196,33 @@ void LegendWidget::OnRefreshClicked()
 void LegendWidget::RefillRows(int TabIndex)
 {
     LegendTable->clearContents();
-    for (int i = 0; i < RowVector.size(); i++)
+
+    int AmountOfRows = LegendRowsForAllPlots[ActiveTab].Rows.size();
+    LegendTable->setRowCount(AmountOfRows);
+
+
+    for (int r=0; r<AmountOfRows; r++)
     {
-        LegendRow Row = RowVector[i];
-        if (Row.ChartTabIndex == TabIndex)
-        {
-            qDebug()<<TabIndex;
-        }
+        LegendRow * NewRow = LegendRowsForAllPlots[ActiveTab].Rows[r];
+
+        QWidget * ZeroCellWidget = new QWidget(this);
+        QHBoxLayout * CellLayout = new QHBoxLayout(ZeroCellWidget);
+
+        CellLayout->addWidget(NewRow->VisibilityBox);
+        CellLayout->addWidget(NewRow->ColourLabel);
+        CellLayout->addWidget(NewRow->TitleLabel);
+
+        LegendTable->setCellWidget(r, 0, ZeroCellWidget);
+        LegendTable->setCellWidget(r, 1, NewRow->DataBox);
+        LegendTable->setCellWidget(r, 2, NewRow->PlaneBox);
+        LegendTable->setCellWidget(r, 3, NewRow->FreqBox);
+        LegendTable->setCellWidget(r, 4, NewRow->AzBox);
+        LegendTable->setCellWidget(r, 5, NewRow->ElBox);
+        LegendTable->setCellWidget(r, 6, NewRow->DistBox);
+        LegendTable->setCellWidget(r, 7, NewRow->ChannelBox);
+        LegendTable->setCellWidget(r, 8, NewRow->SmoothBox);
+        LegendTable->setCellWidget(r, 9, NewRow->PercentBox);
+        LegendTable->setCellWidget(r, 10,NewRow->ColourBox);
     }
 }
 
@@ -199,7 +232,6 @@ void LegendWidget::OnChartTabChanged(int TabIndex)
 {
     ActiveTab = TabIndex;
 
-
     if (ActiveTab == -1) // Деактивируем, если это PrintPreview
     {
         setEnabled(false);
@@ -207,11 +239,120 @@ void LegendWidget::OnChartTabChanged(int TabIndex)
     else // Заполняем, если это не PrintPreview
     {
         setEnabled(true);
-        for (int r=0; r< RowVector.size(); r++)
-        {
-            RefillRows(TabIndex);
-        }
+        //RefillRows(ActiveTab);
     }
 }
+
+
+
+void LegendWidget::SetNumberOfPlots(int PlotsNumber)
+{
+    LegendRowsForAllPlots.resize(PlotsNumber);
+}
+
+
+void LegendWidget::FillFirstRows(MeasDataClass MeasuredData) // Как сделать так, чтобы адаптировалась под произвольное число графиков?
+{
+    int NumberOfPlots = LegendRowsForAllPlots.size();
+
+    QDoubleVector FreqVector = MeasuredData.GetFreqVectorGHz();
+    QStringList FreqVectorStrings;
+    for (double freq : FreqVector)
+    {
+        FreqVectorStrings << QString::number(freq);
+    }
+
+    QDoubleVector AzVector = MeasuredData.GetAzimuthVector();
+    QStringList AzVectorStrings;
+    for (double az : AzVector)
+    {
+        AzVectorStrings << QString::number(az);
+    }
+
+    QDoubleVector ElVector = MeasuredData.GetElevationVector();
+    QStringList ElVectorStrings;
+    for (double el : ElVector)
+    {
+        ElVectorStrings << QString::number(el);
+    }
+
+    QDoubleVector DistVector = MeasuredData.GetDistVector();
+    QStringList DistVectorStrings;
+    for (double dist : DistVector)
+    {
+        DistVectorStrings << QString::number(dist);
+    }
+
+
+    for (int p=0; p<NumberOfPlots; p++)
+    {
+        if (LegendRowsForAllPlots[p].Rows.size()==0)
+        {
+            LegendRow * NewRow = new LegendRow(this);
+            NewRow->VisibilityBox->setChecked(true);
+            NewRow->ColourLabel->setStyleSheet("color: green;");
+            NewRow->TitleLabel->setText("<D>");
+
+            NewRow->DataBox    ->addItems(DataTypes);
+            NewRow->PlaneBox   ->addItems({"Freq","El","Az","Dist"});
+            NewRow->FreqBox    ->addItems(FreqVectorStrings);
+            NewRow->AzBox      ->addItems(AzVectorStrings);
+            NewRow->ElBox      ->addItems(ElVectorStrings);
+            NewRow->DistBox    ->addItems(DistVectorStrings);
+            NewRow->ChannelBox ->addItems({"--"});;
+            NewRow->SmoothBox  ->addItems({"None"});;
+            NewRow->PercentBox ->addItems({"--"});;
+            NewRow->ColourBox  ->addItems(ColourVector);
+            LegendRowsForAllPlots[p].Rows.append(NewRow);
+
+            connect(NewRow->VisibilityBox,  &QCheckBox::stateChanged, this, &LegendWidget::SomeRowChanged);
+            connect(NewRow->DataBox,        &QComboBox::highlighted, this, &LegendWidget::SomeRowChanged);
+            connect(NewRow->PlaneBox,       &QComboBox::highlighted, this, &LegendWidget::SomeRowChanged);
+            connect(NewRow->FreqBox,        &QComboBox::highlighted, this, &LegendWidget::SomeRowChanged);
+            connect(NewRow->AzBox,          &QComboBox::highlighted, this, &LegendWidget::SomeRowChanged);
+            connect(NewRow->ElBox,          &QComboBox::highlighted, this, &LegendWidget::SomeRowChanged);
+            connect(NewRow->DistBox,        &QComboBox::highlighted, this, &LegendWidget::SomeRowChanged);
+            connect(NewRow->ColourBox,      &QComboBox::highlighted, this, &LegendWidget::SomeRowChanged);
+
+        }
+        else
+        {
+            LegendRowsForAllPlots[p].Rows[0]->VisibilityBox->setChecked(true);
+            LegendRowsForAllPlots[p].Rows[0]->ColourLabel->setStyleSheet("color: yellow;");
+            LegendRowsForAllPlots[p].Rows[0]->TitleLabel ->setText("<D>");
+
+            LegendRowsForAllPlots[p].Rows[0]->DataBox    ->addItems(DataTypes);
+            LegendRowsForAllPlots[p].Rows[0]->PlaneBox   ->addItems({"Freq","Az","El","Dist"});
+            LegendRowsForAllPlots[p].Rows[0]->FreqBox    ->addItems(FreqVectorStrings);
+            LegendRowsForAllPlots[p].Rows[0]->AzBox      ->addItems(  AzVectorStrings);
+            LegendRowsForAllPlots[p].Rows[0]->ElBox      ->addItems(  ElVectorStrings);
+            LegendRowsForAllPlots[p].Rows[0]->DistBox    ->addItems(DistVectorStrings);
+            LegendRowsForAllPlots[p].Rows[0]->ChannelBox ->addItems({"--"});;
+            LegendRowsForAllPlots[p].Rows[0]->SmoothBox  ->addItems({"None"});;
+            LegendRowsForAllPlots[p].Rows[0]->PercentBox ->addItems({"--"});;
+            LegendRowsForAllPlots[p].Rows[0]->ColourBox  ->addItems(ColourVector);
+        }
+    }
+
+    RefillRows(ActiveTab);
+
+}
+
+
+
+
+
+void LegendWidget::SomeRowChanged()
+{
+
+}
+
+
+
+
+
+
+
+
 
 

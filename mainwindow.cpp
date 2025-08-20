@@ -10,7 +10,6 @@ MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
 {
-
     ChangeLanguageToRussian(); // Меняет язык на русский
 
     SetUpGeneralStyle(); // Устанавливает общее оформление
@@ -20,7 +19,6 @@ MainWindow::MainWindow(QWidget *parent)
     FillMainWindow(); // Заполняет главное окно виджетами
 
     SetUpConnections(); // Устанавливает соединения между частями программы
-
 }
 
 
@@ -31,7 +29,7 @@ MainWindow::~MainWindow()
 }
 
 
-void MainWindow::ShowErrorMessage(QString Description, QString Advice)
+void MainWindow::ShowErrorMessage(QString Description, QString Advice) // Добавить сюда отправку в легенду
 {
     QMessageBox msgBox;
     msgBox.setIcon(QMessageBox::Critical);
@@ -45,18 +43,21 @@ void MainWindow::ShowErrorMessage(QString Description, QString Advice)
 
 void MainWindow::ConnectMenu()
 {
-    connect(SaveFileAction,&QAction::triggered, this, &MainWindow::OnSaveAsActionTriggered); // Что и как должно сохраняться?
-    connect(MeasureAzTargetAction,&QAction::triggered, this, &MainWindow::OnMeasureAzTargetActionTriggered);
-    connect(MeasureResponseAtSingleAnglAction,&QAction::triggered, this, &MainWindow::OnMeasureResponseAtSingleAnglActionTriggered);
-    connect(MeasureBckgndAtSingleAnglAction,&QAction::triggered, this, &MainWindow::OnMeasureBckgndAtSingleAnglActionTriggered);
-    connect(MeasureCurrentAspectAction,&QAction::triggered, this, &MainWindow::OnMeasureCurrentAspectActionTriggered);
-    connect(AbortAction,&QAction::triggered, this, &MainWindow::OnAbortActionTriggered);
+    // Действия из меню
+    connect(SaveFileAction,                     &QAction::triggered, this, &MainWindow::OnSaveAsActionTriggered);
+    connect(MeasureAzTargetAction,              &QAction::triggered, this, &MainWindow::OnMeasureAzTargetActionTriggered);
+    connect(MeasureResponseAtSingleAnglAction,  &QAction::triggered, this, &MainWindow::OnMeasureResponseAtSingleAnglActionTriggered);
+    connect(MeasureBckgndAtSingleAnglAction,    &QAction::triggered, this, &MainWindow::OnMeasureBckgndAtSingleAnglActionTriggered);
+    connect(MeasureCurrentAspectAction,         &QAction::triggered, this, &MainWindow::OnMeasureCurrentAspectActionTriggered);
+    connect(AbortAction,                        &QAction::triggered, this, &MainWindow::OnAbortActionTriggered);
 
-    connect(this->PaintPlotsAction,&QAction::triggered, this, &MainWindow::PaintAllPlots);
+    connect(PaintPlotsAction,&QAction::triggered, this, &MainWindow::PaintAllPlots);
 
     // Перевод
     connect(SetRussianLanguageAction,&QAction::triggered, this, &MainWindow::ChangeLanguageToRussian);
     connect(SetEnglishLanguageAction,&QAction::triggered, this, &MainWindow::ChangeLanguageToEnglish);
+
+
 }
 
 void MainWindow::FillMenu()
@@ -139,7 +140,7 @@ void MainWindow::FillMenu()
 
 
 
-    MenuProcess = this->menuBar()->addMenu(QObject::tr("Process"));
+    MenuProcess = menuBar()->addMenu(tr("Process"));
     MenuProcess->addAction("Process");
     MenuProcess->addSeparator();
     MenuProcess->addAction("Swap Az/El");
@@ -311,8 +312,6 @@ void MainWindow::OnMeasureAzTargetActionTriggered()
     {
         std::cerr << "An UNKNOWN error occurred in SetAllVNAParamsNoAction: " << std::endl;
     }
-
-    //SendDataToLegend();
 }
 
 void MainWindow::OnMeasureResponseAtSingleAnglActionTriggered()
@@ -394,20 +393,22 @@ void MainWindow::OnAbortActionTriggered()
 
 void MainWindow::PaintAllPlots()
 {
-    for (int i=0;i<8;i++)
-    {ChartTab->PlotTabs[0]->customPlot->addGraph();}
+    int NumberOfPlots = ChartTab->PlotTabs.size();
 
+    for (int i=0;i<NumberOfPlots;i++)
+    {
+        if (ChartTab->PlotTabs[i]->customPlot->graphCount() == 0)
+            ChartTab->PlotTabs[0]->customPlot->addGraph();
+    }
 
     QComplexVector CASweepVector = MeasData.ReadSweepFrom(MeasDataClass::MeasDataType::CurrentAspect);
     QDoubleVector CASweepVector_abs(CASweepVector.size());
-    for (int i = 0; i < CASweepVector.size(); i++)  {CASweepVector_abs[i] = std::log10(std::abs(CASweepVector[i]));}
+    for (int i = 0; i < CASweepVector.size(); i++)  {CASweepVector_abs[i] = std::abs(CASweepVector[i]);}
 
     QComplexVector RTSweepVector = MeasData.ReadSweepFrom(MeasDataClass::MeasDataType::RawTarget);
     QDoubleVector RTSweepVector_abs(RTSweepVector.size());
     for (int i = 0; i < RTSweepVector.size(); i++)  {RTSweepVector_abs[i] = std::abs(RTSweepVector[i]);}
     QVector<double> XRT = MeasData.GetFreqVectorGHz();
-
-
 
     QComplexVector RBSweepVector = MeasData.ReadSweepFrom(MeasDataClass::MeasDataType::RawBcknd);
     QDoubleVector RBSweepVector_abs(RBSweepVector.size());
@@ -431,28 +432,52 @@ void MainWindow::PaintAllPlots()
 
     QVector<double> FreqVector = MeasData.GetFreqVectorGHz();
 
-    ChartTab->PlotTabs[0]->customPlot->graph(0)->setData(MeasData.GetFreqVectorGHz(), CASweepVector_abs);
+
+    QDoubleVector DistVect = MeasData.GetDistVector();
+
+    QDoubleVector CurrentProfRangeVector(DistVect.size());
+    MeasData.GetAmplVectordB(MeasDataClass::MeasDataType::CurrentProfRange, CurrentProfRangeVector,0,0);
+    ChartTab->PlotTabs[0]->customPlot->graph(0)->setData(DistVect, CurrentProfRangeVector);
     ChartTab->PlotTabs[0]->customPlot->graph(0)->setPen(QPen(Qt::red));
+
+    QDoubleVector CurrentGatedProfRangeVector(DistVect.size());
+    MeasData.GetAmplVectordB(MeasDataClass::MeasDataType::CurrentGatedProfRange, CurrentGatedProfRangeVector,0,0);
+    ChartTab->PlotTabs[1]->customPlot->graph(0)->setData(DistVect, CurrentGatedProfRangeVector);
+    ChartTab->PlotTabs[1]->customPlot->graph(0)->setPen(QPen(Qt::yellow));
+
+    /*
+    ChartTab->PlotTabs[0]->customPlot->graph(0)->setData(MeasData.GetFreqVectorGHz(), CASweepVector_abs);
+    ChartTab->PlotTabs[0]->customPlot->graph(0)->setPen(QPen(Qt::yellow));
 
     ChartTab->PlotTabs[1]->customPlot->graph(0)->setData(MeasData.GetFreqVectorGHz(), RTSweepVector_abs);
     ChartTab->PlotTabs[1]->customPlot->graph(0)->setPen(QPen(Qt::yellow));
+    */
 
     ChartTab->PlotTabs[2]->customPlot->graph(0)->setData(MeasData.GetFreqVectorGHz(), RBSweepVector_abs);
-    ChartTab->PlotTabs[2]->customPlot->graph(0)->setPen(QPen(Qt::blue));
+    ChartTab->PlotTabs[2]->customPlot->graph(0)->setPen(QPen(Qt::yellow));
 
     ChartTab->PlotTabs[3]->customPlot->graph(0)->setData(MeasData.GetFreqVectorGHz(), RRSweepVector_abs);
-    ChartTab->PlotTabs[3]->customPlot->graph(0)->setPen(QPen(Qt::cyan));
+    ChartTab->PlotTabs[3]->customPlot->graph(0)->setPen(QPen(Qt::yellow));
 
-    ChartTab->PlotTabs[4]->customPlot->graph(0)->setData(MeasData.GetFreqVectorGHz(), ClbrSweepVector_abs);
-    ChartTab->PlotTabs[4]->customPlot->graph(0)->setPen(QPen(Qt::green));
 
-    ChartTab->PlotTabs[5]->customPlot->graph(0)->setData(MeasData.GetFreqVectorGHz(), PttrnSweepVector_abs);
-    ChartTab->PlotTabs[5]->customPlot->graph(0)->setPen(QPen(Qt::magenta));
+
+
+
+
+    //ChartTab->PlotTabs[4]->customPlot->graph(0)->setData(MeasData.GetFreqVectorGHz(), ClbrSweepVector_abs);
+    //ChartTab->PlotTabs[4]->customPlot->graph(0)->setPen(QPen(Qt::yellow));
+
+    //ChartTab->PlotTabs[5]->customPlot->graph(0)->setData(MeasData.GetFreqVectorGHz(), PttrnSweepVector_abs);
+    //ChartTab->PlotTabs[5]->customPlot->graph(0)->setPen(QPen(Qt::magenta));
 
     UpdatePlots();
 
-    for (int i=0;i<8;i++)
+    for (int i=0;i<NumberOfPlots;i++)
     {ChartTab->PlotTabs[i]->customPlot->ResetPlot();}
+
+
+    TabOfTools->LegendTab->FillFirstRows(MeasData);
+
 
     /*
     ChartTab->PlotTabs[0]->customPlot->graph(4)->setData(RefTargetArrX, RefTargetArr);
@@ -462,6 +487,7 @@ void MainWindow::PaintAllPlots()
 
 void MainWindow::UpdatePlots()
 {
+    /*
     QDoubleVector CurrentAspectVector(MeasData.GetNFreqPoints());
     MeasData.GetAmplVectordB(MeasDataClass::MeasDataType::CurrentAspect, CurrentAspectVector,0,0);
     ChartTab->PlotTabs[6]->customPlot->graph(0)->setData(MeasData.GetFreqVectorGHz(), CurrentAspectVector);
@@ -490,10 +516,12 @@ void MainWindow::UpdatePlots()
         ChartTab->PlotTabs[7]->customPlot->ResetPlot();
         ResetPlotNeeded = false;
     }
+    */
 }
 
 void MainWindow::UpdateAzimuthPlot(int iaz, int iel)
 {
+    /*
     //Сделать так, чтобы не дёргалось
     UpdatePlots();
 
@@ -512,8 +540,10 @@ void MainWindow::UpdateAzimuthPlot(int iaz, int iel)
     //ChartTab->PlotTabs[8]->customPlot->replot();
     //ChartTab->PlotTabs[8]->customPlot->xAxis->setRange(0,1601);
     ChartTab->PlotTabs[8]->customPlot->yAxis->rescale();
+    */
 
-    /*
+
+    /* // Устаревшее
     QDoubleVector CurrentAspectVector(MeasData.GetAzTrigPoints());
     MeasData.GetAmplVectordB(MeasDataClass::MeasDataType::CurrentAspect, CurrentAspectVector,0,0);
     ChartTab->PlotTabs[8]->customPlot->graph(0)->setData(MeasData.GetAzimuthVector(), CurrentAspectVector);
@@ -646,6 +676,8 @@ void MainWindow::changeEvent(QEvent *event) // Именно здесь меня�
     if (event->type() == QEvent::LanguageChange)
     {
         ui->retranslateUi(this);
+
+        // Смена языка в меню:
         MenuFile->setTitle(tr("File"));
         MenuFileWrite->setTitle(tr("Write"));
         MenuFileRead->setTitle(tr("Read"));
@@ -655,7 +687,12 @@ void MainWindow::changeEvent(QEvent *event) // Именно здесь меня�
         MenuOptions->setTitle(tr("Options"));
         MenuCreatePylComp->setTitle(tr("Create Pylon Compensation"));
         MenuLanguage->setTitle(tr("Language"));
-        //.....
+
+        // Смена языка в дочерних виджетах
+        TabOfParameters->UpdateText();
+        TabOfTools->UpdateText();
+        ChartTab->UpdateText();
+
     }
     QWidget::changeEvent(event);
 }
@@ -663,39 +700,115 @@ void MainWindow::changeEvent(QEvent *event) // Именно здесь меня�
 void MainWindow::ConnectLegendAndChartTabs()
 {
     // Сигналы от легенды к главному окну MainWindow
-    connect(TabOfTools->LegendTab, &LegendWidget::ReadDataSignal        ,this, &MainWindow::OnReadDataSignalReceived);
-    connect(TabOfTools->LegendTab, &LegendWidget::WriteDataSignal       ,this, &MainWindow::OnWriteDataSignalReceived);
-    connect(TabOfTools->LegendTab, &LegendWidget::AddLineSignal         ,this, &MainWindow::OnAddLineSignalReceived);
-    connect(TabOfTools->LegendTab, &LegendWidget::DeleteLineSignal      ,this, &MainWindow::OnDeleteLineSignalReceived);
-    connect(TabOfTools->LegendTab, &LegendWidget::ClearAllSignal        ,this, &MainWindow::OnClearAllSignalReceived);
-    connect(TabOfTools->LegendTab, &LegendWidget::UpLineSignal          ,this, &MainWindow::OnUpLineSignalReceived);
-    connect(TabOfTools->LegendTab, &LegendWidget::DownLineSignal        ,this, &MainWindow::OnDownLineSignalReceived);
-    connect(TabOfTools->LegendTab, &LegendWidget::CopyToMemoryLineSignal,this, &MainWindow::CopyToMemoryLineSignalReceived);
-    connect(TabOfTools->LegendTab, &LegendWidget::RefreshSignal         ,this, &MainWindow::RefreshSignalReceived);
+    // Кнопки
+    connect(TabOfTools->LegendTab, &LegendWidget::ReadDataSignal        , this, &MainWindow::OnReadDataSignalReceived);
+    connect(TabOfTools->LegendTab, &LegendWidget::WriteDataSignal       , this, &MainWindow::OnWriteDataSignalReceived);
+    connect(TabOfTools->LegendTab, &LegendWidget::AddLineSignal         , this, &MainWindow::OnAddLineSignalReceived);
+    connect(TabOfTools->LegendTab, &LegendWidget::DeleteLineSignal      , this, &MainWindow::OnDeleteLineSignalReceived);
+    connect(TabOfTools->LegendTab, &LegendWidget::ClearAllSignal        , this, &MainWindow::OnClearAllSignalReceived);
+    connect(TabOfTools->LegendTab, &LegendWidget::UpLineSignal          , this, &MainWindow::OnUpLineSignalReceived);
+    connect(TabOfTools->LegendTab, &LegendWidget::DownLineSignal        , this, &MainWindow::OnDownLineSignalReceived);
+    connect(TabOfTools->LegendTab, &LegendWidget::CopyToMemoryLineSignal, this, &MainWindow::CopyToMemoryLineSignalReceived);
+    connect(TabOfTools->LegendTab, &LegendWidget::RefreshSignal         , this, &MainWindow::RefreshSignalReceived);
+
+    // Строки таблицы
+    connect(TabOfTools->LegendTab, &LegendWidget::VisibilityCheckedSignal, this, &MainWindow::OnVisibilityCheckedSignalReceived);
+    connect(TabOfTools->LegendTab, &LegendWidget::TitleChangedSignal, this, &MainWindow::OnTitleChangedSignalReceived);
+    connect(TabOfTools->LegendTab, &LegendWidget::RedrawPlotSignal, this, &MainWindow::OnRedrawPlotSignalReceived);
+
+
+
+
+
+
+
+
+
+
 
     // Сигналы от вкладок графиков к легенде
     connect(ChartTab, &TabWidgetForCharts::SendCurrentPlotIndexToLegendSignal,TabOfTools->LegendTab, &LegendWidget::OnChartTabChanged);
 
+
+
+
+
 }
 
-void MainWindow::FillPatternArrayFromMeasData()
+QComplexVector MainWindow::Fill3DArrayFromMeasData(MeasDataClass::MeasDataType DType)
 {
-    int FNum = MeasData.GetNFreqPoints();
+    QComplexVector FilledArray;
+
+    int F_or_D_Num;
+    if (DType == MeasDataClass::MeasDataType::CurrentProfRange or DType == MeasDataClass::MeasDataType::CurrentGatedProfRange)
+    {
+        F_or_D_Num =    MeasData.GetDistVector().size();
+    }
+    else
+    {
+        F_or_D_Num =    MeasData.GetNFreqPoints();
+    }
+
+
+    F_or_D_Num = MeasData.GetNFreqPoints();
     int ANum = MeasData.GetAzTrigPoints();
     int ENum = MeasData.GetElTrigPoints();
 
-    for (int f=0;f<FNum;f++)
+    for (int fd=0;fd<F_or_D_Num;fd++)
     {
         for (int a=0;a<ANum;a++)
         {
             for (int e=0;e<ENum;e++)
             {
-                std::complex<double> Value = MeasData.ReadValueFrom(MeasDataClass::MeasDataType::PatternArr,f, a, e);
-                FullPatternArray.append(Value);
+                std::complex<double> Value = MeasData.ReadValueFrom(DType, fd, a, e);
+                FilledArray.append(Value);
             }
         }
     }
+    return FilledArray;
 }
+
+
+
+QComplexVector MainWindow::Fill1DArrayFromMeasDataForAnglePlane(MeasDataClass::MeasDataType DType, QString AnglePlane, int freq_or_dist, int another_angle)
+{
+    QComplexVector FilledArray;
+
+    if (AnglePlane == "Az")
+    {
+        int ANum = MeasData.GetAzTrigPoints();
+        for (int a=0; a < ANum; a++)
+        {
+            std::complex<double> Value = MeasData.ReadValueFrom(DType, freq_or_dist, a, another_angle);
+            FilledArray.append(Value);
+        }
+    }
+
+    if (AnglePlane == "El")
+    {
+        int ENum = MeasData.GetElTrigPoints();
+        for (int e=0; e < ENum; e++)
+        {
+            std::complex<double> Value = MeasData.ReadValueFrom(DType, freq_or_dist, another_angle, e);
+            FilledArray.append(Value);
+        }
+    }
+
+    return FilledArray;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 void MainWindow::FillMainWindow()
 {
@@ -718,6 +831,8 @@ void MainWindow::FillMainWindow()
     ChartTab    ->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     TabOfTools  ->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
+    int NumberOfPlotTabs = ChartTab->PlotTabs.size();
+    TabOfTools  ->LegendTab->SetNumberOfPlots(NumberOfPlotTabs);
 
     OutermostHorizontalSplitter->addWidget(TabOfParameters);
 
@@ -828,38 +943,147 @@ void MainWindow::RefreshSignalReceived()
 
 
 
+void MainWindow::OnVisibilityCheckedSignalReceived  (int TabId, int GraphId, bool Visible)
+{
+    ChartTab->PlotTabs[TabId]->customPlot->graph(GraphId)->setVisible(Visible);
+}
+
+void MainWindow::OnTitleChangedSignalReceived       (int TabId, int GraphId, QString Title)
+{
+    // Должна быть смена легенды на графике
+    // ChartTab->PlotTabs[TabId]->customPlot->legend;//graph(GraphId)->();
+
+}
+
+void MainWindow::OnRedrawPlotSignalReceived         (int TabId, int GraphId,
+                                    MeasDataClass::MeasDataType DataType,
+                                    QString Plane,
+                                    int Frequency,
+                                    int Azimuth,
+                                    int Elevation,
+                                    int Distance,
+                                    QColor Colour
+)
+{
+    QDoubleVector XVector;
+    QDoubleVector YVector;
+    bool PlotIsLogarithmic;
+    PlotIsLogarithmic = ChartTab->PlotTabs[TabId]->YLogScaleButton->isChecked();
+
+    if (Plane == "Dist")
+    {
+        if (DataType == MeasDataClass::MeasDataType::CurrentProfRange or DataType == MeasDataClass::MeasDataType::CurrentGatedProfRange)
+        {
+            XVector = MeasData.GetDistVector();
+
+            if (PlotIsLogarithmic)
+            {MeasData.GetAmplVectordB(DataType, YVector, Azimuth, Elevation);}
+            else
+            {MeasData.GetAmplVectorSqrt(DataType, YVector, Azimuth, Elevation);}
+        }
+        else
+        {
+            qDebug()<< "Тип данных не соответствует оси";
+        }
+    }
+
+    if (Plane == "Freq")
+    {
+        if (DataType != MeasDataClass::MeasDataType::CurrentProfRange and DataType != MeasDataClass::MeasDataType::CurrentGatedProfRange)
+        {
+            XVector = MeasData.GetFreqVectorGHz();
+
+            if (PlotIsLogarithmic)
+                MeasData.GetAmplVectordB(DataType, YVector, Azimuth, Elevation);
+            else
+                MeasData.GetAmplVectorSqrt(DataType, YVector, Azimuth, Elevation);
+        }
+        else
+        {
+            qDebug()<< "Тип данных не соответствует оси";
+        }
+    }
+
+    if (Plane == "Az")
+    {
+
+        XVector = MeasData.GetAzimuthVector();
+
+        int freq_or_dist;
+        if (DataType == MeasDataClass::MeasDataType::CurrentProfRange or DataType == MeasDataClass::MeasDataType::CurrentGatedProfRange)
+        {
+            freq_or_dist = Distance;
+        }
+        else
+        {
+            freq_or_dist = Frequency;
+        }
+
+        QComplexVector PreYVector = Fill1DArrayFromMeasDataForAnglePlane(DataType, Plane, freq_or_dist, Elevation);
+
+        if (PlotIsLogarithmic)
+        {
+            for (int a=0; a<PreYVector.size(); a++)
+            {
+                double real = PreYVector[a].real();
+                double imag = PreYVector[a].imag();
+                YVector.append(log10(real*real + imag*imag)*10);
+            }
+        }
+        else
+        {
+            for (int a=0; a<PreYVector.size(); a++)
+            {
+                double real = PreYVector[a].real();
+                double imag = PreYVector[a].imag();
+                YVector.append(sqrt(real*real + imag*imag));
+            }
+        }
+    }
+
+    if (Plane == "El")
+    {
+
+        XVector = MeasData.GetElevationVector();
+
+        int freq_or_dist;
+        if (DataType == MeasDataClass::MeasDataType::CurrentProfRange or DataType == MeasDataClass::MeasDataType::CurrentGatedProfRange)
+        {
+            freq_or_dist = Distance;
+        }
+        else
+        {
+            freq_or_dist = Frequency;
+        }
+
+        QComplexVector PreYVector = Fill1DArrayFromMeasDataForAnglePlane(DataType, Plane, freq_or_dist, Azimuth);
+
+        if (PlotIsLogarithmic)
+        {
+            for (int e=0; e<PreYVector.size(); e++)
+            {
+                double real = PreYVector[e].real();
+                double imag = PreYVector[e].imag();
+                YVector.append(log10(real*real + imag*imag)*10);
+            }
+        }
+        else
+        {
+            for (int e=0; e<PreYVector.size(); e++)
+            {
+                double real = PreYVector[e].real();
+                double imag = PreYVector[e].imag();
+                YVector.append(sqrt(real*real + imag*imag));
+            }
+        }
+    }
+
+    ChartTab->PlotTabs[TabId]->customPlot->graph(GraphId)->setData(XVector, YVector);
+    ChartTab->PlotTabs[TabId]->customPlot->graph(GraphId)->setPen(QPen(Qt::yellow));
+    ChartTab->PlotTabs[TabId]->customPlot->ResetPlot();
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+}
 
 
 

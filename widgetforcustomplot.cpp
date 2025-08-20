@@ -1426,7 +1426,7 @@ void WidgetForCustomPlot::OnMarkerMoveRightClicked()
             double x = SelectedGraph->data()->at(i)->key;
             if (x > CurrentX)
             {
-                qDebug()<< "x = " << x << ", CurrentX =" << CurrentX;
+                //qDebug()<< "x = " << x << ", CurrentX =" << CurrentX;
                 XValue = x;
                 break;
             }
@@ -1823,7 +1823,7 @@ void WidgetForCustomPlot::OnMarkerGraphClicked()
         customPlot->replot();
     }
 
-    qDebug()<<"SG = " << customPlot->SelectedGraph;
+    //qDebug()<<"SG = " << customPlot->SelectedGraph;
 }
 
 void WidgetForCustomPlot::OnMarkerIncreaseNClicked()
@@ -1914,16 +1914,43 @@ void WidgetForCustomPlot::OnPolarFormat()
 
 
 
-void WidgetForCustomPlot::OnAmplitude(){}
-void WidgetForCustomPlot::OnPhase(){}
-void WidgetForCustomPlot::OnRealPart(){}
-void WidgetForCustomPlot::OnImagPart(){}
-void WidgetForCustomPlot::OnLegendInside(){}
-void WidgetForCustomPlot::OnDisableLegend(){}
+void WidgetForCustomPlot::OnAmplitude()
+{
+
+}
+
+void WidgetForCustomPlot::OnPhase()
+{
+
+}
+
+void WidgetForCustomPlot::OnRealPart()
+{
+
+}
+
+void WidgetForCustomPlot::OnImagPart()
+{
+
+}
+
+void WidgetForCustomPlot::OnLegendInside()
+{
+
+}
+
+void WidgetForCustomPlot::OnDisableLegend()
+{
+
+}
 
 
 
 
+void WidgetForCustomPlot::UpdateText()
+{
+
+}
 
 
 

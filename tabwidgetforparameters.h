@@ -20,7 +20,9 @@ public:
 
     CustomMeasurementTreeWidget * MeasurementTab;
     CustomProcessingTreeWidget  * ProcessingTab;
-    //TreeWidgetForFiles * FileTreeTab;
+
+    void UpdateText();
+
 };
 
 #endif // TABWIDGETFORPARAMETERS_H

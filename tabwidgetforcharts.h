@@ -17,31 +17,42 @@ public:
 
     TabWidgetForCharts();
     ~TabWidgetForCharts();
+
+    QStringList TabTitleList =
+        {
+            tr("Measuring"), // Текущий свип (По умолчанию от частоты)
+            tr("Profile Range"), // Текущий дальностный портрет (на этом угле)
+            tr("Unprocessed"), // Необработанные данные
+            tr("Pattern")  // Обработанный Pattern
+
+            //tr("ClbrSweep"),
+            //tr("PttrnSweep"),
+            //tr("CurrentAspect"),
+            //tr("Current(Gated)ProfRangeVector"),
+            //tr("Azimuth"),
+        };
+
+
+    // Вектор вкладок с графиками
     QVector <WidgetForCustomPlot*> PlotTabs; // Сделать вектором из QWidget, чтобы разные классы-наследники вносить (Скорее всего так понадобится сделать после добавления радиоизображения, так как для него понадобится другая панель управления)
 
-
-    WidgetForCustomPlot * MeasurementPlotTabFrequency;
-    WidgetForCustomPlot * TimeOfFlightPlotTab;
-    WidgetForCustomPlot * MeasurementPlotTabAngle;
-    WidgetForCustomPlot * CrossRangeTab;
-    WidgetForCustomPlot * ColorMapTab;
-    WidgetForCustomPlot * StatisticaTab;
-    WidgetForCustomPlot * FrequencyTab;
-    WidgetForCustomPlot * ScriptEditorTab;
-
-
-    WidgetForCustomPlot * SweepTab;
-    WidgetForCustomPlot * ProfRangeTab;
-    WidgetForCustomPlot * GatedProfileTab;
-    WidgetForCustomPlot * PatternTab;
+    // Вкладка с предпросмотром
     PrintPreview        * PrintPreviewTab;
+
+    // Функция обновления текста
+    void UpdateText();
+    void UpdateTabTitles();
+    void UpdatePrintPreviewCheckBoxes();
+
 
 signals:
     void SendCurrentPlotIndexToLegendSignal(int TabIndex);
+    void SendPixmapToPreview(QPixmap pixmap);
 
 public slots:
     void InitiateCloseTabButton();
-    void SendImagesIfPrintPreview(int TabIndex);
+    void OnTabChanged(int TabIndex);
+    void SendPixmapToPrintPreview(int Tabindex, int width, int height, double scale = 1.0);
 };
 
 
@@ -64,3 +75,22 @@ public slots:
 //void UpdateMeasurementPlot(QVector <std::complex<double>> f);
 //void UpdateBackgroundPlot (QVector <std::complex<double>> bf);
 //void SaveData();
+
+
+/*
+    // Виджеты вкладок с графиками
+    WidgetForCustomPlot * MeasurementPlotTabFrequency;
+    WidgetForCustomPlot * TimeOfFlightPlotTab;
+    WidgetForCustomPlot * MeasurementPlotTabAngle;
+    WidgetForCustomPlot * CrossRangeTab;
+    WidgetForCustomPlot * ColorMapTab;
+    WidgetForCustomPlot * StatisticaTab;
+    WidgetForCustomPlot * FrequencyTab;
+    WidgetForCustomPlot * ScriptEditorTab;
+
+
+    WidgetForCustomPlot * SweepTab;
+    WidgetForCustomPlot * ProfRangeTab;
+    WidgetForCustomPlot * GatedProfileTab;
+    WidgetForCustomPlot * PatternTab;
+    */

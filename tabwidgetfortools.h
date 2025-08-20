@@ -22,40 +22,73 @@ public:
     TabWidgetForTools();
     ~TabWidgetForTools();
 
-    WidgetForCustomPlot * PatternTab;
-    QTreeWidget * MessagesTab;
-    LegendWidget * LegendTab;
-    QWidget * ScriptTab;
-    TreeWidgetForFiles * File_ManagerTab;
-    QTreeWidget * DebugMessagesTab;
+    // Вкладки
+    WidgetForCustomPlot * PatternTab; // Дублирует Pattern
+    QTreeWidget * MessagesTab; // Сообщения
+    LegendWidget * LegendTab; // Легенда
+    QWidget * ScriptTab; // Скрипт
+    TreeWidgetForFiles * File_ManagerTab; // Файловый менеджер
+    QTreeWidget * DebugMessagesTab; // Сообщения для разработчика
 
-
-    QPushButton * StartMeasurementsButton;
-    QPushButton * StopMeasurementsButton;
-    QPushButton * ContinuousMeasurementsButton;
-
-    //QPushButton * SaveDataButton;
-    //QPushButton * ImportDataButton;
-
-    //QPushButton * FourierTransformButton;
-    //QPushButton * InverseFourierTransformButton;
-
-    QPushButton * SaveThreeDimensionalVectorButton;
-    QPushButton * GetPlotDataButton;
-
+    // Функции из конструктора
+    void SetUpGeneralStyle();
+    void SetUpPatternTab();
+    void FillMessagesTab();
+    void SetUpLegendTab();
+    void SetUpFilesManagerTab();
     void FillDebugMessagesTab();
 
-    void setContentsMarginsToZero(QWidget *widget);
+    void UpdateText();
 
+
+
+
+    //void setContentsMarginsToZero(QWidget *widget);
 
 signals:
-    void ContinuousMeasurementsButtonClickedSignal(bool CheckedStatus);
-    void ErrorOccured(QString ErrorText);
+
 
 public slots:
-    void SendContinuousMeasurementsButtonClickedSignal();
-    void DisplayError(QString ErrorText);
+
 
 };
 
 #endif // TABWIDGETFORTOOLS_H
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// Устаревшее
+//void DisplayError(QString ErrorText);
+
+//void ContinuousMeasurementsButtonClickedSignal(bool CheckedStatus);
+//void ErrorOccured(QString ErrorText);
+//void SendContinuousMeasurementsButtonClickedSignal();
+//QPushButton * StartMeasurementsButton;
+//QPushButton * StopMeasurementsButton;
+//QPushButton * ContinuousMeasurementsButton;
+
+//QPushButton * SaveDataButton;
+//QPushButton * ImportDataButton;
+
+//QPushButton * FourierTransformButton;
+//QPushButton * InverseFourierTransformButton;
+
+//QPushButton * SaveThreeDimensionalVectorButton;
+//QPushButton * GetPlotDataButton;

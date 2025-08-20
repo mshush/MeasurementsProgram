@@ -3,154 +3,41 @@
 TabWidgetForCharts::TabWidgetForCharts()
 
 {
+    setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding);
 
+    int NumberOfTabs = TabTitleList.size();
 
-    this->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding);
-
-
-    for (int i=0;i<9;i++)
+    for (int i=0;i<NumberOfTabs;i++)
     {
         WidgetForCustomPlot * TempTab = new WidgetForCustomPlot(this);
-        //TempTab->customPlot->xAxis->setLabel("Frequency, GHz");
-        addTab(TempTab,"Tab" + QString::number(i));
+        addTab(TempTab, TabTitleList[i]);
         PlotTabs.push_back(TempTab);
-        TempTab->customPlot->addGraph();
-        TempTab->customPlot->addGraph();
         TempTab->customPlot->addGraph();
     }
 
-    setTabText(0, "CASweep");
-    setTabText(1, "RTSweep");
-    setTabText(2, "RBSweep");
-    setTabText(3, "RRSweep");
-    setTabText(4, "ClbrSweep");
-    setTabText(5, "PttrnSweep");
-    setTabText(6, "CurrentAspect");
-    setTabText(7, "Current(Gated)ProfRangeVector");
-    setTabText(8, "Azimuth");
+    PrintPreviewTab = new PrintPreview(NumberOfTabs, this);
+    addTab(PrintPreviewTab, tr("Print Preview"));
 
-    //PlotTabs[7]->GraphChoiceComboBox->addItem("График 2"); // Переменовать в Gated...
+    UpdateTabTitles();
+    UpdatePrintPreviewCheckBoxes();
 
-    PrintPreviewTab = new PrintPreview(this);
-    addTab(PrintPreviewTab,"Print Preview");
+    connect(this, &TabWidgetForCharts::currentChanged, this, &TabWidgetForCharts::OnTabChanged);
 
+    connect(PrintPreviewTab, &PrintPreview::NeedPixmap, this, &TabWidgetForCharts::SendPixmapToPrintPreview);
+    connect(this, &TabWidgetForCharts::SendPixmapToPreview, PrintPreviewTab, &PrintPreview::OnPixmapReceived);
 
-    connect(this, &TabWidgetForCharts::currentChanged, this, &TabWidgetForCharts::SendImagesIfPrintPreview);
+    OnTabChanged(PlotTabs.size());
 
-    //connect(PrintPreviewTab->PatternBox, &QCheckBox::toggled, PlotTabs[0], PlotClass::SendPlotImageForPreview);
-
-    /*
-    SweepTab = new WidgetForCustomPlot(this);
-    SweepTab->customPlot->xAxis->setLabel("Frequency (GHz)");
-    SweepTab->XRangeUnitsLabel->setText("GHz");
-    addTab(SweepTab,"Sweep");
-    PlotTabs.push_back(SweepTab);
-    SweepTab->customPlot->addGraph();
-
-
-    ProfRangeTab = new WidgetForCustomPlot(this);
-    ProfRangeTab->customPlot->xAxis->setLabel("Delay (m)");
-    ProfRangeTab->XRangeUnitsLabel->setText("m");
-    addTab(ProfRangeTab,"Prof Range");
-    PlotTabs.push_back(ProfRangeTab);
-    ProfRangeTab->customPlot->addGraph();
-    ProfRangeTab->customPlot->addGraph();
-
-    GatedProfileTab = new WidgetForCustomPlot(this);
-    GatedProfileTab->customPlot->xAxis->setLabel("Delay (m)");
-    GatedProfileTab->XRangeUnitsLabel->setText("m");
-    addTab(GatedProfileTab,"Gated Profile");
-    PlotTabs.push_back(GatedProfileTab);
-
-
-
-    PatternTab = new WidgetForCustomPlot(this);
-    PatternTab->customPlot->xAxis->setLabel("Az (deg)");
-    PatternTab->XRangeUnitsLabel->setText("deg");
-    addTab(PatternTab,"Pattern");
-    PlotTabs.push_back(PatternTab);
-    */
-    //PrintPreviewTab = new PrintPreview(this);
-    //addTab(PrintPreviewTab, "Print Preview");
-
-    //connect(PrintPreviewTab->PreviewButton, &QPushButton::clicked, this, &TabWidgetForCharts::ShowPrintPreview);
-
-
-
-    /*
-    MeasurementPlotTabFrequency = new WidgetForCustomPlot(this);
-    addTab(MeasurementPlotTabFrequency,"Preview");
-    PlotTabs.push_back(MeasurementPlotTabFrequency);
-
-
-    MeasurementPlotTabAngle = new WidgetForCustomPlot(this);
-    MeasurementPlotTabAngle->customPlot->xAxis->setLabel("Угол поворота, градусы");
-    MeasurementPlotTabAngle->XRangeUnitsLabel->setText("град");
-    addTab(MeasurementPlotTabAngle,"Pattern");
-    PlotTabs.push_back(MeasurementPlotTabAngle);
-
-
-    TimeOfFlightPlotTab = new WidgetForCustomPlot(this);
-    TimeOfFlightPlotTab->customPlot->xAxis->setLabel("Расстояние, м");
-    TimeOfFlightPlotTab->XRangeUnitsLabel->setText("м");
-    addTab(TimeOfFlightPlotTab,"Down-range");
-    PlotTabs.push_back(TimeOfFlightPlotTab);
-
-
-
-    CrossRangeTab = new WidgetForCustomPlot(this);
-    addTab(CrossRangeTab,"Cross-range");
-    PlotTabs.push_back(CrossRangeTab);
-
-
-    ColorMapTab = new WidgetForCustomPlot(this);
-    addTab(ColorMapTab,"Color map");
-    PlotTabs.push_back(ColorMapTab);
-
-
-    StatisticaTab = new WidgetForCustomPlot(this);
-    addTab(StatisticaTab,"Statistica");
-    PlotTabs.push_back(StatisticaTab);
-
-
-    FrequencyTab = new WidgetForCustomPlot(this);
-    addTab(FrequencyTab,"Frequency");
-    PlotTabs.push_back(FrequencyTab);
-
-
-    ScriptEditorTab = new WidgetForCustomPlot(this);
-    addTab(ScriptEditorTab,"Script Editor");
-    PlotTabs.push_back(ScriptEditorTab);
-
-
-    PrintPreviewTab = new WidgetForCustomPlot(this);
-    addTab(PrintPreviewTab,"Print Preview");
-    PlotTabs.push_back(PrintPreviewTab);
-    */
-
-
-
-
-
-    //this->setSizePolicy(QSizePolicy::MinimumExpanding,QSizePolicy::MinimumExpanding);
-    // Добавить окно с предпросмотром сохраняемого изображения.
-    //qDebug()<<"PlotWindowSize = " << this->size();
-
-    //setTabsClosable(true); Можно было так.
-    //this->setTabsMovable(true);
-
-    //this->setTabToolTip(0, "Вкладка по умолчанию, на которую влияют кнопки запуска и непрерывного измерения");
-
-
-    SendImagesIfPrintPreview(PlotTabs.size());
 }
 
-
-
-void TabWidgetForCharts::SendImagesIfPrintPreview(int TabIndex)
+void TabWidgetForCharts::SendPixmapToPrintPreview(int TabIndex, int width, int height, double scale)
 {
+    QPixmap Pixmap = this->PlotTabs[TabIndex]->customPlot->PixmapForPreview(width, height, scale);
+    emit SendPixmapToPreview(Pixmap);
+}
 
-
+void TabWidgetForCharts::OnTabChanged(int TabIndex)
+{
     if (TabIndex == PlotTabs.size())
     {
         QVector <QImage> VectorOfPlotImages;
@@ -163,15 +50,207 @@ void TabWidgetForCharts::SendImagesIfPrintPreview(int TabIndex)
             VectorOfPlotImages.append(PlotImage);
         }
         PrintPreviewTab->VectorOfPlotImages = VectorOfPlotImages;
+
         emit SendCurrentPlotIndexToLegendSignal(-1);
     }
     else
+
         emit SendCurrentPlotIndexToLegendSignal(TabIndex);
+}
+
+
+void TabWidgetForCharts::UpdatePrintPreviewCheckBoxes()
+{
+    for (int i=0; i< TabTitleList.size(); i++)
+    {
+        PrintPreviewTab->CheckBoxGroup->button(i)->setText(TabTitleList[i]);
+    }
+}
+
+
+
+
+void TabWidgetForCharts::InitiateCloseTabButton()
+{
+
+    QPushButton* TempCloseButton = new QPushButton("X");
+
+
+    TempCloseButton->setStyleSheet("QPushButton {"
+                                   "background-color: #FF6F61;"
+                                   "color: white;"
+                                   "border-radius: 0px;" // Adjust the value to make it more circular
+                                   "width: 15px;"
+                                   "height: 15px;"
+                                   "}");
+
+
+    TempCloseButton->setFixedSize(15,15);
+
+    tabBar()->setTabButton(this->count()-1, QTabBar::RightSide, TempCloseButton);
+
+    QWidget * TempTabPtr = this->widget(this->count()-1);
 
 }
 
 
 
+
+
+
+TabWidgetForCharts::~TabWidgetForCharts()
+{
+    /*
+    qDeleteAll(PlotTabs);
+    PlotTabs.clear();
+    */
+}
+
+
+
+
+
+void TabWidgetForCharts::UpdateText()
+{
+    UpdateTabTitles();
+    for (int t = 0; t<PlotTabs.size(); t++)
+    {
+        PlotTabs[t]->UpdateText();
+    }
+
+    PrintPreviewTab->UpdateText();
+}
+
+
+
+void TabWidgetForCharts::UpdateTabTitles()
+{
+    for (int i = 0; i< TabTitleList.size(); i++)
+    {
+        setTabText(i, TabTitleList[i]);
+    }
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// Устаревшее
 
 
 
@@ -330,79 +409,114 @@ void TabWidgetForCharts::UpdateMeasurementPlot(QVector <std::complex<double>> f)
 */
 
 
+//connect(PrintPreviewTab->PatternBox, &QCheckBox::toggled, PlotTabs[0], PlotClass::SendPlotImageForPreview);
 
-void TabWidgetForCharts::InitiateCloseTabButton()
-{
+/*
+    SweepTab = new WidgetForCustomPlot(this);
+    SweepTab->customPlot->xAxis->setLabel("Frequency (GHz)");
+    SweepTab->XRangeUnitsLabel->setText("GHz");
+    addTab(SweepTab,"Sweep");
+    PlotTabs.push_back(SweepTab);
+    SweepTab->customPlot->addGraph();
 
-    QPushButton* TempCloseButton = new QPushButton("X");
+
+    ProfRangeTab = new WidgetForCustomPlot(this);
+    ProfRangeTab->customPlot->xAxis->setLabel("Delay (m)");
+    ProfRangeTab->XRangeUnitsLabel->setText("m");
+    addTab(ProfRangeTab,"Prof Range");
+    PlotTabs.push_back(ProfRangeTab);
+    ProfRangeTab->customPlot->addGraph();
+    ProfRangeTab->customPlot->addGraph();
+
+    GatedProfileTab = new WidgetForCustomPlot(this);
+    GatedProfileTab->customPlot->xAxis->setLabel("Delay (m)");
+    GatedProfileTab->XRangeUnitsLabel->setText("m");
+    addTab(GatedProfileTab,"Gated Profile");
+    PlotTabs.push_back(GatedProfileTab);
 
 
-    TempCloseButton->setStyleSheet("QPushButton {"
-                                   "background-color: #FF6F61;"
-                                   "color: white;"
-                                   "border-radius: 0px;" // Adjust the value to make it more circular
-                                   "width: 15px;"
-                                   "height: 15px;"
-                                   "}");
-    TempCloseButton->setFixedSize(15,15);
 
-    tabBar()->setTabButton(this->count()-1, QTabBar::RightSide, TempCloseButton);
-
-    QWidget * TempTabPtr = this->widget(this->count()-1);
-
-    /*
-    ////connect(TempCloseButton, &QPushButton::clicked, this, [TempTabPtr,this]()
-            {
-                removeTab(indexOf(TempTabPtr));
-            }
-            );
+    PatternTab = new WidgetForCustomPlot(this);
+    PatternTab->customPlot->xAxis->setLabel("Az (deg)");
+    PatternTab->XRangeUnitsLabel->setText("deg");
+    addTab(PatternTab,"Pattern");
+    PlotTabs.push_back(PatternTab);
     */
-}
+//PrintPreviewTab = new PrintPreview(this);
+//addTab(PrintPreviewTab, "Print Preview");
+
+//connect(PrintPreviewTab->PreviewButton, &QPushButton::clicked, this, &TabWidgetForCharts::ShowPrintPreview);
 
 
 
+/*
+    MeasurementPlotTabFrequency = new WidgetForCustomPlot(this);
+    addTab(MeasurementPlotTabFrequency,"Preview");
+    PlotTabs.push_back(MeasurementPlotTabFrequency);
+
+
+    MeasurementPlotTabAngle = new WidgetForCustomPlot(this);
+    MeasurementPlotTabAngle->customPlot->xAxis->setLabel("Угол поворота, градусы");
+    MeasurementPlotTabAngle->XRangeUnitsLabel->setText("град");
+    addTab(MeasurementPlotTabAngle,"Pattern");
+    PlotTabs.push_back(MeasurementPlotTabAngle);
+
+
+    TimeOfFlightPlotTab = new WidgetForCustomPlot(this);
+    TimeOfFlightPlotTab->customPlot->xAxis->setLabel("Расстояние, м");
+    TimeOfFlightPlotTab->XRangeUnitsLabel->setText("м");
+    addTab(TimeOfFlightPlotTab,"Down-range");
+    PlotTabs.push_back(TimeOfFlightPlotTab);
 
 
 
-TabWidgetForCharts::~TabWidgetForCharts()
-{
-    /*
-    qDeleteAll(PlotTabs);
-    PlotTabs.clear();
+    CrossRangeTab = new WidgetForCustomPlot(this);
+    addTab(CrossRangeTab,"Cross-range");
+    PlotTabs.push_back(CrossRangeTab);
+
+
+    ColorMapTab = new WidgetForCustomPlot(this);
+    addTab(ColorMapTab,"Color map");
+    PlotTabs.push_back(ColorMapTab);
+
+
+    StatisticaTab = new WidgetForCustomPlot(this);
+    addTab(StatisticaTab,"Statistica");
+    PlotTabs.push_back(StatisticaTab);
+
+
+    FrequencyTab = new WidgetForCustomPlot(this);
+    addTab(FrequencyTab,"Frequency");
+    PlotTabs.push_back(FrequencyTab);
+
+
+    ScriptEditorTab = new WidgetForCustomPlot(this);
+    addTab(ScriptEditorTab,"Script Editor");
+    PlotTabs.push_back(ScriptEditorTab);
+
+
+    PrintPreviewTab = new WidgetForCustomPlot(this);
+    addTab(PrintPreviewTab,"Print Preview");
+    PlotTabs.push_back(PrintPreviewTab);
     */
-}
 
 
 
 
 
+//this->setSizePolicy(QSizePolicy::MinimumExpanding,QSizePolicy::MinimumExpanding);
+// Добавить окно с предпросмотром сохраняемого изображения.
+//qDebug()<<"PlotWindowSize = " << this->size();
+
+//setTabsClosable(true); Можно было так.
+//this->setTabsMovable(true);
+
+//this->setTabToolTip(0, "Вкладка по умолчанию, на которую влияют кнопки запуска и непрерывного измерения");
 
 
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// Устаревшее
 /*
 void TabWidgetForCharts::ContinuousMeasurementModeChanged()
 {

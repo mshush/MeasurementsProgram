@@ -2,76 +2,177 @@
 
 TabWidgetForTools::TabWidgetForTools()
 {
-
-    //this->adjustSize();
-    this->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding);
-
-
-    PatternTab = new WidgetForCustomPlot(this);
-    PatternTab->setMaximumHeight(300);
-    PatternTab->setSizePolicy(QSizePolicy::Minimum,QSizePolicy::Minimum);
-    //setContentsMarginsToZero(PatternTab);
-    //PatternTab->ControlsWidget->setContentsMargins(QMargins(0,0,0,0));
-    //PatternTab->VerticalControlsLayout->setContentsMargins(QMargins(0,0,0,0));
-    //PatternTab->SetRangeVerticalLayout->setContentsMargins(QMargins(0,0,0,0));
-    PatternTab->customPlot->xAxis->setLabel("Az, deg");
-    //PatternTab->MarkerFrame->setVisible(false);
-    MessagesTab = new QTreeWidget(this);
-    LegendTab = new LegendWidget(this);
-    ScriptTab = new QWidget(this);
-    File_ManagerTab = new TreeWidgetForFiles(this);
-    DebugMessagesTab = new QTreeWidget(this);
-
-
-
-
-
-
-
-    addTab(PatternTab,       "Pattern");
-    addTab(MessagesTab,      "Messages");
-    addTab(LegendTab,        "Legend");
-    addTab(ScriptTab,        "Script");
-    addTab(File_ManagerTab,  "File_Manager");
-    addTab(DebugMessagesTab, "Debug_Messages");
-
-
-
-    MessagesTab->setColumnCount(1); // Set the number of columns
-    MessagesTab->setHeaderLabel("Messages"); // Set the header label
-
-    // Create root item
-    QTreeWidgetItem *rootItem = new QTreeWidgetItem(MessagesTab, QStringList() << "Legend Item");
-
-    // Create child items
-    QTreeWidgetItem *childItem1 = new QTreeWidgetItem(rootItem, QStringList() << "Item 1");
-    QTreeWidgetItem *childItem2 = new QTreeWidgetItem(rootItem, QStringList() << "Item 2");
-
-    // Create sub-child item
-    QTreeWidgetItem *subChildItem = new QTreeWidgetItem(childItem1, QStringList() << "Item3");
-
-    // Expand the root item to show children
-    rootItem->setExpanded(true);
-
-
+    SetUpGeneralStyle();
+    SetUpPatternTab();
+    FillMessagesTab();
     FillDebugMessagesTab();
 
 
+    LegendTab = new LegendWidget(this);
+    ScriptTab = new QWidget(this);
+    File_ManagerTab = new TreeWidgetForFiles(this);
 
-    // Create root item
-    QTreeWidgetItem *rootItem1 = new QTreeWidgetItem(MessagesTab, QStringList() << "Legend Item");
 
-    // Create child items
-    QTreeWidgetItem *childItem11 = new QTreeWidgetItem(rootItem1, QStringList() << "Item 1");
-    QTreeWidgetItem *childItem21 = new QTreeWidgetItem(rootItem1, QStringList() << "Item 2");
 
-    // Create sub-child item
-    QTreeWidgetItem *subChildItem1 = new QTreeWidgetItem(childItem11, QStringList() << "Item3");
+    addTab(PatternTab,       tr("Pattern"));
+    addTab(MessagesTab,      tr("Messages"));
+    addTab(LegendTab,        tr("Legend"));
+    addTab(ScriptTab,        tr("Script"));
+    addTab(File_ManagerTab,  tr("File_Manager"));
+    addTab(DebugMessagesTab, tr("Debug_Messages"));
 
-    // Expand the root item to show children
-    rootItem1->setExpanded(true);
+}
 
-    /*
+
+
+
+
+
+void TabWidgetForTools::UpdateText()
+{
+
+}
+
+void TabWidgetForTools::SetUpGeneralStyle()
+{
+    this->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding);
+
+}
+
+void TabWidgetForTools::SetUpPatternTab()
+{
+    PatternTab = new WidgetForCustomPlot(this);
+    PatternTab->setMaximumHeight(300);
+    PatternTab->setSizePolicy(QSizePolicy::Minimum,QSizePolicy::Minimum);
+
+    //PatternTab->ControlsWidget->setContentsMargins(QMargins(0,0,0,0));
+    //PatternTab->VerticalControlsLayout->setContentsMargins(QMargins(0,0,0,0));
+    //PatternTab->SetRangeVerticalLayout->setContentsMargins(QMargins(0,0,0,0));
+    //PatternTab->customPlot->xAxis->setLabel("Az, deg");
+    //PatternTab->MarkerPositionsTable->setVisible(false);
+}
+
+void TabWidgetForTools::FillMessagesTab()
+{
+    MessagesTab = new QTreeWidget(this);
+    MessagesTab->setColumnCount(1);
+    MessagesTab->setHeaderLabel(tr("Messages"));
+/*
+    QTreeWidgetItem *rootItem = new QTreeWidgetItem(MessagesTab, QStringList() << "Legend Item");
+    QTreeWidgetItem *childItem1 = new QTreeWidgetItem(rootItem, QStringList() << "Item 1");
+    QTreeWidgetItem *childItem2 = new QTreeWidgetItem(rootItem, QStringList() << "Item 2");
+    QTreeWidgetItem *subChildItem = new QTreeWidgetItem(childItem1, QStringList() << "Item3");
+    rootItem->setExpanded(true);
+*/
+}
+
+void TabWidgetForTools::SetUpLegendTab()
+{
+
+}
+
+void TabWidgetForTools::SetUpFilesManagerTab()
+{
+
+}
+
+void TabWidgetForTools :: FillDebugMessagesTab()
+{
+    DebugMessagesTab = new QTreeWidget(this);
+    DebugMessagesTab->setColumnCount(1);
+    QTreeWidgetItem * Error1 = new QTreeWidgetItem(DebugMessagesTab);
+    Error1->setText(0,"Error1");
+    DebugMessagesTab->addTopLevelItem(Error1);
+
+    DebugMessagesTab->setHeaderLabel("Errors");
+}
+
+
+
+
+
+TabWidgetForTools::~TabWidgetForTools()
+{
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// Устаревшее
+
+/*
     DebugMessagesTab->setColumnCount(3);
     DebugMessagesTab->setHorizontalHeaderLabels({"Время", "Отправитель", "Сообшение"});
     DebugMessagesTab->horizontalHeader()->setStretchLastSection(true);
@@ -79,7 +180,7 @@ TabWidgetForTools::TabWidgetForTools()
     */
 
 
-    /*
+/*
     QHBoxLayout * Tab1Layout = new QHBoxLayout(PatternTab); // Переименовать
 
 
@@ -119,7 +220,7 @@ TabWidgetForTools::TabWidgetForTools()
 
 /////////////////////////////////////////
 
-    /*
+/*
     SaveDataButton = new QPushButton("⇩",this); //⤓⇩
     SaveDataButton->setFont(QFont("Arial", 30, QFont::Bold));
     SaveDataButton->setStyleSheet("QPushButton { color: orange; padding-top: 0px; padding-bottom: 0px; padding-left: 5px; padding-right: 5px; }");
@@ -136,7 +237,7 @@ TabWidgetForTools::TabWidgetForTools()
     Tab1Layout->addWidget(ImportDataButton);
     */
 
-    /*
+/*
     FourierTransformButton = new QPushButton("F",this);
     FourierTransformButton->resize(30,30);
     Tab1Layout->addWidget(FourierTransformButton);
@@ -146,7 +247,7 @@ TabWidgetForTools::TabWidgetForTools()
     Tab1Layout->addWidget(InverseFourierTransformButton);
     */
 ////////////////////////////////////////
-    /*
+/*
     SaveThreeDimensionalVectorButton = new QPushButton("Сохранить результат измерения",this);
     Tab1Layout->addWidget(SaveThreeDimensionalVectorButton);
 
@@ -173,35 +274,19 @@ TabWidgetForTools::TabWidgetForTools()
 
 
 
-    //this->adjustSize();
+//this->adjustSize();
 
-}
-
-
+/*
 void TabWidgetForTools::SendContinuousMeasurementsButtonClickedSignal()
 {
     emit ContinuousMeasurementsButtonClickedSignal(ContinuousMeasurementsButton->isChecked());
 }
+*/
 
-
-
-TabWidgetForTools::~TabWidgetForTools()
-{
-    /*
-    delete StartMeasurementsButton;
-    delete StopMeasurementsButton;
-    delete ContinuousMeasurementsButton;
-    delete SaveDataButton;
-    delete ImportDataButton;
-    delete Tab1;
-    delete Tab2;
-    */
-}
-
-
+/*
 void TabWidgetForTools::DisplayError(QString ErrorText)
 {
-    /*
+
     int NumberOfRows = DebugMessagesTab->rowCount();
     DebugMessagesTab->insertRow(NumberOfRows);
     DebugMessagesTab->setItem(NumberOfRows, 0, new QTableWidgetItem(QDateTime::currentDateTime().toString("yyyy-MM-dd HH:mm:ss")));
@@ -210,12 +295,11 @@ void TabWidgetForTools::DisplayError(QString ErrorText)
     QString message = ListOf2Items.size() > 1 ? ListOf2Items[1].trimmed() : "Нет сообщения";
     DebugMessagesTab->setItem(NumberOfRows, 1, new QTableWidgetItem(type));
     DebugMessagesTab->setItem(NumberOfRows, 2, new QTableWidgetItem(message));
-*/
 }
-
+*/
+/*
 void TabWidgetForTools::setContentsMarginsToZero(QWidget *widget)
 {
-    /*
     widget->setContentsMargins(0, 0, 0, 0);
     widget->layout()->setContentsMargins(0, 0, 0, 0);
 
@@ -227,21 +311,5 @@ void TabWidgetForTools::setContentsMarginsToZero(QWidget *widget)
             qDebug()<<child;
         }
     }
-    */
 }
-
-void TabWidgetForTools :: FillDebugMessagesTab()
-{
-
-    DebugMessagesTab->setColumnCount(1);
-    QTreeWidgetItem * Error1 = new QTreeWidgetItem(DebugMessagesTab);
-    Error1->setText(0,"Error1");
-    DebugMessagesTab->addTopLevelItem(Error1);
-
-    DebugMessagesTab->setHeaderLabel("Errors");
-
-
-
-}
-
-
+*/

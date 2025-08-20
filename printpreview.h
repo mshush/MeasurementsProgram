@@ -14,39 +14,65 @@
 
 
 
-enum PresetSizesAndPositions
-{
-    usersize,
-    wholepage           ,
 
-    upperhalf           ,
-    lowerhalf           ,
-
-    upperthird          ,
-    middlethird         ,
-    bottomthird         ,
-
-    topleftquarter      ,
-    toprightquarter     ,
-    bottomleftquarter   ,
-    bottomrightquarter  ,
-
-    topleftsixth        ,
-    toprightsixth       ,
-    middleleftsixth     ,
-    middlerightsixth    ,
-    bottomleftsixth     ,
-    bottomrightsixth    ,
-};
 
 class PrintPreview : public QWidget {
     Q_OBJECT
 
 public:
-    PrintPreview(QWidget *parent = nullptr);
+    PrintPreview(int NumberOfPlotTabs, QWidget *parent = nullptr);
     ~PrintPreview();
 
-    //QPainter * Painter;
+    // Функции из конструктора
+    void SetUpGeneralStyle();
+    void SetUpPrinter();
+    void SetUpPreviewArea();
+    void FillCheckBoxes(int NumberOfPlotTabs);
+    void FillPresetButtons();
+    void FillCompClearPrintClearButtons();
+    void SetUpConnections();
+    void CalculateMargins();
+    void FillLayout();
+
+    // Функции из функций из конструктора
+    void ConnectPresetButtons();
+
+
+    // Класс-перебор шаблонов
+    enum class Preset
+    {
+        usersize,
+        wholepage           ,
+
+        upperhalf           ,
+        lowerhalf           ,
+
+        upperthird          ,
+        middlethird         ,
+        bottomthird         ,
+
+        topleftquarter      ,
+        toprightquarter     ,
+        bottomleftquarter   ,
+        bottomrightquarter  ,
+
+        topleftsixth        ,
+        toprightsixth       ,
+        middleleftsixth     ,
+        middlerightsixth    ,
+        bottomleftsixth     ,
+        bottomrightsixth    ,
+    };
+
+    QVector <QImage> VectorOfImages;
+    QVector <Preset> VectorOfPresets;
+
+
+
+    // Выбранные шаблон и картинка (на данный момент)
+    Preset CurrentPreset = Preset::usersize;
+    QPixmap CurrentPixmap;
+
     QPrintPreviewWidget * PrintPreviewWidget;
     QPrinter * Printer;
 
@@ -55,7 +81,6 @@ public:
     QVector <QPoint> VectorOfPlotPositions;
     QVector <QSize>  VectorOfPlotSizes;
     int ActiveButton;
-    PresetSizesAndPositions Preset = usersize;
 
     int LeftMarginInMM      = 20; // Отступ слева
     int TopMarginInMM       = 10; // Отступ сверху
@@ -70,35 +95,17 @@ public:
     double BottomMarginY;
     qreal dpi;
 
+    QButtonGroup * CheckBoxGroup;
 
-
-
+    // Компоновки
     QHBoxLayout * PrintPreviewLayout;
-    QVBoxLayout * OldButtonsLayout; // Кнопки как в старой проге
-    QGridLayout * SizeLocationLayout;
+    QGridLayout * PresetLayout;
     QGridLayout * CompClearPrintClearLayout;
-    QGridLayout * CheckBoxLayout;
+    QVBoxLayout * CheckBoxLayout;
+    QVBoxLayout * ButtonsPanelLayout;
 
-    QWidget * SizeLocationContainerWidget;
-
-    // Окошки для галочек: какой график сейчас добавляем/меняем
-    QCheckBox * PreviewBox;
-    QCheckBox * FrequencyBox;
-    QCheckBox * PatternBox;
-    QCheckBox * DownRangeBox;
-    QCheckBox * CrossRangeBox;
-    QCheckBox * StatisticaBox;
-    QCheckBox * Frequency_DRBox;
-    QCheckBox * CompositeBox;
-
-    QLabel * PreviewLabel;
-    QLabel * FrequencyLabel;
-    QLabel * PatternLabel;
-    QLabel * DownRangeLabel;
-    QLabel * CrossRangeLabel;
-    QLabel * StatisticaLabel;
-    QLabel * Frequency_DRLabel;
-    QLabel * CompositeLabel;
+    QWidget * ButtonsPanelWidget; // Виджет-контейнер всей панели управления справа
+    QWidget * PresetButtonsContainerWidget; // Виджет-контейнер кнопок шаблона
 
 
     // Кнопки изменения размеров
@@ -131,20 +138,16 @@ public:
     QPushButton * PrintPlusButton;
     QPushButton * ClearPrintButton;
 
+    void UpdateText();
 
+
+    QRect RectFromPreset(Preset PresetInput);
 public slots:
-    // При установке галочек добавляют/меняют соответствующий график
-    void PreviewBoxClicked      (bool checked);
-    void FrequencyBoxClicked    (bool checked);
-    void PatternBoxClicked      (bool checked);
-    void DownRangeBoxClicked    (bool checked);
-    void CrossRangeBoxClicked   (bool checked);
-    void StatisticaBoxClicked   (bool checked);
-    void Frequency_DRBoxClicked (bool checked);
-    void CompositeBoxClicked    (bool checked);
+    // При установке галочек добавляет/меняет соответствующий график
+    void SendSignalForPixmap(int CorrespondingTabId);
+
 
     // При нажатии меняют размер выбранного графика:
-
     void  MoveAndResizeToUserSize           ();
     void  MoveAndResizeToWholePage          ();
     void  MoveAndResizeToUpperHalf          ();
@@ -170,12 +173,15 @@ public slots:
 
 
 
-    void DrawPreset(QImage image, QPainter &painter);
+    void DrawPreset(QImage image, QPainter &painter, Preset PresetInput);
 
     void OnPaintRequested();
 
     void UpdatePreview();
 
+    void OnPixmapReceived(QPixmap Pixmap);
+signals:
+    void NeedPixmap(int NeededTab, int NeededWidth, int NeededHeight, int NeededScale);
 
 };
 

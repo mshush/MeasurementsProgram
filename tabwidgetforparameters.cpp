@@ -24,3 +24,27 @@ TabWidgetForParameters::~TabWidgetForParameters()
     delete Tab3;
     */
 }
+
+
+
+
+void TabWidgetForParameters::UpdateText()
+{
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

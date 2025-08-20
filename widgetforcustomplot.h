@@ -145,6 +145,8 @@ public:
         };
 
 
+    void UpdateText();
+
 
 public slots:
     //void EnterSelectLocalMinMode();

@@ -4,6 +4,7 @@
 #include <QObject>
 #include <QWidget>
 #include <QtWidgets>
+#include "measurmentscontrol.h"
 
 
 
@@ -12,6 +13,11 @@ class LegendWidget : public QWidget
     Q_OBJECT
 public:
     explicit LegendWidget(QWidget *parent = nullptr);
+
+    MeasDataClass MeasData;
+    int ActiveTab = 0;
+
+
 
     struct LegendRow
     {
@@ -22,14 +28,22 @@ public:
         QComboBox * DataBox;
         QComboBox * PlaneBox;
         QComboBox * FreqBox;
-        QComboBox * AlBox;
+        QComboBox * AzBox;
         QComboBox * ElBox;
+        QComboBox * DistBox;
         QComboBox * ChannelBox;
         QComboBox * SmoothBox;
         QComboBox * PercentBox;
         QComboBox * ColourBox;
-        int ChartTabIndex;
     };
+
+    struct LegendRowsForOnePlot
+    {
+        QVector <LegendRow *> Rows;
+    };
+
+
+    QVector <LegendRowsForOnePlot> LegendRowsForAllPlots;
 
     struct DataForLegendRow
     {
@@ -39,11 +53,11 @@ public:
         QVector <double>  Freq;
         QVector <double>  Az;
         QVector <double>  El;
+        QVector <double>  Dist;
         QVector <QString> Channel;
         QVector <QString> Smooth;
         QVector <int>     Percent;
         QVector <QString> Colour;
-
     };
 
     struct DataFromLegendRow
@@ -54,6 +68,7 @@ public:
         int Freq        = 0;
         int Az          = 0;
         int El          = 0;
+        int Dist        = 0;
         int Channel     = 0;
         int Smooth      = 0;
         int Percent     = 0;
@@ -88,6 +103,20 @@ public:
         "White"
     };
 
+    QStringList DataTypes = // Типы данных, чтобы внести их в QComboBox
+    {
+        "Raw Target",
+        "Raw Bckgnd",
+        "Raw Resp",
+        "Proc Bckgnd",
+        "Clbr",
+        "Pattern",
+        "Curr Aspect",
+        "ProfRange",
+        "Gated ProfRange"
+    };
+
+
     QVector <LegendRow> VectorOfRows; //Вектор всех строк таблицы (в строке хранится номер соответствующей графику вкладки)
 
 
@@ -115,17 +144,22 @@ public:
     QLabel * ShowInLegendBoxLabel;
     QLabel * GraphTitleLabel;
     QLabel * TitleLabel;
+
     QCheckBox * TitleChBox;
     QCheckBox * DataChBox;
     QCheckBox * PlaneChBox;
     QCheckBox * FreqChBox;
     QCheckBox * AzChBox;
     QCheckBox * ElChBox;
+    QCheckBox * DistChBox;
     QCheckBox * ChannelChBox;
     QVector <LegendRow> RowVector;
     QTableWidget * LegendTable;
 
-    int ActiveTab = 0;
+
+
+    void SetNumberOfPlots(int PlotsNumber);
+
 
 public slots:
     void OnReadDataClicked();
@@ -137,10 +171,12 @@ public slots:
     void OnDownLineClicked();
     void OnCopyToMemoryLineClicked();
     void OnRefreshClicked();
-
-    //void ReceiveMeasurementsData();
-
     void OnChartTabChanged(int TabNumber);
+
+    void FillFirstRows(MeasDataClass MeasuredData);
+
+    void SomeRowChanged();
+
 
 signals:
     void ReadDataSignal();
@@ -152,6 +188,23 @@ signals:
     void DownLineSignal();
     void CopyToMemoryLineSignal();
     void RefreshSignal();
+
+
+    void VisibilityCheckedSignal(int TabId, int GraphId, bool Visible);
+    void TitleChangedSignal     (int TabId, int GraphId, QString Title);
+    void RedrawPlotSignal       (int TabId, int GraphId,
+                          MeasDataClass::MeasDataType DataType,
+                          QString Plane,
+                          int Frequency,
+                          int Azimuth,
+                          int Elevation,
+                          int Distance,
+                          QColor Colour
+);
+
+
+
+
 };
 
 

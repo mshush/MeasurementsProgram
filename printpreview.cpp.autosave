@@ -68,10 +68,11 @@ void PrintPreview::FillCheckBoxes(int NumberOfPlotTabs)
     // Окошки для галочек, с каким графиком работаем
     for (int i=0; i<NumberOfPlotTabs; i++)
     {
-        QCheckBox * NewCheckBox      = new QCheckBox("");
+        QCheckBox * NewCheckBox = new QCheckBox("");
         NewCheckBox->setLayoutDirection(Qt::RightToLeft);
         CheckBoxGroup->addButton(NewCheckBox, i);
         CheckBoxLayout->addWidget(NewCheckBox);
+        con
     }
     CheckBoxGroup->button(0)->setChecked(true);
 }

@@ -48,8 +48,9 @@ public:
     MeasurmentsControl * MeasControl;
     QTimer * Timer;
 
-    QComplexVector FullPatternArray; // Нужно ли так заморачиваться?
-    void FillPatternArrayFromMeasData();
+    QComplexVector Fill3DArrayFromMeasData(MeasDataClass::MeasDataType DType);
+
+    QComplexVector Fill1DArrayFromMeasDataForAnglePlane(MeasDataClass::MeasDataType DType, QString Plane, int firstindex, int secondindex);
 
 
 
@@ -153,6 +154,7 @@ public slots:
 
 
     // Связанные с легендой слоты
+    // Кнопки
     void OnReadDataSignalReceived();
     void OnWriteDataSignalReceived();
     void OnAddLineSignalReceived();
@@ -163,8 +165,26 @@ public slots:
     void CopyToMemoryLineSignalReceived();
     void RefreshSignalReceived();
 
+    // Строки
+    void OnVisibilityCheckedSignalReceived(int TabId, int GraphId, bool Visible);
+    void OnTitleChangedSignalReceived     (int TabId, int GraphId, QString Title);
+    void OnRedrawPlotSignalReceived       (int TabId, int GraphId,
+                                    MeasDataClass::MeasDataType DataType,
+                                    QString Plane,
+                                    int Frequency,
+                                    int Azimuth,
+                                    int Elevation,
+                                    int Distance,
+                                    QColor Colour
+);
+
+
+
+
+
     // Вывод сообщения об ошибке
     void ShowErrorMessage(QString Description, QString Advice);
+
 
 signals:
     void ErrorOccured(QString ErrorText);

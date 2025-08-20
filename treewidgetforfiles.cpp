@@ -8,7 +8,6 @@ TreeWidgetForFiles::TreeWidgetForFiles (QWidget *parent)  : QWidget(parent)
 
     model = new QFileSystemModel(this);
     model->setRootPath(QDir::rootPath());
-
     FileTree->setModel(model);
     FileTree->setRootIndex(model->index(QDir::rootPath())); //Сменить папку
     FileTree->setColumnWidth(10, 250);

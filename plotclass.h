@@ -116,7 +116,8 @@ public slots:
 
     void ResetPlot();
 
-    void SendPlotImageForPreview();
+    QPixmap PixmapForPreview(int widthparam, int heightparam, double scaleparam);
+
     void DeleteAllMarkers();
     void CopyPlot();
     void SaveData(); // Устар
