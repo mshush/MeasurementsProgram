@@ -331,13 +331,13 @@ void WidgetForCustomPlot::FillYAxisControl()
     YAxisWidget->setContentsMargins(QMargins(0,0,0,0));
     QVBoxLayout * YAxisVertLayout = new QVBoxLayout(YAxisWidget);
 
-    YAxisTitleLabel = new QLabel("Y-axis");
+    YAxisTitleLabel = new QLabel(tr("Y-axis"));
     YAxisVertLayout->addWidget(YAxisTitleLabel);
 
     QGridLayout * YAxisGridLayout = new QGridLayout();
 
-    YAxisMaxLabel   = new QLabel("Max (dB)");
-    YAxisSpanLabel  = new QLabel("Span (dB)");
+    YAxisMaxLabel   = new QLabel(tr("Max (dB)"));
+    YAxisSpanLabel  = new QLabel(tr("Span (dB)"));
     YAxisMaxBox     = new QComboBox();
     YAxisSpanBox    = new QComboBox();
     YAxisMaxBox ->setEditable(true);
@@ -390,7 +390,7 @@ void WidgetForCustomPlot::FillXAxisAndMarkerControl()
     QGridLayout * XAxisGridLayout = new QGridLayout(XAxisWidget);
     XAxisWidget->setLayout(XAxisGridLayout);
 
-    XAxisTitleLabel = new QLabel("X-Axis");
+    XAxisTitleLabel = new QLabel(tr("X-Axis"));
     XAxisGridLayout->addWidget(XAxisTitleLabel, 0, 0, 1, 2);
 
 

@@ -77,43 +77,44 @@ public:
 
     QStringList headers =
     {
-        "Title",
-        "Data",
-        "Plane",
-        "Freq",
-        "Az",
-        "El",
-        "Channel",
-        "Smooth",
-        "%",
-        "Color"
+        tr("Title"),
+        tr("Data"),
+        tr("Plane"),
+        tr("Frequency"),
+        tr("Azimuth"),
+        tr("Elevation"),
+        tr("Distance"),
+        tr("Channel"),
+        tr("Smooth"),
+        tr("%"),
+        tr("Color")
     };
 
     int SelectedRow = 0;
 
     QStringList ColourVector = //Чтобы было больше вариантов, можно использовать QColor::colorNames()
     {
-        "Yellow",
-        "Green",
-        "Cyan",
-        "Red",
-        "Magenta",
-        "Blue",
-        "Green",
-        "White"
+        tr("Yellow"),
+        tr("Green"),
+        tr("Cyan"),
+        tr("Red"),
+        tr("Magenta"),
+        tr("Blue"),
+        tr("Green"),
+        tr("White")
     };
 
     QStringList DataTypes = // Типы данных, чтобы внести их в QComboBox
     {
-        "Raw Target",
-        "Raw Bckgnd",
-        "Raw Resp",
-        "Proc Bckgnd",
-        "Clbr",
-        "Pattern",
-        "Curr Aspect",
-        "ProfRange",
-        "Gated ProfRange"
+        tr("Raw Target" ),
+        tr("Raw Bckgnd" ),
+        tr("Raw Resp" ),
+        tr("Proc Bckgnd" ),
+        tr("Clbr" ),
+        tr("Pattern" ),
+        tr("Curr Aspect" ),
+        tr("ProfRange" ),
+        tr("Gated ProfRange")
     };
 
 
@@ -122,10 +123,7 @@ public:
 
     void InitiateRow();
 
-
-    void RefillRows(int TabIndex);
-
-
+    void RefillRows();
 
     // Заполнение компоновки
     void FillLayout();
@@ -176,6 +174,16 @@ public slots:
     void FillFirstRows(MeasDataClass MeasuredData);
 
     void SomeRowChanged();
+
+    void DataBoxHighLighted     (int ID);
+    void PlaneBoxHighLighted    (int ID);
+    void FreqBoxHighLighted     (int ID);
+    void AzBoxHighLighted       (int ID);
+    void ElBoxHighLighted       (int ID);
+    void DistBoxHighLighted     (int ID);
+    void ColourBoxHighLighted   (int ID);
+
+
 
 
 signals:

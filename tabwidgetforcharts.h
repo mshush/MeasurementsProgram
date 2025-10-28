@@ -24,7 +24,6 @@ public:
             tr("Profile Range"), // Текущий дальностный портрет (на этом угле)
             tr("Unprocessed"), // Необработанные данные
             tr("Pattern")  // Обработанный Pattern
-
             //tr("ClbrSweep"),
             //tr("PttrnSweep"),
             //tr("CurrentAspect"),

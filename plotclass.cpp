@@ -1153,19 +1153,19 @@ QPixmap PlotClass::PixmapForPreview(int widthparam, int heightparam, double scal
     yAxis->setTickLabelColor(Qt::white);
 
     // Полярная сетка
-    AngularAxis->grid()->setAngularSubGridPen(QPen(Qt::black));
-    AngularAxis->grid()->setRadialSubGridPen(QPen(Qt::black));
-    AngularAxis->setTickPen(QPen(Qt::black, 2));
-    AngularAxis->setLabelColor(Qt::black);
-    AngularAxis->setBasePen(QPen(Qt::black, 2));
-    AngularAxis->setSubTickPen(QPen(Qt::black));
-    AngularAxis->setTickLabelColor(Qt::black);
+    AngularAxis->grid()->setAngularSubGridPen(QPen(Qt::white));
+    AngularAxis->grid()->setRadialSubGridPen(QPen(Qt::white));
+    AngularAxis->setTickPen(QPen(Qt::white, 2));
+    AngularAxis->setLabelColor(Qt::white);
+    AngularAxis->setBasePen(QPen(Qt::white, 2));
+    AngularAxis->setSubTickPen(QPen(Qt::white));
+    AngularAxis->setTickLabelColor(Qt::white);
 
-    RadialAxis->setTickPen(QPen(Qt::black, 2));
-    RadialAxis->setSubTickPen(QPen(Qt::black));
-    RadialAxis->setLabelColor(Qt::black);
-    RadialAxis->setBasePen(QPen(Qt::black, 2));
-    RadialAxis->setTickLabelColor(Qt::black);
+    RadialAxis->setTickPen(QPen(Qt::white, 2));
+    RadialAxis->setSubTickPen(QPen(Qt::white));
+    RadialAxis->setLabelColor(Qt::white);
+    RadialAxis->setBasePen(QPen(Qt::white, 2));
+    RadialAxis->setTickLabelColor(Qt::white);
 
     //Меняем размеры обратно:
     resize(SizeBefore);

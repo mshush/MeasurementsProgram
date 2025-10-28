@@ -145,19 +145,8 @@ public slots:
     void ChangeYAxisSpan(QString SpanValue);
 
 
-    void ChangeToPolarFormat(); // Переводит график в полярный формат
+    void ChangeToPolarFormat();     // Переводит график в полярный формат
     void ChangeToDescartesFormat(); // Переводит график в декартовый формат
-
-
-
-
-
-
-
-
-
-
-
 
 
 protected:

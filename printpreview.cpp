@@ -68,7 +68,7 @@ void PrintPreview::FillCheckBoxes(int NumberOfPlotTabs)
     // Окошки для галочек, с каким графиком работаем
     for (int i=0; i<NumberOfPlotTabs; i++)
     {
-        QCheckBox * NewCheckBox      = new QCheckBox("");
+        QCheckBox * NewCheckBox = new QCheckBox("");
         NewCheckBox->setLayoutDirection(Qt::RightToLeft);
         CheckBoxGroup->addButton(NewCheckBox, i);
         CheckBoxLayout->addWidget(NewCheckBox);
@@ -201,17 +201,7 @@ void PrintPreview::SetUpConnections()
 
 
     // Подсоединяем галочки
-    /*
-    connect(PreviewBox,     &QCheckBox::toggled, this, &PrintPreview::PreviewBoxClicked);
-    connect(FrequencyBox,   &QCheckBox::toggled, this, &PrintPreview::PreviewBoxClicked);
-    connect(PatternBox,     &QCheckBox::toggled, this, &PrintPreview::PreviewBoxClicked);
-    connect(DownRangeBox,   &QCheckBox::toggled, this, &PrintPreview::PreviewBoxClicked);
-    connect(CrossRangeBox,  &QCheckBox::toggled, this, &PrintPreview::PreviewBoxClicked);
-    connect(StatisticaBox,  &QCheckBox::toggled, this, &PrintPreview::PreviewBoxClicked);
-    connect(Frequency_DRBox,&QCheckBox::toggled, this, &PrintPreview::PreviewBoxClicked);
-    connect(CompositeBox,   &QCheckBox::toggled, this, &PrintPreview::PreviewBoxClicked);
-    */
-    // Можно только одну подсоединить
+    // (Можно сразу все через группу подсоединить)
     connect(CheckBoxGroup, &QButtonGroup::idClicked, this,  &PrintPreview::SendSignalForPixmap);
 
     connect(CompPlusButton,    &QPushButton::clicked, this, &PrintPreview::OnCompPlusButtonClicked);
@@ -293,7 +283,6 @@ void PrintPreview::SendSignalForPixmap(int TabID)
     int width = rect.width()*25.4/dpi;
     int height = rect.height()*25.4/dpi;
     emit NeedPixmap(TabID, width, height, 1.0);
-    qDebug()<< rect;
 }
 
 

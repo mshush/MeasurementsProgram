@@ -56,8 +56,6 @@ void MainWindow::ConnectMenu()
     // Перевод
     connect(SetRussianLanguageAction,&QAction::triggered, this, &MainWindow::ChangeLanguageToRussian);
     connect(SetEnglishLanguageAction,&QAction::triggered, this, &MainWindow::ChangeLanguageToEnglish);
-
-
 }
 
 void MainWindow::FillMenu()

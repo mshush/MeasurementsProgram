@@ -183,6 +183,7 @@
         <translation>Ширина (м)</translation>
     </message>
     <message>
+        <location filename="../custommeasurementtreewidget.cpp" line="318"/>
         <location filename="../custommeasurementtreewidget.cpp" line="359"/>
         <source>N</source>
         <translation>Число Точек</translation>
@@ -321,95 +322,220 @@
 <context>
     <name>LegendWidget</name>
     <message>
-        <location filename="../legendwidget.cpp" line="70"/>
+        <location filename="../legendwidget.cpp" line="16"/>
         <source>Read Data</source>
         <translation>Чтение</translation>
     </message>
     <message>
-        <location filename="../legendwidget.cpp" line="71"/>
+        <location filename="../legendwidget.cpp" line="17"/>
         <source>Write Data</source>
         <translation>Запись</translation>
     </message>
     <message>
-        <location filename="../legendwidget.cpp" line="72"/>
+        <location filename="../legendwidget.cpp" line="18"/>
         <source>Add Line</source>
         <translation>Добавить Строку</translation>
     </message>
     <message>
-        <location filename="../legendwidget.cpp" line="73"/>
+        <location filename="../legendwidget.cpp" line="19"/>
         <source>Delete Line</source>
         <translation>Удалить Строку</translation>
     </message>
     <message>
-        <location filename="../legendwidget.cpp" line="74"/>
+        <location filename="../legendwidget.cpp" line="20"/>
         <source>Clear All</source>
         <translation>Очистить Всё</translation>
     </message>
     <message>
-        <location filename="../legendwidget.cpp" line="75"/>
+        <location filename="../legendwidget.cpp" line="21"/>
         <source>Up Line</source>
         <translation>Вверх</translation>
     </message>
     <message>
-        <location filename="../legendwidget.cpp" line="76"/>
+        <location filename="../legendwidget.cpp" line="22"/>
         <source>Down Line</source>
         <translation>Вниз</translation>
     </message>
     <message>
-        <location filename="../legendwidget.cpp" line="77"/>
+        <location filename="../legendwidget.cpp" line="23"/>
         <source>Copy To Memory Line</source>
         <translation>Скопировать строку в память</translation>
     </message>
     <message>
-        <location filename="../legendwidget.cpp" line="78"/>
+        <location filename="../legendwidget.cpp" line="24"/>
         <source>Refresh</source>
         <translation>Обновить</translation>
     </message>
     <message>
-        <location filename="../legendwidget.cpp" line="81"/>
+        <location filename="../legendwidget.cpp" line="27"/>
         <source>Show in legend box</source>
         <translation>Показать в окне легенды</translation>
     </message>
     <message>
-        <location filename="../legendwidget.cpp" line="82"/>
+        <location filename="../legendwidget.cpp" line="28"/>
         <source>Graph title</source>
         <translation>Название графика</translation>
     </message>
     <message>
-        <location filename="../legendwidget.cpp" line="83"/>
-        <location filename="../legendwidget.cpp" line="86"/>
+        <location filename="../legendwidget.cpp" line="29"/>
+        <location filename="../legendwidget.cpp" line="31"/>
+        <location filename="../legendwidget.h" line="80"/>
         <source>Title</source>
         <translation>Название</translation>
     </message>
     <message>
-        <location filename="../legendwidget.cpp" line="87"/>
+        <location filename="../legendwidget.cpp" line="32"/>
+        <location filename="../legendwidget.h" line="81"/>
         <source>Data</source>
         <translation>Тип данных</translation>
     </message>
     <message>
-        <location filename="../legendwidget.cpp" line="88"/>
+        <location filename="../legendwidget.cpp" line="33"/>
+        <location filename="../legendwidget.h" line="82"/>
         <source>Plane</source>
         <translation>Плоскость</translation>
     </message>
     <message>
-        <location filename="../legendwidget.cpp" line="89"/>
+        <location filename="../legendwidget.cpp" line="34"/>
         <source>Freq</source>
         <translation>Частота</translation>
     </message>
     <message>
-        <location filename="../legendwidget.cpp" line="90"/>
+        <location filename="../legendwidget.cpp" line="35"/>
         <source>Az</source>
         <translation>Поворот</translation>
     </message>
     <message>
-        <location filename="../legendwidget.cpp" line="91"/>
+        <location filename="../legendwidget.cpp" line="36"/>
         <source>El</source>
         <translation>Наклон</translation>
     </message>
     <message>
-        <location filename="../legendwidget.cpp" line="92"/>
+        <location filename="../legendwidget.cpp" line="37"/>
+        <source>Dist</source>
+        <translation>Расстояние</translation>
+    </message>
+    <message>
+        <location filename="../legendwidget.cpp" line="38"/>
+        <location filename="../legendwidget.h" line="87"/>
         <source>Channel</source>
         <translation>Канал</translation>
+    </message>
+    <message>
+        <location filename="../legendwidget.h" line="83"/>
+        <source>Frequency</source>
+        <translation>Частота</translation>
+    </message>
+    <message>
+        <location filename="../legendwidget.h" line="84"/>
+        <source>Azimuth</source>
+        <translation>Поворот</translation>
+    </message>
+    <message>
+        <location filename="../legendwidget.h" line="85"/>
+        <source>Elevation</source>
+        <translation>Наклон</translation>
+    </message>
+    <message>
+        <location filename="../legendwidget.h" line="86"/>
+        <source>Distance</source>
+        <translation>Расстояние</translation>
+    </message>
+    <message>
+        <location filename="../legendwidget.h" line="88"/>
+        <source>Smooth</source>
+        <translation>Гладкость</translation>
+    </message>
+    <message>
+        <location filename="../legendwidget.h" line="89"/>
+        <source>%</source>
+        <translation>%</translation>
+    </message>
+    <message>
+        <location filename="../legendwidget.h" line="90"/>
+        <source>Color</source>
+        <translation>Цвет</translation>
+    </message>
+    <message>
+        <location filename="../legendwidget.h" line="97"/>
+        <source>Yellow</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../legendwidget.h" line="98"/>
+        <location filename="../legendwidget.h" line="103"/>
+        <source>Green</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../legendwidget.h" line="99"/>
+        <source>Cyan</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../legendwidget.h" line="100"/>
+        <source>Red</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../legendwidget.h" line="101"/>
+        <source>Magenta</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../legendwidget.h" line="102"/>
+        <source>Blue</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../legendwidget.h" line="104"/>
+        <source>White</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../legendwidget.h" line="109"/>
+        <source>Raw Target</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../legendwidget.h" line="110"/>
+        <source>Raw Bckgnd</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../legendwidget.h" line="111"/>
+        <source>Raw Resp</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../legendwidget.h" line="112"/>
+        <source>Proc Bckgnd</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../legendwidget.h" line="113"/>
+        <source>Clbr</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../legendwidget.h" line="114"/>
+        <source>Pattern</source>
+        <translation type="unfinished">Картина</translation>
+    </message>
+    <message>
+        <location filename="../legendwidget.h" line="115"/>
+        <source>Curr Aspect</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../legendwidget.h" line="116"/>
+        <source>ProfRange</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../legendwidget.h" line="117"/>
+        <source>Gated ProfRange</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -420,160 +546,291 @@
         <translation>Главное Окно</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="164"/>
-        <location filename="../mainwindow.cpp" line="803"/>
+        <location filename="../mainwindow.cpp" line="64"/>
+        <location filename="../mainwindow.cpp" line="679"/>
         <source>File</source>
         <translation>Файл</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="165"/>
+        <location filename="../mainwindow.cpp" line="65"/>
         <source>Save as</source>
         <translation>Сохранить как</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="168"/>
-        <location filename="../mainwindow.cpp" line="804"/>
+        <location filename="../mainwindow.cpp" line="68"/>
+        <location filename="../mainwindow.cpp" line="680"/>
         <source>Write</source>
         <translation>Запись</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="169"/>
-        <location filename="../mainwindow.cpp" line="177"/>
+        <location filename="../mainwindow.cpp" line="69"/>
+        <location filename="../mainwindow.cpp" line="77"/>
         <source>Sketch</source>
         <translation>Набросок</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="171"/>
-        <location filename="../mainwindow.cpp" line="179"/>
+        <location filename="../mainwindow.cpp" line="71"/>
+        <location filename="../mainwindow.cpp" line="79"/>
         <source>Bkgnd Calibration</source>
         <translation>Калибровка фона</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="172"/>
-        <location filename="../mainwindow.cpp" line="180"/>
+        <location filename="../mainwindow.cpp" line="72"/>
+        <location filename="../mainwindow.cpp" line="80"/>
         <source>Response Calibration</source>
         <translation>Калибровка отклика</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="176"/>
-        <location filename="../mainwindow.cpp" line="805"/>
+        <location filename="../mainwindow.cpp" line="76"/>
+        <location filename="../mainwindow.cpp" line="681"/>
         <source>Read</source>
         <translation>Чтение</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="184"/>
+        <location filename="../mainwindow.cpp" line="84"/>
         <source>Change Database Folder</source>
         <translation>Сменить Папку Данных</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="185"/>
+        <location filename="../mainwindow.cpp" line="85"/>
         <source>Print...</source>
         <translation>Печать</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="187"/>
+        <location filename="../mainwindow.cpp" line="87"/>
         <source>Exit</source>
         <translation>Выход</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="806"/>
+        <location filename="../mainwindow.cpp" line="682"/>
         <source>Measure</source>
         <translation>Измерение</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="807"/>
+        <location filename="../mainwindow.cpp" line="141"/>
+        <location filename="../mainwindow.cpp" line="683"/>
         <source>Process</source>
         <translation>Обработка</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="249"/>
-        <location filename="../mainwindow.cpp" line="808"/>
+        <location filename="../mainwindow.cpp" line="149"/>
+        <location filename="../mainwindow.cpp" line="684"/>
         <source>Post-Process</source>
         <translation>Пост-Обработка</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="266"/>
-        <location filename="../mainwindow.cpp" line="809"/>
+        <location filename="../mainwindow.cpp" line="166"/>
+        <location filename="../mainwindow.cpp" line="685"/>
         <source>Options</source>
         <translation>Опции</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="284"/>
-        <location filename="../mainwindow.cpp" line="810"/>
+        <location filename="../mainwindow.cpp" line="184"/>
+        <location filename="../mainwindow.cpp" line="686"/>
         <source>Create Pylon Compensation</source>
         <translation>Компенсация Пилона</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="287"/>
-        <location filename="../mainwindow.cpp" line="811"/>
+        <location filename="../mainwindow.cpp" line="187"/>
+        <location filename="../mainwindow.cpp" line="687"/>
         <source>Language</source>
         <translation>Язык</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="288"/>
+        <location filename="../mainwindow.cpp" line="188"/>
         <source>Russian</source>
         <translation>Русский</translation>
     </message>
     <message>
-        <location filename="../mainwindow.cpp" line="289"/>
+        <location filename="../mainwindow.cpp" line="189"/>
         <source>English</source>
         <translation>Английский</translation>
     </message>
 </context>
 <context>
+    <name>PlotClass</name>
+    <message>
+        <location filename="../plotclass.h" line="107"/>
+        <source>X-Axis, x-units</source>
+        <translation>Ось X, ед.изм.</translation>
+    </message>
+    <message>
+        <location filename="../plotclass.h" line="108"/>
+        <source>Y-Axis, y-units</source>
+        <translation>Ось Y, ед.изм.</translation>
+    </message>
+</context>
+<context>
     <name>QObject</name>
     <message>
-        <location filename="../mainwindow.cpp" line="241"/>
         <source>Process</source>
+        <translation type="vanished">Обработка</translation>
+    </message>
+</context>
+<context>
+    <name>TabWidgetForCharts</name>
+    <message>
+        <location filename="../tabwidgetforcharts.cpp" line="19"/>
+        <source>Print Preview</source>
+        <translation>Предпросмотр печати</translation>
+    </message>
+    <message>
+        <location filename="../tabwidgetforcharts.h" line="23"/>
+        <source>Measuring</source>
+        <translation>Измеряется</translation>
+    </message>
+    <message>
+        <location filename="../tabwidgetforcharts.h" line="24"/>
+        <source>Profile Range</source>
+        <translation>Дальностный портрет</translation>
+    </message>
+    <message>
+        <location filename="../tabwidgetforcharts.h" line="25"/>
+        <source>Unprocessed</source>
+        <translation>До Обработки</translation>
+    </message>
+    <message>
+        <location filename="../tabwidgetforcharts.h" line="26"/>
+        <source>Pattern</source>
+        <translation>Картина</translation>
+    </message>
+</context>
+<context>
+    <name>TabWidgetForParameters</name>
+    <message>
+        <location filename="../tabwidgetforparameters.cpp" line="12"/>
+        <source>Setup</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../tabwidgetforparameters.cpp" line="13"/>
+        <source>Processing</source>
         <translation>Обработка</translation>
+    </message>
+</context>
+<context>
+    <name>TabWidgetForTools</name>
+    <message>
+        <location filename="../tabwidgetfortools.cpp" line="17"/>
+        <source>Pattern</source>
+        <translation>Картина</translation>
+    </message>
+    <message>
+        <location filename="../tabwidgetfortools.cpp" line="18"/>
+        <location filename="../tabwidgetfortools.cpp" line="59"/>
+        <source>Messages</source>
+        <translation>Сообщения</translation>
+    </message>
+    <message>
+        <location filename="../tabwidgetfortools.cpp" line="19"/>
+        <source>Legend</source>
+        <translation>Легенда</translation>
+    </message>
+    <message>
+        <location filename="../tabwidgetfortools.cpp" line="20"/>
+        <source>Script</source>
+        <translation>Скрипт</translation>
+    </message>
+    <message>
+        <location filename="../tabwidgetfortools.cpp" line="21"/>
+        <source>File_Manager</source>
+        <translation>Проводник</translation>
+    </message>
+    <message>
+        <location filename="../tabwidgetfortools.cpp" line="22"/>
+        <source>Debug_Messages</source>
+        <translation>Сообщения отладки</translation>
+    </message>
+    <message>
+        <source>File Manager</source>
+        <translation type="vanished">Файловый Менеджер</translation>
+    </message>
+    <message>
+        <source>Debug Messages</source>
+        <translation type="vanished">Для Разработчика</translation>
     </message>
 </context>
 <context>
     <name>WidgetForCustomPlot</name>
     <message>
-        <location filename="../widgetforcustomplot.cpp" line="2313"/>
+        <location filename="../widgetforcustomplot.cpp" line="126"/>
         <source>Context Menu</source>
         <translation>Контекстное Меню</translation>
     </message>
     <message>
-        <location filename="../widgetforcustomplot.cpp" line="2315"/>
+        <location filename="../widgetforcustomplot.cpp" line="128"/>
         <source>Disable Scale Panel</source>
         <translation>Убрать Панель Масштаба</translation>
     </message>
     <message>
-        <location filename="../widgetforcustomplot.cpp" line="2316"/>
+        <location filename="../widgetforcustomplot.cpp" line="129"/>
         <source>Polar Format</source>
         <translation>Полярный Формат</translation>
     </message>
     <message>
-        <location filename="../widgetforcustomplot.cpp" line="2318"/>
+        <location filename="../widgetforcustomplot.cpp" line="131"/>
         <source>Amplitude</source>
         <translation>Амплитуда</translation>
     </message>
     <message>
-        <location filename="../widgetforcustomplot.cpp" line="2319"/>
+        <location filename="../widgetforcustomplot.cpp" line="132"/>
         <source>Phase</source>
         <translation>Фаза</translation>
     </message>
     <message>
-        <location filename="../widgetforcustomplot.cpp" line="2320"/>
+        <location filename="../widgetforcustomplot.cpp" line="133"/>
         <source>RealPart</source>
         <translation>Действительная Часть</translation>
     </message>
     <message>
-        <location filename="../widgetforcustomplot.cpp" line="2321"/>
+        <location filename="../widgetforcustomplot.cpp" line="134"/>
         <source>ImagPart</source>
         <translation>Мнимая Часть</translation>
     </message>
     <message>
-        <location filename="../widgetforcustomplot.cpp" line="2323"/>
+        <location filename="../widgetforcustomplot.cpp" line="136"/>
         <source>Legend Inside</source>
         <translation>Легенда Внутри</translation>
     </message>
     <message>
-        <location filename="../widgetforcustomplot.cpp" line="2324"/>
+        <location filename="../widgetforcustomplot.cpp" line="137"/>
         <source>Disable Legend</source>
         <translation>Убрать Легенду</translation>
+    </message>
+    <message>
+        <location filename="../widgetforcustomplot.cpp" line="334"/>
+        <source>Y-axis</source>
+        <translation>Ось Y</translation>
+    </message>
+    <message>
+        <location filename="../widgetforcustomplot.cpp" line="339"/>
+        <source>Max (dB)</source>
+        <translation>Максимум (дБ)</translation>
+    </message>
+    <message>
+        <location filename="../widgetforcustomplot.cpp" line="340"/>
+        <source>Span (dB)</source>
+        <translation>Ширина (дБ)</translation>
+    </message>
+    <message>
+        <location filename="../widgetforcustomplot.cpp" line="393"/>
+        <source>X-Axis</source>
+        <translation>Ось Х</translation>
+    </message>
+    <message>
+        <location filename="../widgetforcustomplot.cpp" line="429"/>
+        <source>Marker</source>
+        <translation>Маркер</translation>
+    </message>
+    <message>
+        <location filename="../widgetforcustomplot.cpp" line="450"/>
+        <source>m</source>
+        <translation>Номер</translation>
+    </message>
+    <message>
+        <location filename="../widgetforcustomplot.cpp" line="450"/>
+        <source>Val</source>
+        <translation>Значение</translation>
     </message>
 </context>
 </TS>

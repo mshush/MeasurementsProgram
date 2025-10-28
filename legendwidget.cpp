@@ -60,6 +60,7 @@ void LegendWidget::FillLayout()
     HorizontalLowerCheckboxLayout->addWidget(FreqChBox);
     HorizontalLowerCheckboxLayout->addWidget(AzChBox);
     HorizontalLowerCheckboxLayout->addWidget(ElChBox);
+    HorizontalLowerCheckboxLayout->addWidget(DistChBox);
     HorizontalLowerCheckboxLayout->addWidget(ChannelChBox);
     HorizontalLowerCheckboxLayout->addWidget(GraphTitleLabel);
     HorizontalLowerCheckboxLayout->addWidget(TitleLabel);
@@ -138,8 +139,6 @@ void LegendWidget::OnAddLineClicked()
 
     LegendTable->setCellWidget(RowCount, 0, ZeroCellWidget);
 
-
-
     LegendTable->setCellWidget(RowCount, 1, NewRow.DataBox);
     LegendTable->setCellWidget(RowCount, 2, NewRow.PlaneBox);
     LegendTable->setCellWidget(RowCount, 3, NewRow.FreqBox);
@@ -193,36 +192,34 @@ void LegendWidget::OnRefreshClicked()
 }
 
 
-void LegendWidget::RefillRows(int TabIndex)
+
+void LegendWidget::RefillRows()
 {
     LegendTable->clearContents();
 
     int AmountOfRows = LegendRowsForAllPlots[ActiveTab].Rows.size();
     LegendTable->setRowCount(AmountOfRows);
 
-
     for (int r=0; r<AmountOfRows; r++)
     {
-        LegendRow * NewRow = LegendRowsForAllPlots[ActiveTab].Rows[r];
-
         QWidget * ZeroCellWidget = new QWidget(this);
         QHBoxLayout * CellLayout = new QHBoxLayout(ZeroCellWidget);
 
-        CellLayout->addWidget(NewRow->VisibilityBox);
-        CellLayout->addWidget(NewRow->ColourLabel);
-        CellLayout->addWidget(NewRow->TitleLabel);
+        CellLayout->addWidget(LegendRowsForAllPlots[ActiveTab].Rows[r]->VisibilityBox);
+        CellLayout->addWidget(LegendRowsForAllPlots[ActiveTab].Rows[r]->ColourLabel);
+        CellLayout->addWidget(LegendRowsForAllPlots[ActiveTab].Rows[r]->TitleLabel);
 
         LegendTable->setCellWidget(r, 0, ZeroCellWidget);
-        LegendTable->setCellWidget(r, 1, NewRow->DataBox);
-        LegendTable->setCellWidget(r, 2, NewRow->PlaneBox);
-        LegendTable->setCellWidget(r, 3, NewRow->FreqBox);
-        LegendTable->setCellWidget(r, 4, NewRow->AzBox);
-        LegendTable->setCellWidget(r, 5, NewRow->ElBox);
-        LegendTable->setCellWidget(r, 6, NewRow->DistBox);
-        LegendTable->setCellWidget(r, 7, NewRow->ChannelBox);
-        LegendTable->setCellWidget(r, 8, NewRow->SmoothBox);
-        LegendTable->setCellWidget(r, 9, NewRow->PercentBox);
-        LegendTable->setCellWidget(r, 10,NewRow->ColourBox);
+        LegendTable->setCellWidget(r, 1, LegendRowsForAllPlots[ActiveTab].Rows[r]->DataBox);
+        LegendTable->setCellWidget(r, 2, LegendRowsForAllPlots[ActiveTab].Rows[r]->PlaneBox);
+        LegendTable->setCellWidget(r, 3, LegendRowsForAllPlots[ActiveTab].Rows[r]->FreqBox);
+        LegendTable->setCellWidget(r, 4, LegendRowsForAllPlots[ActiveTab].Rows[r]->AzBox);
+        LegendTable->setCellWidget(r, 5, LegendRowsForAllPlots[ActiveTab].Rows[r]->ElBox);
+        LegendTable->setCellWidget(r, 6, LegendRowsForAllPlots[ActiveTab].Rows[r]->DistBox);
+        LegendTable->setCellWidget(r, 7, LegendRowsForAllPlots[ActiveTab].Rows[r]->ChannelBox);
+        LegendTable->setCellWidget(r, 8, LegendRowsForAllPlots[ActiveTab].Rows[r]->SmoothBox);
+        LegendTable->setCellWidget(r, 9, LegendRowsForAllPlots[ActiveTab].Rows[r]->PercentBox);
+        LegendTable->setCellWidget(r, 10,LegendRowsForAllPlots[ActiveTab].Rows[r]->ColourBox);
     }
 }
 
@@ -239,7 +236,7 @@ void LegendWidget::OnChartTabChanged(int TabIndex)
     else // Заполняем, если это не PrintPreview
     {
         setEnabled(true);
-        //RefillRows(ActiveTab);
+        RefillRows();
     }
 }
 
@@ -305,14 +302,24 @@ void LegendWidget::FillFirstRows(MeasDataClass MeasuredData) // Как сдел�
             NewRow->ColourBox  ->addItems(ColourVector);
             LegendRowsForAllPlots[p].Rows.append(NewRow);
 
-            connect(NewRow->VisibilityBox,  &QCheckBox::stateChanged, this, &LegendWidget::SomeRowChanged);
-            connect(NewRow->DataBox,        &QComboBox::highlighted, this, &LegendWidget::SomeRowChanged);
-            connect(NewRow->PlaneBox,       &QComboBox::highlighted, this, &LegendWidget::SomeRowChanged);
-            connect(NewRow->FreqBox,        &QComboBox::highlighted, this, &LegendWidget::SomeRowChanged);
-            connect(NewRow->AzBox,          &QComboBox::highlighted, this, &LegendWidget::SomeRowChanged);
-            connect(NewRow->ElBox,          &QComboBox::highlighted, this, &LegendWidget::SomeRowChanged);
-            connect(NewRow->DistBox,        &QComboBox::highlighted, this, &LegendWidget::SomeRowChanged);
-            connect(NewRow->ColourBox,      &QComboBox::highlighted, this, &LegendWidget::SomeRowChanged);
+            connect(NewRow->VisibilityBox,  &QCheckBox::stateChanged, this,&LegendWidget::SomeRowChanged);
+
+            connect(NewRow->DataBox,        &QComboBox::highlighted, this, &LegendWidget::DataBoxHighLighted);
+            connect(NewRow->PlaneBox,       &QComboBox::highlighted, this, &LegendWidget::PlaneBoxHighLighted);
+            connect(NewRow->FreqBox,        &QComboBox::highlighted, this, &LegendWidget::FreqBoxHighLighted);
+            connect(NewRow->AzBox,          &QComboBox::highlighted, this, &LegendWidget::AzBoxHighLighted);
+            connect(NewRow->ElBox,          &QComboBox::highlighted, this, &LegendWidget::ElBoxHighLighted);
+            connect(NewRow->DistBox,        &QComboBox::highlighted, this, &LegendWidget::DistBoxHighLighted);
+            connect(NewRow->ColourBox,      &QComboBox::highlighted, this, &LegendWidget::ColourBoxHighLighted);
+
+            connect(NewRow->DataBox,        &QComboBox::currentIndexChanged, this, &LegendWidget::SomeRowChanged);
+            connect(NewRow->PlaneBox,       &QComboBox::currentIndexChanged, this, &LegendWidget::SomeRowChanged);
+            connect(NewRow->FreqBox,        &QComboBox::currentIndexChanged, this, &LegendWidget::SomeRowChanged);
+            connect(NewRow->AzBox,          &QComboBox::currentIndexChanged, this, &LegendWidget::SomeRowChanged);
+            connect(NewRow->ElBox,          &QComboBox::currentIndexChanged, this, &LegendWidget::SomeRowChanged);
+            connect(NewRow->DistBox,        &QComboBox::currentIndexChanged, this, &LegendWidget::SomeRowChanged);
+            connect(NewRow->ColourBox,      &QComboBox::currentIndexChanged, this, &LegendWidget::SomeRowChanged);
+
 
         }
         else
@@ -334,7 +341,7 @@ void LegendWidget::FillFirstRows(MeasDataClass MeasuredData) // Как сдел�
         }
     }
 
-    RefillRows(ActiveTab);
+    RefillRows();
 
 }
 
@@ -344,10 +351,42 @@ void LegendWidget::FillFirstRows(MeasDataClass MeasuredData) // Как сдел�
 
 void LegendWidget::SomeRowChanged()
 {
+    int NumberOfRows = LegendRowsForAllPlots[ActiveTab].Rows.size();
+
+    /*
+    for (int r=0; r < NumberOfRows; r++)
+    {
+        MeasDataClass::MeasDataType DType;
+        //Meas??? Откуда это и зачем?
+        LegendRowsForAllPlots[ActiveTab].Rows[r]->DataBox   ->currentText(),
+        LegendRowsForAllPlots[ActiveTab].Rows[r]->PlaneBox  ->currentIndex(),
+        emit RedrawPlotSignal(
+            ActiveTab,
+            r,
+            LegendRowsForAllPlots[ActiveTab].Rows[r]->DataBox   ->currentIndex(),
+            LegendRowsForAllPlots[ActiveTab].Rows[r]->PlaneBox  ->currentIndex(),
+            LegendRowsForAllPlots[ActiveTab].Rows[r]->FreqBox   ->currentIndex(),
+            LegendRowsForAllPlots[ActiveTab].Rows[r]->AzBox     ->currentIndex(),
+            LegendRowsForAllPlots[ActiveTab].Rows[r]->ElBox     ->currentIndex(),
+            LegendRowsForAllPlots[ActiveTab].Rows[r]->DistBox   ->currentIndex(),
+            LegendRowsForAllPlots[ActiveTab].Rows[r]->ColourBox ->currentIndex()
+            );
+    }
+    */
+
 
 }
 
 
+
+
+void LegendWidget::DataBoxHighLighted     (int ID){LegendRowsForAllPlots[ActiveTab].Rows[0]->DataBox->  setCurrentIndex(ID);}
+void LegendWidget::PlaneBoxHighLighted    (int ID){LegendRowsForAllPlots[ActiveTab].Rows[0]->PlaneBox-> setCurrentIndex(ID);}
+void LegendWidget::FreqBoxHighLighted     (int ID){LegendRowsForAllPlots[ActiveTab].Rows[0]->FreqBox->  setCurrentIndex(ID);}
+void LegendWidget::AzBoxHighLighted       (int ID){LegendRowsForAllPlots[ActiveTab].Rows[0]->AzBox->    setCurrentIndex(ID);}
+void LegendWidget::ElBoxHighLighted       (int ID){LegendRowsForAllPlots[ActiveTab].Rows[0]->ElBox->    setCurrentIndex(ID);}
+void LegendWidget::DistBoxHighLighted     (int ID){LegendRowsForAllPlots[ActiveTab].Rows[0]->DistBox->  setCurrentIndex(ID);}
+void LegendWidget::ColourBoxHighLighted   (int ID){LegendRowsForAllPlots[ActiveTab].Rows[0]->ColourBox->setCurrentIndex(ID);}
 
 
 

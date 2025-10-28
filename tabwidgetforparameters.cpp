@@ -9,8 +9,8 @@ TabWidgetForParameters::TabWidgetForParameters(QWidget *parent) : QTabWidget(par
     ProcessingTab  = new CustomProcessingTreeWidget();
     //FileTreeTab = new TreeWidgetForFiles();
 
-    addTab(MeasurementTab, "Setup");
-    addTab(ProcessingTab, "Processing");
+    addTab(MeasurementTab, tr("Setup"));
+    addTab(ProcessingTab, tr("Processing"));
     //addTab(FileTreeTab, "Навигация");
 }
 
