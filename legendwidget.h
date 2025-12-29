@@ -24,7 +24,7 @@ public:
         LegendRow(QWidget * parent = nullptr);
         QCheckBox * VisibilityBox;
         QLabel    * ColourLabel;
-        QLabel    * TitleLabel;
+        QLineEdit    * TitleEdit;
         QComboBox * DataBox;
         QComboBox * PlaneBox;
         QComboBox * FreqBox;
@@ -64,7 +64,7 @@ public:
     {
         QString Title   = "<D>";
         int Data        = 0;
-        int Plane       = 0;
+        QString Plane   = "Az";
         int Freq        = 0;
         int Az          = 0;
         int El          = 0;
@@ -100,22 +100,46 @@ public:
         tr("Red"),
         tr("Magenta"),
         tr("Blue"),
-        tr("Green"),
         tr("White")
     };
 
-    QStringList DataTypes = // Типы данных, чтобы внести их в QComboBox
-    {
-        tr("Raw Target" ),
-        tr("Raw Bckgnd" ),
-        tr("Raw Resp" ),
-        tr("Proc Bckgnd" ),
-        tr("Clbr" ),
-        tr("Pattern" ),
-        tr("Curr Aspect" ),
-        tr("ProfRange" ),
-        tr("Gated ProfRange")
-    };
+    QVector<QColor> ColorVector =
+        {
+            Qt::yellow,
+            Qt::green,
+            Qt::cyan,
+            Qt::red,
+            Qt::magenta,
+            Qt::blue,
+            Qt::white
+        };
+
+    QStringList DataTypes = // Типы данных, чтобы внеси их в QComboBox
+        {
+            tr("Raw Target"),
+            tr("Raw Bckgnd"),
+            tr("Raw Resp"),
+            tr("Proc Bckgnd"),
+            tr("Clbr"),
+            tr("Pattern"),
+            tr("Curr Aspect"),
+            tr("ProfRange"),
+            tr("Gated ProfRange")
+        };
+
+
+    QVector<MeasDataClass::MeasDataType> DataTypeVector =
+        {
+            MeasDataClass::MeasDataType::RawTarget,
+            MeasDataClass::MeasDataType::RawBcknd,
+            MeasDataClass::MeasDataType::RawRsp,
+            MeasDataClass::MeasDataType::ProcessedBcknd,
+            MeasDataClass::MeasDataType::CalibrationArr,
+            MeasDataClass::MeasDataType::PatternArr,
+            MeasDataClass::MeasDataType::CurrentAspect,
+            MeasDataClass::MeasDataType::CurrentProfRange,
+            MeasDataClass::MeasDataType::CurrentGatedProfRange
+        };
 
 
     QVector <LegendRow> VectorOfRows; //Вектор всех строк таблицы (в строке хранится номер соответствующей графику вкладки)
@@ -140,8 +164,8 @@ public:
     QPushButton * CopyToMemoryLineButton;
     QPushButton * RefreshButton;
     QLabel * ShowInLegendBoxLabel;
-    QLabel * GraphTitleLabel;
-    QLabel * TitleLabel;
+    QLabel * GraphTitleEdit;
+    QLineEdit * TitleEdit;
 
     QCheckBox * TitleChBox;
     QCheckBox * DataChBox;
@@ -157,6 +181,9 @@ public:
 
 
     void SetNumberOfPlots(int PlotsNumber);
+
+
+    DataFromLegendRow * ExtractRowData(LegendRow * row);
 
 
 public slots:
@@ -209,6 +236,8 @@ signals:
                           int Distance,
                           QColor Colour
 );
+
+
 
 
 

@@ -75,6 +75,21 @@ void MeasurmentsControl::MeasureBckgndAtSingleAngl(MeasDataClass &MeasData)
     ResetAbort();
     QComplexVector Bcknd;
     MeasureCurrentAspectInternal(MeasData.getVNAParameters(), Bcknd);
+
+    ////////////////УДАЛИТЬ ПОСЛЕ ПРОВЕРКИ!!!
+    /// ////////////////УДАЛИТЬ ПОСЛЕ ПРОВЕРКИ!!!
+    /// ////////////////УДАЛИТЬ ПОСЛЕ ПРОВЕРКИ!!!
+    for (int i = 0; i < Bcknd.size(); i++)
+    {
+        double linearFactor = 1.0 + i * 0.001;  // Increases 0.1% per index
+        double noiseRe = (rand()/(double)RAND_MAX - 0.5) * 0.001 * linearFactor;
+        double noiseIm = (rand()/(double)RAND_MAX - 0.5) * 0.001 * linearFactor;
+        Bcknd[i] += std::complex<double>(noiseRe, noiseIm);
+    }
+    ////////////////УДАЛИТЬ ПОСЛЕ ПРОВЕРКИ!!!
+    /// ////////////////УДАЛИТЬ ПОСЛЕ ПРОВЕРКИ!!!
+    /// ////////////////УДАЛИТЬ ПОСЛЕ ПРОВЕРКИ!!!
+
     PrimaryProcessSweep(MeasDataClass::MeasDataType::RawBcknd, Bcknd, MeasData);
 }
 
@@ -136,10 +151,7 @@ void MeasurmentsControl::MeasureAzTarget(MeasDataClass& MeasData)
                 //qDebug() <<  TempVector[0].real();
                 iAz++;
             }
-
-
         }
-
     }
     }
 
@@ -341,6 +353,7 @@ void MeasurmentsControl::PrimaryProcessSweep(MeasDataClass::MeasDataType RawData
             int i = 0;
             i++;
             }
+
            /* ProcClass.FFT(FilteredData, GatedProfRange);
             ProcClass.FFTShift(GatedProfRange);
             ProcClass.FFTPhaseCorrection(GatedProfRange, f1, f2, N);
@@ -349,6 +362,7 @@ void MeasurmentsControl::PrimaryProcessSweep(MeasDataClass::MeasDataType RawData
             GatedProfRange = ProcClass.FFTWithPhsCorrectionAndNorm(FilteredData, f1, f2);
 
             MeasData.WriteSweepAt(DataType::CurrentGatedProfRange, GatedProfRange);
+
             qDebug() << "Gated Profrange written";
 
     }

@@ -449,8 +449,8 @@ void WidgetForCustomPlot::FillMarkerTable()
     //MarkerTable->setCellWidget(0,1, new QPushButton("Val"));
     MarkerTable->setHorizontalHeaderLabels({tr("m"),tr("Val")});
     MarkerFrameLayout->addWidget(MarkerTable,2,0,5,6);
-    MarkerTable->setColumnWidth(0,50);
-    MarkerTable->setColumnWidth(1,50);
+    MarkerTable->setColumnWidth(0,90);
+    MarkerTable->setColumnWidth(1,90);
     VerticalControlsLayout->addWidget(MarkerFrame);
 
     MarkerTable->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding);

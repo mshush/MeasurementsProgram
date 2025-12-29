@@ -21,6 +21,8 @@ PrintPreview::PrintPreview(int NumberOfPlotTabs, QWidget *parent) : QWidget{pare
     CalculateMargins(); // Вычисляем значения отступов в пикселях
 
     FillLayout(); // Инициируем и заполняем компоновки
+
+    PrintPreviewWidget->installEventFilter(this);
 }
 
 
@@ -55,6 +57,8 @@ void PrintPreview::SetUpPreviewArea()
     PrintPreviewWidget->setPortraitOrientation();
     PrintPreviewWidget->setSinglePageViewMode();
     PrintPreviewWidget->setMouseTracking(true);
+
+
 }
 
 void PrintPreview::FillCheckBoxes(int NumberOfPlotTabs)
@@ -240,6 +244,17 @@ void PrintPreview::CalculateMargins()
     BottomMargin  = BottomMarginInMM*dpi/25.4; // Отступ снизу
     RightMarginX  = (Printer->pageRect(QPrinter::Millimeter).width()  - RightMarginInMM )*dpi/25.4; //Координата правой границы
     BottomMarginY = (Printer->pageRect(QPrinter::Millimeter).height() - BottomMarginInMM)*dpi/25.4; //Координата нижней  границы
+
+    int pageWidth = RightMarginX - LeftMargin;
+    int pageHeight = BottomMarginY - TopMargin;
+    int userWidth = pageWidth * 0.6;
+    int userHeight = pageHeight * 0.6;
+    int userX = LeftMargin + (pageWidth - userWidth) / 2;
+    int userY = TopMargin + (pageHeight - userHeight) / 2;
+
+    UserRect = QRect(userX, userY, userWidth, userHeight);
+
+
 }
 
 
@@ -289,23 +304,32 @@ void PrintPreview::SendSignalForPixmap(int TabID)
 
 
 
-void PrintPreview::MoveAndResizeToUserSize              (){CurrentPreset = Preset::usersize;           SendSignalForPixmap(CheckBoxGroup->checkedId());}
-void PrintPreview::MoveAndResizeToWholePage             (){CurrentPreset = Preset::wholepage;          SendSignalForPixmap(CheckBoxGroup->checkedId());}
-void PrintPreview::MoveAndResizeToUpperHalf             (){CurrentPreset = Preset::upperhalf;          SendSignalForPixmap(CheckBoxGroup->checkedId());}
-void PrintPreview::MoveAndResizeToLowerHalf             (){CurrentPreset = Preset::lowerhalf;          SendSignalForPixmap(CheckBoxGroup->checkedId());}
-void PrintPreview::MoveAndResizeToUpperThird            (){CurrentPreset = Preset::upperthird;         SendSignalForPixmap(CheckBoxGroup->checkedId());}
-void PrintPreview::MoveAndResizeToMiddleThird           (){CurrentPreset = Preset::middlethird;        SendSignalForPixmap(CheckBoxGroup->checkedId());}
-void PrintPreview::MoveAndResizeToBottomThird           (){CurrentPreset = Preset::bottomthird;        SendSignalForPixmap(CheckBoxGroup->checkedId());}
-void PrintPreview::MoveAndResizeToTopLeftQuarter        (){CurrentPreset = Preset::topleftquarter;     SendSignalForPixmap(CheckBoxGroup->checkedId());}
-void PrintPreview::MoveAndResizeToTopRightQuarter       (){CurrentPreset = Preset::toprightquarter;    SendSignalForPixmap(CheckBoxGroup->checkedId());}
-void PrintPreview::MoveAndResizeToBottomLeftQuarter     (){CurrentPreset = Preset::bottomleftquarter;  SendSignalForPixmap(CheckBoxGroup->checkedId());}
-void PrintPreview::MoveAndResizeToBottomRightQuarter    (){CurrentPreset = Preset::bottomrightquarter; SendSignalForPixmap(CheckBoxGroup->checkedId());}
-void PrintPreview::MoveAndResizeToTopLeftSixth          (){CurrentPreset = Preset::topleftsixth;       SendSignalForPixmap(CheckBoxGroup->checkedId());}
-void PrintPreview::MoveAndResizeToTopRightSixth         (){CurrentPreset = Preset::toprightsixth;      SendSignalForPixmap(CheckBoxGroup->checkedId());}
-void PrintPreview::MoveAndResizeToMiddleLeftSixth       (){CurrentPreset = Preset::middleleftsixth;    SendSignalForPixmap(CheckBoxGroup->checkedId());}
-void PrintPreview::MoveAndResizeToMiddleRightSixth      (){CurrentPreset = Preset::middlerightsixth;   SendSignalForPixmap(CheckBoxGroup->checkedId());}
-void PrintPreview::MoveAndResizeToBottomLeftSixth       (){CurrentPreset = Preset::bottomleftsixth;    SendSignalForPixmap(CheckBoxGroup->checkedId());}
-void PrintPreview::MoveAndResizeToBottomRightSixth      (){CurrentPreset = Preset::bottomrightsixth;   SendSignalForPixmap(CheckBoxGroup->checkedId());}
+void PrintPreview::MoveAndResizeToUserSize              ()
+{
+    CurrentPreset = Preset::usersize;
+    SendSignalForPixmap(CheckBoxGroup->checkedId());
+
+    EnableUserSize(true);
+}
+
+
+
+void PrintPreview::MoveAndResizeToWholePage             (){CurrentPreset = Preset::wholepage;          SendSignalForPixmap(CheckBoxGroup->checkedId()); EnableUserSize(false);}
+void PrintPreview::MoveAndResizeToUpperHalf             (){CurrentPreset = Preset::upperhalf;          SendSignalForPixmap(CheckBoxGroup->checkedId()); EnableUserSize(false);}
+void PrintPreview::MoveAndResizeToLowerHalf             (){CurrentPreset = Preset::lowerhalf;          SendSignalForPixmap(CheckBoxGroup->checkedId()); EnableUserSize(false);}
+void PrintPreview::MoveAndResizeToUpperThird            (){CurrentPreset = Preset::upperthird;         SendSignalForPixmap(CheckBoxGroup->checkedId()); EnableUserSize(false);}
+void PrintPreview::MoveAndResizeToMiddleThird           (){CurrentPreset = Preset::middlethird;        SendSignalForPixmap(CheckBoxGroup->checkedId()); EnableUserSize(false);}
+void PrintPreview::MoveAndResizeToBottomThird           (){CurrentPreset = Preset::bottomthird;        SendSignalForPixmap(CheckBoxGroup->checkedId()); EnableUserSize(false);}
+void PrintPreview::MoveAndResizeToTopLeftQuarter        (){CurrentPreset = Preset::topleftquarter;     SendSignalForPixmap(CheckBoxGroup->checkedId()); EnableUserSize(false);}
+void PrintPreview::MoveAndResizeToTopRightQuarter       (){CurrentPreset = Preset::toprightquarter;    SendSignalForPixmap(CheckBoxGroup->checkedId()); EnableUserSize(false);}
+void PrintPreview::MoveAndResizeToBottomLeftQuarter     (){CurrentPreset = Preset::bottomleftquarter;  SendSignalForPixmap(CheckBoxGroup->checkedId()); EnableUserSize(false);}
+void PrintPreview::MoveAndResizeToBottomRightQuarter    (){CurrentPreset = Preset::bottomrightquarter; SendSignalForPixmap(CheckBoxGroup->checkedId()); EnableUserSize(false);}
+void PrintPreview::MoveAndResizeToTopLeftSixth          (){CurrentPreset = Preset::topleftsixth;       SendSignalForPixmap(CheckBoxGroup->checkedId()); EnableUserSize(false);}
+void PrintPreview::MoveAndResizeToTopRightSixth         (){CurrentPreset = Preset::toprightsixth;      SendSignalForPixmap(CheckBoxGroup->checkedId()); EnableUserSize(false);}
+void PrintPreview::MoveAndResizeToMiddleLeftSixth       (){CurrentPreset = Preset::middleleftsixth;    SendSignalForPixmap(CheckBoxGroup->checkedId()); EnableUserSize(false);}
+void PrintPreview::MoveAndResizeToMiddleRightSixth      (){CurrentPreset = Preset::middlerightsixth;   SendSignalForPixmap(CheckBoxGroup->checkedId()); EnableUserSize(false);}
+void PrintPreview::MoveAndResizeToBottomLeftSixth       (){CurrentPreset = Preset::bottomleftsixth;    SendSignalForPixmap(CheckBoxGroup->checkedId()); EnableUserSize(false);}
+void PrintPreview::MoveAndResizeToBottomRightSixth      (){CurrentPreset = Preset::bottomrightsixth;   SendSignalForPixmap(CheckBoxGroup->checkedId()); EnableUserSize(false);}
 
 
 
@@ -345,13 +369,14 @@ void PrintPreview::OnClearPrintButtonClicked()
 
 QRect PrintPreview::RectFromPreset(Preset PresetInput)
 {
+
     QRect Rect(LeftMargin, TopMargin,0,0);
     int width;
     int height;
     switch (PresetInput)
     {
     case Preset::usersize:
-        Rect = QRect(LeftMargin, TopMargin, 10, 10);
+        Rect =  UserRect;
         break;
     case Preset::wholepage:
         width = RightMarginX-LeftMargin;
@@ -473,6 +498,37 @@ void PrintPreview::OnPaintRequested()
 
     QImage CurrentPlotImage = CurrentPixmap.toImage();
 
+
+    if (CurrentPreset == Preset::usersize && UserSizeActive)
+    {
+
+        QPen rectPen(QColor(0, 120, 215), 2);  // Blue outline
+        Painter.setPen(rectPen);
+        Painter.setBrush(Qt::NoBrush);
+        Painter.drawRect(UserRect);
+
+        Painter.setBrush(QBrush(QColor(0, 120, 215)));
+        Painter.setPen(Qt::NoPen);
+
+        QRect handles[] =
+            {
+            QRect(UserRect.topLeft() - QPoint(4, 4), QSize(8, 8)),
+            QRect(UserRect.topRight() - QPoint(4, 4), QSize(8, 8)),
+            QRect(UserRect.bottomLeft() - QPoint(4, 4), QSize(8, 8)),
+            QRect(UserRect.bottomRight() - QPoint(4, 4), QSize(8, 8)),
+
+            QRect(UserRect.topLeft() + QPoint(UserRect.width()/2 - 4, -4), QSize(8, 8)),
+            QRect(UserRect.bottomLeft() + QPoint(UserRect.width()/2 - 4, -4), QSize(8, 8)),
+            QRect(UserRect.topLeft() + QPoint(-4, UserRect.height()/2 - 4), QSize(8, 8)),
+            QRect(UserRect.topRight() + QPoint(-4, UserRect.height()/2 - 4), QSize(8, 8))
+        };
+
+        for (const QRect& handle : handles) {
+            Painter.drawRect(handle);
+        }
+    }
+
+
     DrawPreset(CurrentPlotImage, Painter, CurrentPreset);
 
     for (int i=0; i<VectorOfImages.size(); i++)
@@ -480,11 +536,169 @@ void PrintPreview::OnPaintRequested()
         DrawPreset(VectorOfImages[i], Painter, VectorOfPresets[i]);
     }
 
-    //PrintPreviewWidget->updatePreview();
-    //PrintPreviewWidget->print();
-    //PrintPreviewWidget->show();
-
 }
+
+
+
+
+
+void PrintPreview::mousePressEvent(QMouseEvent *event)
+{
+    if (CurrentPreset != Preset::usersize || !UserSize->isChecked())
+    {
+        QWidget::mousePressEvent(event);
+        return;
+    }
+
+    QPoint pagePos = PreviewPosToPagePos(event->pos());
+
+    CurrentResizeHandle = ChooseResizeHandleAt(pagePos);
+
+    if (CurrentResizeHandle == Handle_None && UserRect.contains(pagePos))
+    {
+        DraggingNow = true;
+        ClickPos = pagePos - UserRect.topLeft();
+        LastMousePos = pagePos;
+
+        PrintPreviewWidget->setCursor(Qt::ClosedHandCursor);
+    }
+    else if (CurrentResizeHandle != Handle_None)
+    {
+        ResizingNow = true;
+        LastMousePos = pagePos;
+
+        UpdateCursorForHandle(CurrentResizeHandle);
+    }
+
+    event->accept();
+}
+
+void PrintPreview::mouseMoveEvent(QMouseEvent *event)
+{
+    if (!DraggingNow && !ResizingNow)
+    {
+        if (CurrentPreset == Preset::usersize && UserSize->isChecked())
+        {
+            QPoint pagePos = PreviewPosToPagePos(event->pos());
+            ResizeHandle handle = ChooseResizeHandleAt(pagePos);
+            UpdateCursorForHandle(handle);
+        }
+    }
+
+
+    if (DraggingNow)
+    {
+        QPoint pagePos = PreviewPosToPagePos(event->pos());
+        QPoint delta = pagePos - LastMousePos;
+
+        // Move the rectangle
+        QRect newRect = UserRect.translated(delta);
+        UpdateUserRect(newRect);
+
+        LastMousePos = pagePos;
+    }
+
+    else if (ResizingNow)
+    {
+        QPoint pagePos = PreviewPosToPagePos(event->pos());
+        QPoint delta = pagePos - LastMousePos;
+
+        QRect newRect = UserRect;
+
+        switch (CurrentResizeHandle) {
+        case Handle_TopLeft:
+            newRect.setTopLeft(newRect.topLeft() + delta);
+            break;
+        case Handle_Top:
+            newRect.setTop(newRect.top() + delta.y());
+            break;
+        case Handle_TopRight:
+            newRect.setTopRight(newRect.topRight() + delta);
+            break;
+        case Handle_Left:
+            newRect.setLeft(newRect.left() + delta.x());
+            break;
+        case Handle_Right:
+            newRect.setRight(newRect.right() + delta.x());
+            break;
+        case Handle_BottomLeft:
+            newRect.setBottomLeft(newRect.bottomLeft() + delta);
+            break;
+        case Handle_Bottom:
+            newRect.setBottom(newRect.bottom() + delta.y());
+            break;
+        case Handle_BottomRight:
+            newRect.setBottomRight(newRect.bottomRight() + delta);
+            break;
+        default:
+            break;
+        }
+
+        UpdateUserRect(newRect);
+        LastMousePos = pagePos;
+    }
+
+    QWidget::mouseMoveEvent(event);
+}
+
+void PrintPreview::mouseReleaseEvent(QMouseEvent *event)
+{
+    if (DraggingNow || ResizingNow)
+    {
+        DraggingNow = false;
+        ResizingNow = false;
+        CurrentResizeHandle = Handle_None;
+
+        if (CurrentPreset == Preset::usersize && UserSize->isChecked())
+        {
+            PrintPreviewWidget->setCursor(Qt::CrossCursor);
+        }
+    }
+
+    QWidget::mouseReleaseEvent(event);
+}
+
+
+
+
+
+void PrintPreview::UpdateCursorForHandle(ResizeHandle handle)
+{
+    switch (handle)
+    {
+    case Handle_TopLeft:
+    case Handle_BottomRight:
+        PrintPreviewWidget->setCursor(Qt::SizeFDiagCursor);
+        break;
+    case Handle_TopRight:
+    case Handle_BottomLeft:
+        PrintPreviewWidget->setCursor(Qt::SizeBDiagCursor);
+        break;
+    case Handle_Top:
+    case Handle_Bottom:
+        PrintPreviewWidget->setCursor(Qt::SizeVerCursor);
+        break;
+    case Handle_Left:
+    case Handle_Right:
+        PrintPreviewWidget->setCursor(Qt::SizeHorCursor);
+        break;
+    case Handle_None:
+        if (UserRect.contains(PreviewPosToPagePos(QCursor::pos()))) {
+            PrintPreviewWidget->setCursor(Qt::OpenHandCursor);
+        } else {
+            PrintPreviewWidget->setCursor(Qt::CrossCursor);
+        }
+        break;
+    }
+}
+
+
+
+
+
+
+
+
 
 
 
@@ -508,23 +722,173 @@ PrintPreview::~PrintPreview()
 
 
 
+QPoint PrintPreview::PreviewPosToPagePos(const QPoint& PreviewPos)
+{
+    QSize PreviewSize = PrintPreviewWidget->size();
+
+    double scaleX = (RightMarginX - LeftMargin) / (double)PreviewSize.width();
+    double scaleY = (BottomMarginY - TopMargin) / (double)PreviewSize.height();
+
+    return QPoint
+        (
+        LeftMargin + PreviewPos.x() * scaleX,
+        TopMargin + PreviewPos.y() * scaleY
+        );
+}
+
+QPoint PrintPreview::PagePosToPreviewPos(const QPoint& PagePos)
+{
+    QSize PreviewSize = PrintPreviewWidget->size();
+
+    double scaleX = PreviewSize.width() / (double)(RightMarginX - LeftMargin);
+    double scaleY = PreviewSize.height() / (double)(BottomMarginY - TopMargin);
+
+    return QPoint
+        (
+        (PagePos.x() - LeftMargin) * scaleX,
+        (PagePos.y() - TopMargin) * scaleY
+        );
+}
+
+
+
+
+PrintPreview::ResizeHandle PrintPreview::ChooseResizeHandleAt(const QPoint& pagePos)
+{
+
+    QRect topLeftHandle(
+        UserRect.topLeft() - QPoint(HandleSize/2, HandleSize/2),
+        QSize(HandleSize, HandleSize)
+        );
+
+    QRect topRightHandle(
+        UserRect.topRight() - QPoint(HandleSize/2, HandleSize/2),
+        QSize(HandleSize, HandleSize)
+        );
+
+    QRect bottomLeftHandle(
+        UserRect.bottomLeft() - QPoint(HandleSize/2, HandleSize/2),
+        QSize(HandleSize, HandleSize)
+        );
+
+    QRect bottomRightHandle(
+        UserRect.bottomRight() - QPoint(HandleSize/2, HandleSize/2),
+        QSize(HandleSize, HandleSize)
+        );
+
+    QRect topHandle(
+        UserRect.topLeft() + QPoint(UserRect.width()/2 - HandleSize/2, -HandleSize/2),
+        QSize(HandleSize, HandleSize)
+        );
+
+    QRect bottomHandle(
+        UserRect.bottomLeft() + QPoint(UserRect.width()/2 - HandleSize/2, -HandleSize/2),
+        QSize(HandleSize, HandleSize)
+        );
+
+    QRect leftHandle(
+        UserRect.topLeft() + QPoint(-HandleSize/2, UserRect.height()/2 - HandleSize/2),
+        QSize(HandleSize, HandleSize)
+        );
+
+    QRect rightHandle(
+        UserRect.topRight() + QPoint(-HandleSize/2, UserRect.height()/2 - HandleSize/2),
+        QSize(HandleSize, HandleSize)
+        );
+
+
+    if (topLeftHandle.contains(pagePos)) return Handle_TopLeft;
+    if (topRightHandle.contains(pagePos)) return Handle_TopRight;
+    if (bottomLeftHandle.contains(pagePos)) return Handle_BottomLeft;
+    if (bottomRightHandle.contains(pagePos)) return Handle_BottomRight;
+    if (topHandle.contains(pagePos)) return Handle_Top;
+    if (bottomHandle.contains(pagePos)) return Handle_Bottom;
+    if (leftHandle.contains(pagePos)) return Handle_Left;
+    if (rightHandle.contains(pagePos)) return Handle_Right;
+
+    if (UserRect.contains(pagePos)) return Handle_None;
+
+    return Handle_None;
+}
 
 
 
 
 
+void PrintPreview::UpdateUserRect(const QRect& NewRect)
+{
+    QRect BoundedRect = NewRect;
+
+    if (BoundedRect.left() < LeftMargin)
+        BoundedRect.moveLeft(LeftMargin);
+    if (BoundedRect.top() < TopMargin)
+        BoundedRect.moveTop(TopMargin);
+    if (BoundedRect.right() > RightMarginX)
+        BoundedRect.setRight(RightMarginX);
+    if (BoundedRect.bottom() > BottomMarginY)
+        BoundedRect.setBottom(BottomMarginY);
+
+    if (BoundedRect.width() < MinimumSize)
+        BoundedRect.setWidth(MinimumSize);
+    if (BoundedRect.height() < MinimumSize)
+        BoundedRect.setHeight(MinimumSize);
+
+    UserRect = BoundedRect;
+
+    if (CheckBoxGroup->checkedId() >= 0) {
+        int widthMM = UserRect.width() * 25.4 / dpi;
+        int heightMM = UserRect.height() * 25.4 / dpi;
+        emit NeedPixmap(CheckBoxGroup->checkedId(), widthMM, heightMM, 1.0);
+    }
+
+    UpdatePreview();
+}
 
 
 
+void PrintPreview::EnableUserSize(bool enable)
+{
+    UserSizeActive = enable;
+
+    if (enable) {
+        // Set appropriate cursor
+        PrintPreviewWidget->setCursor(Qt::CrossCursor);
+    } else {
+        PrintPreviewWidget->setCursor(Qt::ArrowCursor);
+    }
+}
 
 
+bool PrintPreview::eventFilter(QObject* obj, QEvent* event)
+{
+    if (obj == PrintPreviewWidget && UserSizeActive)
+    {
+        QMouseEvent* mouseEvent = nullptr;
 
+        switch (event->type())
+        {
+        case QEvent::MouseButtonPress:
+            mouseEvent = static_cast<QMouseEvent*>(event);
+            mousePressEvent(mouseEvent);
+            return true;
 
+        case QEvent::MouseMove:
+            mouseEvent = static_cast<QMouseEvent*>(event);
+            mouseMoveEvent(mouseEvent);
+            return true;
 
+        case QEvent::MouseButtonRelease:
+            mouseEvent = static_cast<QMouseEvent*>(event);
+            mouseReleaseEvent(mouseEvent);
+            return true;
 
+        default:
+            break;
+        }
+    }
 
-
-
+    return QWidget::eventFilter(obj, event);
+}
 
 
 

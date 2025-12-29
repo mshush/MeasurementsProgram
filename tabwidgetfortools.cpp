@@ -12,15 +12,12 @@ TabWidgetForTools::TabWidgetForTools()
     ScriptTab = new QWidget(this);
     File_ManagerTab = new TreeWidgetForFiles(this);
 
-
-
     addTab(PatternTab,       tr("Pattern"));
     addTab(MessagesTab,      tr("Messages"));
     addTab(LegendTab,        tr("Legend"));
     addTab(ScriptTab,        tr("Script"));
     addTab(File_ManagerTab,  tr("File_Manager"));
     addTab(DebugMessagesTab, tr("Debug_Messages"));
-
 }
 
 

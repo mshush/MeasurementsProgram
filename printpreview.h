@@ -142,6 +142,42 @@ public:
 
 
     QRect RectFromPreset(Preset PresetInput);
+
+
+    bool UserSizeActive = false; // Включена ли кнопка пользовательского размера
+    bool DraggingNow = false; // Производится ли сейчас передвижение графика пользователем
+    bool ResizingNow = false; // Производится ли сейчас изменение размера
+    QRect UserRect;  // Прямоугольник, определяющий размер графика в режиме пользовательского размера
+    QPoint LastMousePos;  // Последнее положение мыши
+    QPoint ClickPos;   // Расстояние от точки клика до верхнего левого угла прямоугольника
+
+    // Значки для изменения размера
+    enum ResizeHandle
+    {
+        Handle_None,
+        Handle_TopLeft,
+        Handle_Top,
+        Handle_TopRight,
+        Handle_Left,
+        Handle_Right,
+        Handle_BottomLeft,
+        Handle_Bottom,
+        Handle_BottomRight
+    };
+
+    ResizeHandle CurrentResizeHandle = Handle_None; // Текущий значок (по умолчанию -- никакой)
+
+    // Стиль
+    int HandleSize = 8;  // Размер в пикселях значков изменения размера
+
+    QPoint PreviewPosToPagePos(const QPoint& previewPos); // Пересчитывает позицию курсора относительно бумаги к позиции относительно графика
+    QPoint PagePosToPreviewPos(const QPoint& pagePos); // Наоборот
+    void UpdateUserRect(const QRect& newRect); // Обновляет пользовательский прямоугольник размера графика
+    void UpdateCursorForHandle(ResizeHandle handle); // Обновляет значок курсора
+    ResizeHandle ChooseResizeHandleAt(const QPoint& pagePos); // Выбирает вид значка в зависимости от точки
+    int MinimumSize = 50;
+    void EnableUserSize(bool enable);
+
 public slots:
     // При установке галочек добавляет/меняет соответствующий график
     void SendSignalForPixmap(int CorrespondingTabId);
@@ -166,10 +202,10 @@ public slots:
     void  MoveAndResizeToBottomLeftSixth    ();
     void  MoveAndResizeToBottomRightSixth   ();
 
-    void OnCompPlusButtonClicked();
-    void OnClearCompButtonClicked();
-    void OnPrintPlusButtonClicked();
-    void OnClearPrintButtonClicked();
+    void OnCompPlusButtonClicked    ();
+    void OnClearCompButtonClicked   ();
+    void OnPrintPlusButtonClicked   ();
+    void OnClearPrintButtonClicked  ();
 
 
 
@@ -180,6 +216,24 @@ public slots:
     void UpdatePreview();
 
     void OnPixmapReceived(QPixmap Pixmap);
+
+private:
+    // Методы для работы с мышью в режиме User Size
+    QPoint ConvertToPagePos(const QPoint& widgetPos);
+    void HandleMousePress(QMouseEvent* event);
+    void HandleMouseMove(QMouseEvent* event);
+    void HandleMouseRelease(QMouseEvent* event);
+    void DebugMouse(const QString& eventName, const QPoint& pos);
+    bool eventFilter(QObject* obj, QEvent* event) override;
+
+
+protected:
+    void mouseMoveEvent     (QMouseEvent *event) override;
+    void mousePressEvent    (QMouseEvent *event) override;
+    void mouseReleaseEvent  (QMouseEvent *event) override;
+
+
+
 signals:
     void NeedPixmap(int NeededTab, int NeededWidth, int NeededHeight, int NeededScale);
 

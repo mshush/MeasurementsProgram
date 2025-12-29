@@ -334,8 +334,8 @@ void MainWindow::OnMeasureResponseAtSingleAnglActionTriggered()
 
 void MainWindow::OnMeasureBckgndAtSingleAnglActionTriggered()
 {
-    this->SetAllOPUParamsFromInterface();
-    this->SetAllVNAParamsFromInterface();
+    SetAllOPUParamsFromInterface();
+    SetAllVNAParamsFromInterface();
 
     try
     {
@@ -563,9 +563,10 @@ void MainWindow::PaintSomePlot(int TabID, LegendWidget::DataFromLegendRow LD)
     MeasDataClass::MeasDataType DType = DataTypeVector[TabID];
     PlotClass::ComplexInfo CompInfo = ChartTab->PlotTabs[TabID]->customPlot->ComplexDisplayMode;
 
+    qDebug()<<"002";
     QString Title   = LD.Title;
     //int Data        = LD.Data;    // Ничего не делает
-    int Plane       = LD.Plane;
+    QString Plane       = LD.Plane;
     int Freq        = LD.Freq;
     int Az          = LD.Az;
     int El          = LD.El;
@@ -578,49 +579,50 @@ void MainWindow::PaintSomePlot(int TabID, LegendWidget::DataFromLegendRow LD)
     QDoubleVector XData;
     QDoubleVector YData;
 
-    switch (Plane)
+    if (Plane == "Freq" || Plane == "freq")
     {
-        case 0: // Частота
+        // Частота
+        XData = MeasData.GetFreqVectorGHz();
+        YComplexData = MeasData.ReadSweepFrom(DType, Az, El);
+    }
+    else if (Plane == "Az" || Plane == "az")
+    {
+        // Азимут
+        XData = MeasData.GetAzimuthVector();
+        int AzPoints = MeasData.GetAzTrigPoints();
+        YComplexData.resize(AzPoints);
+        for (int az = 0; az < AzPoints; az++)
         {
-            XData = MeasData.GetFreqVectorGHz();
-            YComplexData = MeasData.ReadSweepFrom(DType, Az, El);
-            break;
-        }
-        case 1: // Азимут
-        {
-            XData = MeasData.GetAzimuthVector();
-            int AzPoints = MeasData.GetAzTrigPoints();
-            YComplexData.resize(AzPoints);
-            for (int az=0; az<AzPoints; az++)
-            {
             YComplexData[az] = MeasData.ReadValueFrom(DType, Freq, az, El);
-            }
-            break;
-        }
-        case 2: // Подъём
-        {
-            XData = MeasData.GetElevationVector();
-            int ElPoints = MeasData.GetElTrigPoints();
-            YComplexData.resize(ElPoints);
-            for (int el=0; el<ElPoints; el++)
-            {
-                YComplexData[el] = MeasData.ReadValueFrom(DType, Freq, Az, el);
-            }
-            break;
-        }
-        case 3: // Метры как отдельный случай рассмотрим пока (Тоже лучше сделать через enum?)
-        {
-            XData = MeasData.GetDistVector();
-            int DistPoints = XData.size();
-            YComplexData.resize(DistPoints);
-            for (int m=0; m<DistPoints; m++)
-            {
-                YComplexData[m] = MeasData.ReadValueFrom(DType, m, Az, El);
-            }
-            break;
         }
     }
+    else if (Plane == "El" || Plane == "el")
+    {
+        // Подъём
+        XData = MeasData.GetElevationVector();
+        int ElPoints = MeasData.GetElTrigPoints();
+        YComplexData.resize(ElPoints);
+        for (int el = 0; el < ElPoints; el++)
+        {
+            YComplexData[el] = MeasData.ReadValueFrom(DType, Freq, Az, el);
+        }
+    }
+    else if (Plane == "Dist" || Plane == "dist")
+    {
+        // Метры
+        XData = MeasData.GetDistVector();
+        int DistPoints = XData.size();
+        YComplexData.resize(DistPoints);
+        for (int m = 0; m < DistPoints; m++)
+        {
+            YComplexData[m] = MeasData.ReadValueFrom(DType, m, Az, El);
+        }
+    }
+    else
+    {
+        qWarning() << "Unknown plane type:" << Plane;
 
+    }
 
     YData.resize(YComplexData.size());
 
@@ -666,11 +668,11 @@ void MainWindow::PaintSomePlot(int TabID, LegendWidget::DataFromLegendRow LD)
     ChartTab->PlotTabs[TabID]->customPlot->rescaleAxes(); // Всегда ли менять масштаб?
     ChartTab->PlotTabs[TabID]->customPlot->replot();
 
+
 }
 
 void MainWindow::changeEvent(QEvent *event) // Именно здесь меняется язык!!!
 {
-
     if (event->type() == QEvent::LanguageChange)
     {
         ui->retranslateUi(this);
@@ -711,23 +713,11 @@ void MainWindow::ConnectLegendAndChartTabs()
 
     // Строки таблицы
     connect(TabOfTools->LegendTab, &LegendWidget::VisibilityCheckedSignal, this, &MainWindow::OnVisibilityCheckedSignalReceived);
-    connect(TabOfTools->LegendTab, &LegendWidget::TitleChangedSignal, this, &MainWindow::OnTitleChangedSignalReceived);
-    connect(TabOfTools->LegendTab, &LegendWidget::RedrawPlotSignal, this, &MainWindow::OnRedrawPlotSignalReceived);
-
-
-
-
-
-
-
-
-
-
+    connect(TabOfTools->LegendTab, &LegendWidget::TitleChangedSignal,      this, &MainWindow::OnTitleChangedSignalReceived);
+    connect(TabOfTools->LegendTab, &LegendWidget::RedrawPlotSignal,        this, &MainWindow::OnRedrawPlotSignalReceived);
 
     // Сигналы от вкладок графиков к легенде
-    connect(ChartTab, &TabWidgetForCharts::SendCurrentPlotIndexToLegendSignal,TabOfTools->LegendTab, &LegendWidget::OnChartTabChanged);
-
-
+    //connect(ChartTab, &TabWidgetForCharts::SendCurrentPlotIndexToLegendSignal,TabOfTools->LegendTab, &LegendWidget::OnChartTabChanged);
 
 
 
@@ -973,11 +963,17 @@ void MainWindow::OnRedrawPlotSignalReceived         (int TabId, int GraphId,
         if (DataType == MeasDataClass::MeasDataType::CurrentProfRange or DataType == MeasDataClass::MeasDataType::CurrentGatedProfRange)
         {
             XVector = MeasData.GetDistVector();
-
             if (PlotIsLogarithmic)
-            {MeasData.GetAmplVectordB(DataType, YVector, Azimuth, Elevation);}
+            {
+                YVector.resize(XVector.size());
+                MeasData.GetAmplVectordB(DataType, YVector, Azimuth, Elevation);
+
+            }
             else
-            {MeasData.GetAmplVectorSqrt(DataType, YVector, Azimuth, Elevation);}
+            {
+                YVector.resize(XVector.size());
+                MeasData.GetAmplVectorSqrt(DataType, YVector, Azimuth, Elevation);
+            }
         }
         else
         {
@@ -989,12 +985,19 @@ void MainWindow::OnRedrawPlotSignalReceived         (int TabId, int GraphId,
     {
         if (DataType != MeasDataClass::MeasDataType::CurrentProfRange and DataType != MeasDataClass::MeasDataType::CurrentGatedProfRange)
         {
+
             XVector = MeasData.GetFreqVectorGHz();
 
             if (PlotIsLogarithmic)
+            {
+                YVector.resize(XVector.size());
                 MeasData.GetAmplVectordB(DataType, YVector, Azimuth, Elevation);
+
+            }
             else
+            {
                 MeasData.GetAmplVectorSqrt(DataType, YVector, Azimuth, Elevation);
+            }
         }
         else
         {
@@ -1018,7 +1021,7 @@ void MainWindow::OnRedrawPlotSignalReceived         (int TabId, int GraphId,
         }
 
         QComplexVector PreYVector = Fill1DArrayFromMeasDataForAnglePlane(DataType, Plane, freq_or_dist, Elevation);
-
+        qDebug()<<"CheckAz1";
         if (PlotIsLogarithmic)
         {
             for (int a=0; a<PreYVector.size(); a++)
@@ -1077,7 +1080,7 @@ void MainWindow::OnRedrawPlotSignalReceived         (int TabId, int GraphId,
     }
 
     ChartTab->PlotTabs[TabId]->customPlot->graph(GraphId)->setData(XVector, YVector);
-    ChartTab->PlotTabs[TabId]->customPlot->graph(GraphId)->setPen(QPen(Qt::yellow));
+    ChartTab->PlotTabs[TabId]->customPlot->graph(GraphId)->setPen(QPen(Colour));
     ChartTab->PlotTabs[TabId]->customPlot->ResetPlot();
 
 
